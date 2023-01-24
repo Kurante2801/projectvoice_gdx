@@ -4,8 +4,15 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.ui.GameScreen
-import com.kurante.projectvoice_gdx.ui.WidthViewport.Companion.scaledUi
-import ktx.scene2d.*
+import com.kurante.projectvoice_gdx.ui.imageTextButton
+import com.kurante.projectvoice_gdx.ui.UiUtil.mainColor
+import com.kurante.projectvoice_gdx.ui.UiUtil.scaledUi
+import com.kurante.projectvoice_gdx.ui.textButton
+import ktx.actors.onChange
+import ktx.scene2d.label
+import ktx.scene2d.scene2d
+import ktx.scene2d.table
+import kotlin.random.Random
 
 class StorageScreen(private val parent: ProjectVoice) : GameScreen(parent) {
     override fun show() {
@@ -19,30 +26,24 @@ class StorageScreen(private val parent: ProjectVoice) : GameScreen(parent) {
                 this.setAlignment(Align.center)
                 it.colspan(2)
             }
+            label("")
 
             defaults().pad(8f.scaledUi(), 8f.scaledUi(), 8f.scaledUi(), 8f.scaledUi()).row()
 
-            textButton("Button with Text") {
-                it.prefSize(140f.scaledUi(), 48f.scaledUi())
-                this.pad(0f, 8f.scaledUi(), 0f, 8f.scaledUi())
-                this.color = Color.valueOf("#FF4B00")
+            textButton("Button with Text").onChange {
+                mainColor = Color(
+                    Random.nextFloat(),
+                    Random.nextFloat(),
+                    Random.nextFloat(),
+                    1f,
+                )
             }
 
-            imageTextButton("Button with Icon and Text") {
-                it.prefSize(140f.scaledUi(), 48f.scaledUi())
-                this.pad(0f, 8f.scaledUi(), 0f, 8f.scaledUi())
-                this.style.imageUp = skin.getDrawable("folder_open_shadow")
-                this.color = Color.valueOf("#FF4B00")
-            }
+            imageTextButton("Button with Icon and Text", skin.getDrawable("folder_open_shadow"))
 
             defaults().row()
 
-            textButton("HELL") {
-                it.prefSize(140f.scaledUi(), 48f.scaledUi())
-                it.colspan(2)
-                this.pad(0f, 8f.scaledUi(), 0f, 8f.scaledUi())
-                this.color = Color.valueOf("#FF4B00")
-            }
+            textButton("HELL")
         }
 
         stage.addActor(table)

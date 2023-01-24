@@ -17,14 +17,6 @@ class WidthViewport : Viewport() {
     companion object {
         // Viewport is scaled down so textures don't look blurry (such as buttons)
         const val REFERENCE_WIDTH = 2460f
-
-        const val UI_SCALE = 1280f / REFERENCE_WIDTH
-        /**
-         * Game is developed on a 1280x980 window. This function
-         * converts the Float to match REFERENCE_WIDTH, which is much larger.
-         * On a window with 1280 pixels of width, this will be pixel perfect (in theory)
-         */
-        fun Float.scaledUi() = this / UI_SCALE
     }
 
     override fun update(screenWidth: Int, screenHeight: Int, centerCamera: Boolean) {

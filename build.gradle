@@ -53,6 +53,7 @@ project(":core") {
         api group: 'io.github.libktx', name: 'ktx-app', version: ktxVersion
         api group: 'io.github.libktx', name: 'ktx-graphics', version: ktxVersion
         api group: 'io.github.libktx', name: 'ktx-scene2d', version: ktxVersion
+        api group: 'io.github.libktx', name: 'ktx-actors', version: ktxVersion
     }
 }
 
