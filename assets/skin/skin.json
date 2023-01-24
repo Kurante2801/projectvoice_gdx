@@ -1,0 +1,49 @@
+{
+"BitmapFont": {
+	"button": {
+		"file": "rubik_semibold.fnt"
+	},
+	"label": {
+		"file": "rubik_regular.fnt"
+	}
+},
+"Color": {
+	"SHADOW": {
+		"hex": "0000004b"
+	},
+	"WHITE": {
+		"hex": "ffffffff"
+	}
+},
+"ButtonStyle": {
+	"default": {
+		"up": "button_up",
+		"down": "button_down"
+	}
+},
+"ImageTextButtonStyle": {
+	"default": {
+		"imageUp": "folder_open_shadow",
+		"font": "button",
+		"up": "button_up",
+		"down": "button_down"
+	}
+},
+"LabelStyle": {
+	"default": {
+		"font": "label"
+	}
+},
+"TextButtonStyle": {
+	"default": {
+		"font": "button",
+		"up": "button_up",
+		"down": "button_down"
+	}
+},
+"TextTooltipStyle": {
+	"default": {
+		"label": "default"
+	}
+}
+}
