@@ -9,6 +9,7 @@ import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.StorageScreen
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
+import ktx.async.KtxAsync
 import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin
 
@@ -22,6 +23,8 @@ class ProjectVoice : KtxGame<KtxScreen>() {
 
         skin = Skin(Gdx.files.internal("skin/skin.json"))
         Scene2DSkin.defaultSkin = skin
+
+        KtxAsync.initiate()
 
         addScreen(StorageScreen(this))
         setScreen<StorageScreen>()

@@ -2,11 +2,15 @@ package com.kurante.projectvoice_gdx
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
+import com.kurante.projectvoice_gdx.storage.StorageManager
+import com.kurante.projectvoice_gdx.storage.WindowsStorageHandler
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
+        StorageManager.handler = WindowsStorageHandler()
+
         Lwjgl3Application(ProjectVoice(), Lwjgl3ApplicationConfiguration().apply {
             setForegroundFPS(60)
             setTitle("Project Voice")
