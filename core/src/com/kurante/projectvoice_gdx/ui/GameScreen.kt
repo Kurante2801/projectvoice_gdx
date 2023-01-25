@@ -12,11 +12,9 @@ import ktx.graphics.use
 open class GameScreen(private val parent: ProjectVoice) : KtxScreen {
     var buffer = FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
     val stage = Stage(WidthViewport())
-    val bufferColor: Color = Color.WHITE
 
-    var opacity: Float
-        get() = bufferColor.a
-        set(value) { bufferColor.a = value }
+    val bufferColor: Color = Color.WHITE
+    var opacity: Float = bufferColor.a
 
     override fun show() {
         Gdx.input.inputProcessor = stage

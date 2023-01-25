@@ -2,10 +2,12 @@ package com.kurante.projectvoice_gdx
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kurante.projectvoice_gdx.ui.GameScreen
+import com.kurante.projectvoice_gdx.ui.UiUtil.BACKGROUND_COLOR
 import com.kurante.projectvoice_gdx.ui.screens.StorageScreen
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
@@ -14,6 +16,10 @@ import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin
 
 class ProjectVoice : KtxGame<KtxScreen>() {
+    companion object {
+        fun getPreferences(): Preferences = Gdx.app.getPreferences("preferences")
+    }
+
     private lateinit var batch: SpriteBatch
     lateinit var skin: Skin
 
@@ -31,7 +37,7 @@ class ProjectVoice : KtxGame<KtxScreen>() {
     }
 
     override fun render() {
-        ScreenUtils.clear(0f, 0f, 0f, 1f)
+        ScreenUtils.clear(BACKGROUND_COLOR)
 
         val screen = currentScreen as? GameScreen
         // Used when rendering fade in/out

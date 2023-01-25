@@ -6,7 +6,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.badlogic.gdx.backends.android.AndroidComponentApplication
 import com.kurante.fat.OpenDocumentTreePersistent
-import com.kurante.projectvoice_gdx.storage.AndroidFileHandler
+import com.kurante.projectvoice_gdx.storage.AndroidFileHandle
 import com.kurante.projectvoice_gdx.storage.AndroidStorageHandler
 import com.kurante.projectvoice_gdx.storage.StorageManager
 
@@ -20,7 +20,7 @@ class AndroidLauncher : AndroidComponentApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        StorageManager.handler = AndroidStorageHandler(this)
+        StorageManager.storageHandler = AndroidStorageHandler(this)
 
         initialize(ProjectVoice(), AndroidApplicationConfiguration().apply {
             useCompass = false
@@ -31,12 +31,12 @@ class AndroidLauncher : AndroidComponentApplication() {
         })
     }
 
-    fun openDocumentTree(callback: (AndroidFileHandler?) -> Unit) {
+    fun openDocumentTree(callback: (AndroidFileHandle?) -> Unit) {
         treeCallback = { uri ->
             if(uri != null) {
                 val document = DocumentFile.fromSingleUri(context, uri)
                 if(document != null)
-                    callback.invoke(AndroidFileHandler(document, context))
+                    callback.invoke(AndroidFileHandle(context, document))
                 else
                     callback(null)
             }

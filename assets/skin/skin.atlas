@@ -4,23 +4,23 @@ size: 1024, 1024
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
-rubik_regular
+bold
   rotate: false
-  xy: 1, 75
-  size: 506, 248
-  orig: 506, 248
+  xy: 1, 141
+  size: 506, 284
+  orig: 506, 284
   offset: 0, 0
   index: -1
-rubik_semibold
+regular
   rotate: false
-  xy: 1, 325
-  size: 506, 285
-  orig: 506, 285
+  xy: 1, 427
+  size: 506, 270
+  orig: 506, 270
   offset: 0, 0
   index: -1
 button_down
   rotate: false
-  xy: 509, 538
+  xy: 509, 625
   size: 72, 72
   split: 6, 6, 6, 6
   orig: 72, 72
@@ -28,16 +28,31 @@ button_down
   index: -1
 button_up
   rotate: false
-  xy: 1, 1
+  xy: 1, 67
   size: 72, 72
   split: 6, 6, 6, 6
   orig: 72, 72
   offset: 0, 0
   index: -1
-folder_open_shadow
+cursor_shadow
   rotate: false
-  xy: 509, 472
+  xy: 1, 1
   size: 64, 64
   orig: 64, 64
+  offset: 0, 0
+  index: -1
+folder_open_shadow
+  rotate: false
+  xy: 583, 633
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+selection_shadow
+  rotate: false
+  xy: 509, 572
+  size: 67, 51
+  split: 3, 3, 3, 3
+  orig: 67, 51
   offset: 0, 0
   index: -1

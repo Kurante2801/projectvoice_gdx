@@ -18,4 +18,7 @@ object UiUtil {
             field = value
             mainColorEvent.invoke(value)
         }
+
+    val BACKGROUND_COLOR = Color.valueOf("#191919")
+    val FOREGROUND2_COLOR = Color.valueOf("#4B4B4B")
 }

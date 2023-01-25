@@ -1,49 +1,61 @@
 {
-"BitmapFont": {
-	"button": {
-		"file": "rubik_semibold.fnt"
-	},
-	"label": {
-		"file": "rubik_regular.fnt"
+BitmapFont: {
+	bold: {
+		file: bold.fnt
 	}
-},
-"Color": {
-	"SHADOW": {
-		"hex": "0000004b"
-	},
-	"WHITE": {
-		"hex": "ffffffff"
+	regular: {
+		file: regular.fnt
 	}
-},
-"ButtonStyle": {
-	"default": {
-		"up": "button_up",
-		"down": "button_down"
+}
+Color: {
+	SHADOW: {
+		hex: 0000004b
 	}
-},
-"ImageTextButtonStyle": {
-	"default": {
-		"imageUp": "folder_open_shadow",
-		"font": "button",
-		"up": "button_up",
-		"down": "button_down"
+	WHITE: {
+		hex: ffffffff
 	}
-},
-"LabelStyle": {
-	"default": {
-		"font": "label"
+	BUTTON_TEXT: {
+		hex: ffffffff
 	}
-},
-"TextButtonStyle": {
-	"default": {
-		"font": "button",
-		"up": "button_up",
-		"down": "button_down"
+}
+ButtonStyle: {
+	default: {
+		up: button_up
+		down: button_down
 	}
-},
-"TextTooltipStyle": {
-	"default": {
-		"label": "default"
+}
+ImageTextButtonStyle: {
+	default: {
+		imageUp: folder_open_shadow
+		font: bold
+		up: button_up
+		down: button_down
+	}
+}
+LabelStyle: {
+	default: {
+		font: regular
+	}
+}
+TextButtonStyle: {
+	default: {
+		font: bold
+		up: button_up
+		down: button_down
+	}
+}
+TextFieldStyle: {
+	default: {
+		font: regular
+		fontColor: WHITE
+		background: button_up
+		cursor: cursor_shadow
+		selection: selection_shadow
+	}
+}
+TextTooltipStyle: {
+	default: {
+		label: default
 	}
 }
 }

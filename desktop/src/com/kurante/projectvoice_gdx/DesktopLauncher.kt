@@ -9,7 +9,7 @@ import com.kurante.projectvoice_gdx.storage.WindowsStorageHandler
 object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
-        StorageManager.handler = WindowsStorageHandler()
+        StorageManager.storageHandler = WindowsStorageHandler()
 
         Lwjgl3Application(ProjectVoice(), Lwjgl3ApplicationConfiguration().apply {
             setForegroundFPS(60)
