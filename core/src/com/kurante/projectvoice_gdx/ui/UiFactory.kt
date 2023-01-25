@@ -56,6 +56,10 @@ inline fun <S> KWidget<S>.imageTextButton(
     }
 }
 
+fun KImageTextButton.setDisabled(disabled: Boolean) {
+
+}
+
 @Scene2dDsl
 @OptIn(ExperimentalContracts::class)
 inline fun <S> KWidget<S>.textField(

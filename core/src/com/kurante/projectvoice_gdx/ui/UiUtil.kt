@@ -20,5 +20,6 @@ object UiUtil {
         }
 
     val BACKGROUND_COLOR = Color.valueOf("#191919")
+    val FOREGROUND1_COLOR = Color.valueOf("#323232")
     val FOREGROUND2_COLOR = Color.valueOf("#4B4B4B")
 }

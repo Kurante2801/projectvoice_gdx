@@ -7,7 +7,7 @@ import com.kurante.projectvoice_gdx.ProjectVoice.Companion.getPreferences
 import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.UiUtil.scaledUi
-import com.kurante.projectvoice_gdx.ui.imageTextButton
+import com.kurante.projectvoice_gdx.ui.pvImageTextButton
 import ktx.actors.onChange
 import ktx.scene2d.label
 import ktx.scene2d.scene2d
@@ -26,6 +26,7 @@ class StorageScreen(private val parent: ProjectVoice) : GameScreen(parent) {
     private fun showFirstTime() {
         val table = scene2d.table {
             setFillParent(true)
+            debug = true
 
             val message = label("Project Voice requires access to a folder to load levels from\nIt can be an empty folder that you will later add levels to") {
                 this.setAlignment(Align.center)
@@ -34,13 +35,13 @@ class StorageScreen(private val parent: ProjectVoice) : GameScreen(parent) {
 
             defaults().pad(8f.scaledUi(), 8f.scaledUi(), 8f.scaledUi(), 8f.scaledUi()).row()
 
-            imageTextButton("Browse", skin.getDrawable("folder_open_shadow")) {
+            pvImageTextButton("Browse", skin.getDrawable("folder_open_shadow")) {
                 it.uniformX()
 
                 onChange {
-                    //isDisabled = true
+                    isDisabled = true
                     storageHandler.requestFolderAccess { handle ->
-                        //isDisabled = false
+                        isDisabled = false
                         if(handle == null)
                             message.setText("Could not access the given directory, please try again!")
                         else {

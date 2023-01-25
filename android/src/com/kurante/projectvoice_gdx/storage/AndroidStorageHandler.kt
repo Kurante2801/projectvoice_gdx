@@ -19,8 +19,15 @@ class AndroidStorageHandler(
     }
 
     override fun fromString(string: String): AndroidFileHandle? {
-        val doc = DocumentFile.fromSingleUri(launcher, Uri.parse(string))
-        return if(doc != null) AndroidFileHandle(launcher, doc) else null
+        var doc = DocumentFile.fromSingleUri(launcher, Uri.parse(string))
+            ?: return null
+
+        // If directory, convert to tree
+        if(doc.isDirectory)
+           doc = DocumentFile.fromTreeUri(launcher, Uri.parse(string))
+               ?: return null
+
+        return AndroidFileHandle(launcher, doc)
     }
 
     override fun encode(string: String): String = Uri.encode(string)

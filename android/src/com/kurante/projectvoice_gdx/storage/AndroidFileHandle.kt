@@ -52,24 +52,38 @@ class AndroidFileHandle(
     }
 
     override fun write(append: Boolean): OutputStream {
-        TODO("NOT IMPLEMENTED IN ANDROID")
+        if(document.isDirectory)
+            throw GdxRuntimeException("(Android) Cannot open a stream to a directory: ${document.uri.path}")
+        val output = context.contentResolver.openOutputStream(document.uri)
+            ?: throw GdxRuntimeException("(Android) Error opening output stream: ${document.uri.path}")
+
+        if(append && exists()) {
+            context.contentResolver.openInputStream(document.uri).use { input ->
+                input?.copyTo(output)
+            }
+        }
+
+        return output
     }
 
     override fun list(): Array<FileHandle> {
-        return try {
-            document.listFiles().map { AndroidFileHandle(context, document) }.toTypedArray()
-        } catch (e: java.lang.UnsupportedOperationException) {
-            val doc = DocumentFile.fromTreeUri(context, document.uri)
-                ?: throw GdxRuntimeException("(Android) Failed to get a document from DocumentFile.fromTreeUri")
-            doc.listFiles().map { AndroidFileHandle(context, document) }.toTypedArray()
-        }
+        // To deal with SAF's weird handling of directories,
+        // we have to first read children and determine if they're directories
+        // If they're directories we need to re parse them as trees (as opposed to singleUri for files)
+        // This assumes the first uri we've ever gotten was a document tree
+        return document.listFiles().map { child(document.name!!) }.toTypedArray()
     }
 
     override fun child(name: String): AndroidFileHandle {
-        val doc = DocumentFile.fromTreeUri(
+        var doc = DocumentFile.fromSingleUri(
             context,
             Uri.parse(document.uri.toString() + Uri.encode("/$name"))
-        ) ?: throw GdxRuntimeException("(Android) Failed to get a document from DocumentFile.fromTreeUri: child($name)")
+        ) ?: throw GdxRuntimeException("(Android) Failed to get a document from DocumentFile.fromSingleUri: child($name)")
+
+        // In case of a directory, convert to tree
+        if(doc.isDirectory)
+            doc = DocumentFile.fromTreeUri(context, doc.uri)
+                ?: throw GdxRuntimeException("(Android) Failed to get a document from DocumentFile.fromTreeUri: child($name)")
 
         return AndroidFileHandle(context, doc)
     }
@@ -110,4 +124,6 @@ class AndroidFileHandle(
         else
             TODO("NOT IMPLEMENTED IN ANDROID")
     }
+
+
 }

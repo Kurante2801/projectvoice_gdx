@@ -34,7 +34,7 @@ class AndroidLauncher : AndroidComponentApplication() {
     fun openDocumentTree(callback: (AndroidFileHandle?) -> Unit) {
         treeCallback = { uri ->
             if(uri != null) {
-                val document = DocumentFile.fromSingleUri(context, uri)
+                val document = DocumentFile.fromTreeUri(context, uri)
                 if(document != null)
                     callback.invoke(AndroidFileHandle(context, document))
                 else
