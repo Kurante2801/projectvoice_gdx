@@ -21,9 +21,6 @@ import ktx.scene2d.Scene2DSkin
 class ProjectVoice : KtxGame<KtxScreen>() {
     companion object {
         fun getPreferences(): Preferences = Gdx.app.getPreferences("com.kurante.projectvoice_gdx")
-        fun log(message: String, throwable: Throwable? = null) {
-            Gdx.app.log("com.kurante.projectvoice_gdx", message, throwable)
-        }
     }
 
     private lateinit var batch: SpriteBatch

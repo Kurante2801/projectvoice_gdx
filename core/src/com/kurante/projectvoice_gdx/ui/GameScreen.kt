@@ -21,6 +21,10 @@ open class GameScreen(private val parent: ProjectVoice) : KtxScreen {
 
     override fun resize(width: Int, height: Int) = Gdx.app.postRunnable {
         stage.viewport.update(width, height, true)
+
+        // Minimizing on windows crashes without this
+        if(width == 0 || height == 0) return@postRunnable
+
         buffer = FrameBuffer(Pixmap.Format.RGBA8888, width, height, false)
     }
 

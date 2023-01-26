@@ -2,7 +2,6 @@ package com.kurante.projectvoice_gdx.ui.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
@@ -11,6 +10,7 @@ import com.kurante.projectvoice_gdx.ProjectVoice.Companion.getPreferences
 import com.kurante.projectvoice_gdx.level.LevelManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
 import com.kurante.projectvoice_gdx.ui.GameScreen
+import com.kurante.projectvoice_gdx.ui.PVImageTextButton
 import com.kurante.projectvoice_gdx.ui.UiUtil.scaledUi
 import com.kurante.projectvoice_gdx.ui.pvImageTextButton
 import com.kurante.projectvoice_gdx.ui.textField
@@ -69,6 +69,7 @@ class StorageScreen(
                 it.minWidth(200f.scaledUi())
                 it.align(Align.left)
                 it.pad(8f.scaledUi(), 8f.scaledUi(), 0f, 0f)
+                this.group.reverse()
             }
 
             browse.onChange {
@@ -141,8 +142,8 @@ class StorageScreen(
         handle: FileHandle,
         message: Label,
         field: TextField,
-        browse: ImageTextButton,
-        next: ImageTextButton
+        browse: PVImageTextButton,
+        next: PVImageTextButton
     ) {
         message.setText("Loading...")
         field.text = handle.name()

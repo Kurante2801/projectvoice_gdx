@@ -13,20 +13,20 @@ object LevelManager {
 
         for(directory in tree.list()) {
             if(!directory.isDirectory) {
-                Gdx.app.log("com.kurante.projectvoice_gdx", "Skipping ${directory.name()}. Not a directory")
+                Gdx .app.log("LevelManager", "Skipping ${directory.name()} (not a directory)")
                 continue
             }
 
             val config = directory.child("songconfig.txt")
             if(!config.exists()) {
-                Gdx.app.log("com.kurante.projectvoice_gdx", "Skipping ${directory.name()}. Found no songconfig.txt")
+                Gdx.app.log("LevelManager", "Skipping ${directory.name()} (found no songconfig.txt)")
                 continue
             }
 
             try {
                 levels.add(Level.fromSongConfig(directory))
             } catch (e: Exception) {
-                Gdx.app.error("com.kurante.projectvoice_gdx", "Failed loading ${directory.name()}", e)
+                Gdx.app.error("LevelManager", "Skipping ${directory.name()} (failed to load)", e)
             }
         }
 

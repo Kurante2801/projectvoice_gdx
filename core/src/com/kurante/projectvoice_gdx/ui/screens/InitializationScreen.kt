@@ -28,7 +28,6 @@ class InitializationScreen(
         val handle = storageHandler.directoryFromString(tree)
 
         val table = scene2d.table {
-            //debug = true
             setFillParent(true)
             val lbl = label("Loading levels...")
 
@@ -36,8 +35,8 @@ class InitializationScreen(
             KtxAsync.launch(executor) {
                 try {
                     LevelManager.loadLevels(handle)
+                    // TODO: Change to home screen (level selection)
                     lbl.setText("Loaded ${LevelManager.levels.size} levels")
-
                 } catch (e: Exception) {
                     this@InitializationScreen.parent.changeScreen<StorageScreen>()
                 }
