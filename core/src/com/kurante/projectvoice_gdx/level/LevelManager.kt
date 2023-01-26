@@ -5,10 +5,17 @@ import com.badlogic.gdx.files.FileHandle
 
 object LevelManager {
     val levels = mutableListOf<Level>()
+    var loaded = false
 
     fun loadLevels(tree: FileHandle) {
+        loaded = false
+        levels.clear()
+
         for(directory in tree.list()) {
-            if(!directory.isDirectory) continue
+            if(!directory.isDirectory) {
+                Gdx.app.log("com.kurante.projectvoice_gdx", "Skipping ${directory.name()}. Not a directory")
+                continue
+            }
 
             val config = directory.child("songconfig.txt")
             if(!config.exists()) {
@@ -23,5 +30,6 @@ object LevelManager {
             }
         }
 
+        loaded = true
     }
 }

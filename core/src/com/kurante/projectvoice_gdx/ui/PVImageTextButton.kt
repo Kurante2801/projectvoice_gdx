@@ -46,8 +46,11 @@ inline fun <S> KWidget<S>.pvImageTextButton(
     return actor(PVImageTextButton(text)) {
         (it as Cell<*>).prefSize(160f.scaledUi(), 48f.scaledUi())
 
-        if(drawable != null)
-            this.style.imageUp = drawable
+        if(drawable != null) {
+            this.style = ImageTextButton.ImageTextButtonStyle(this.style).apply {
+                imageUp = drawable
+            }
+        }
 
         init(this, it)
     }

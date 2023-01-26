@@ -1,10 +1,11 @@
 package com.kurante.projectvoice_gdx.ui
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.math.MathUtils.lerp
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.kurante.projectvoice_gdx.ProjectVoice
 import ktx.app.KtxScreen
 import ktx.graphics.use
@@ -12,9 +13,7 @@ import ktx.graphics.use
 open class GameScreen(private val parent: ProjectVoice) : KtxScreen {
     var buffer = FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
     val stage = Stage(WidthViewport())
-
-    val bufferColor: Color = Color.WHITE
-    var opacity: Float = bufferColor.a
+    var opacity: Float = 1f
 
     override fun show() {
         Gdx.input.inputProcessor = stage
@@ -34,5 +33,19 @@ open class GameScreen(private val parent: ProjectVoice) : KtxScreen {
         buffer.use {
             render(delta)
         }
+    }
+
+    class FadeAction(
+        private val startAlpha: Float,
+        private val endAlpha: Float,
+        private val screen: GameScreen
+    ) : TemporalAction() {
+        init {
+            duration = 0.25f
+        }
+        override fun update(percent: Float) {
+            screen.opacity = lerp(startAlpha, endAlpha, percent)
+        }
+
     }
 }

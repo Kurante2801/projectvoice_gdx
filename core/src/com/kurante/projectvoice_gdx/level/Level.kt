@@ -40,7 +40,7 @@ data class Level (
                 throw GdxRuntimeException("Music file not found: ${directory.name()}")
 
             // songconfig.txt is like an INI file
-            val songConfig = directory.child("songConfig.txt")
+            val songConfig = directory.child("songconfig.txt")
             assert(songConfig.exists())
 
             // Each line will be: key=value

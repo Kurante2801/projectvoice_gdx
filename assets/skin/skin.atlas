@@ -48,6 +48,13 @@ folder_open_shadow
   orig: 64, 64
   offset: 0, 0
   index: -1
+forward_shadow
+  rotate: false
+  xy: 75, 75
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 selection_shadow
   rotate: false
   xy: 509, 572

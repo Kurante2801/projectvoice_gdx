@@ -37,7 +37,11 @@ class WindowsStorageHandler : StorageHandler {
         )
     }
 
-    override fun fromString(string: String): FileHandle {
+    override fun fileFromString(string: String): FileHandle {
+        return Gdx.files.absolute(string)
+    }
+
+    override fun directoryFromString(string: String): FileHandle {
         return Gdx.files.absolute(string)
     }
 

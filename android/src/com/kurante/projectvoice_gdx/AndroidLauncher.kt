@@ -1,5 +1,6 @@
 package com.kurante.projectvoice_gdx
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.documentfile.provider.DocumentFile
@@ -15,6 +16,9 @@ class AndroidLauncher : AndroidComponentApplication() {
     private val treeLauncher = registerForActivityResult(OpenDocumentTreePersistent()) {
         treeCallback?.invoke(it)
         treeCallback = null
+
+        if(it != null)
+            contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +39,7 @@ class AndroidLauncher : AndroidComponentApplication() {
         treeCallback = { uri ->
             if(uri != null) {
                 val document = DocumentFile.fromTreeUri(context, uri)
+
                 if(document != null)
                     callback.invoke(AndroidFileHandle(context, document))
                 else

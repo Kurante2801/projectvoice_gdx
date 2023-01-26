@@ -18,16 +18,12 @@ class AndroidStorageHandler(
         }
     }
 
-    override fun fromString(string: String): AndroidFileHandle? {
-        var doc = DocumentFile.fromSingleUri(launcher, Uri.parse(string))
-            ?: return null
+    override fun fileFromString(string: String): FileHandle {
+        return AndroidFileHandle(launcher, DocumentFile.fromSingleUri(launcher, Uri.parse(string))!!)
+    }
 
-        // If directory, convert to tree
-        if(doc.isDirectory)
-           doc = DocumentFile.fromTreeUri(launcher, Uri.parse(string))
-               ?: return null
-
-        return AndroidFileHandle(launcher, doc)
+    override fun directoryFromString(string: String): AndroidFileHandle {
+        return AndroidFileHandle(launcher, DocumentFile.fromTreeUri(launcher, Uri.parse(string))!!)
     }
 
     override fun encode(string: String): String = Uri.encode(string)

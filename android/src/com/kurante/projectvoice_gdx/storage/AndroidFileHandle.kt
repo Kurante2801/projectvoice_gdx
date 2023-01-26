@@ -14,18 +14,37 @@ class AndroidFileHandle(
 ) : FileHandle() {
     override fun path(): String = document.uri.path!!
     override fun name(): String = document.name!!
+
     override fun type(): Files.FileType = Files.FileType.Absolute
-    override fun toString(): String = document.uri.path!!
+    override fun toString(): String = document.uri.toString()
     override fun isDirectory(): Boolean = document.isDirectory
     override fun exists(): Boolean = document.exists()
     override fun delete(): Boolean = document.delete()
+
+    override fun extension(): String {
+        val name = name()
+        val i = name.lastIndexOf('.')
+        return if(i == -1) "" else name.substring(i + 1)
+    }
+
+    override fun nameWithoutExtension(): String {
+        val name = name()
+        val i = name.lastIndexOf('.')
+        return if(i == -1) name else name.substring(0, i)
+    }
+
+    override fun pathWithoutExtension(): String {
+        val path = path()
+        val i = path.lastIndexOf(".")
+        return if(i == -1) path else path.substring(0, i)
+    }
 
     override fun read(): InputStream {
         if(!document.exists())
             throw GdxRuntimeException("(Android) File not found: $document")
         if(document.isDirectory)
             throw GdxRuntimeException("(Android) Cannot open a stream to a directory: $document")
-        if(document.canRead())
+        if(!document.canRead())
             throw GdxRuntimeException("(Android) Cannot read file: $document")
 
         return try {
@@ -67,28 +86,26 @@ class AndroidFileHandle(
     }
 
     override fun list(): Array<FileHandle> {
-        // To deal with SAF's weird handling of directories,
-        // we have to first read children and determine if they're directories
-        // If they're directories we need to re parse them as trees (as opposed to singleUri for files)
-        // This assumes the first uri we've ever gotten was a document tree
-        return document.listFiles().map { child(document.name!!) }.toTypedArray()
+        val children = mutableListOf<DocumentFile>()
+
+        for(doc in document.listFiles()) {
+            if(!doc.exists() || doc.name == null) continue
+            children.add(doc)
+        }
+
+        return children.map { AndroidFileHandle(context, it) }.toTypedArray()
     }
 
+    // Quite slow...
     override fun child(name: String): AndroidFileHandle {
-        var doc = DocumentFile.fromSingleUri(
-            context,
-            Uri.parse(document.uri.toString() + Uri.encode("/$name"))
-        ) ?: throw GdxRuntimeException("(Android) Failed to get a document from DocumentFile.fromSingleUri: child($name)")
-
-        // In case of a directory, convert to tree
-        if(doc.isDirectory)
-            doc = DocumentFile.fromTreeUri(context, doc.uri)
-                ?: throw GdxRuntimeException("(Android) Failed to get a document from DocumentFile.fromTreeUri: child($name)")
-
+        val doc = document.findFile(name) ?: DocumentFile.fromSingleUri(context, Uri.EMPTY)!!
         return AndroidFileHandle(context, doc)
     }
 
-    override fun parent() = AndroidFileHandle(context, document.parentFile!!)
+    override fun parent(): AndroidFileHandle {
+        val parent = document.parentFile ?: DocumentFile.fromSingleUri(context, Uri.EMPTY)!!
+        return AndroidFileHandle(context, parent)
+    }
 
     override fun copyTo(dest: FileHandle) {
         if(!isDirectory)

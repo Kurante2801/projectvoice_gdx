@@ -3,11 +3,14 @@ package com.kurante.projectvoice_gdx
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.UiUtil.BACKGROUND_COLOR
+import com.kurante.projectvoice_gdx.ui.screens.InitializationScreen
 import com.kurante.projectvoice_gdx.ui.screens.StorageScreen
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
@@ -17,7 +20,10 @@ import ktx.scene2d.Scene2DSkin
 
 class ProjectVoice : KtxGame<KtxScreen>() {
     companion object {
-        fun getPreferences(): Preferences = Gdx.app.getPreferences("preferences")
+        fun getPreferences(): Preferences = Gdx.app.getPreferences("com.kurante.projectvoice_gdx")
+        fun log(message: String, throwable: Throwable? = null) {
+            Gdx.app.log("com.kurante.projectvoice_gdx", message, throwable)
+        }
     }
 
     private lateinit var batch: SpriteBatch
@@ -32,8 +38,9 @@ class ProjectVoice : KtxGame<KtxScreen>() {
 
         KtxAsync.initiate()
 
+        addScreen(InitializationScreen(this))
         addScreen(StorageScreen(this))
-        setScreen<StorageScreen>()
+        setScreen<InitializationScreen>()
     }
 
     override fun render() {
@@ -48,7 +55,7 @@ class ProjectVoice : KtxGame<KtxScreen>() {
                 // Uncomment below if rendering anything else
                 // it.color = Color.WHITE
 
-                it.color = screen.bufferColor
+                it.color = Color(1f, 1f, 1f, screen.opacity)
                 it.draw(
                     screen.buffer.colorBufferTexture,
                     0f, 0f,
@@ -59,5 +66,29 @@ class ProjectVoice : KtxGame<KtxScreen>() {
             }
         } else
             currentScreen.render(Gdx.graphics.deltaTime)
+    }
+
+    inline fun <reified Type : GameScreen> changeScreen() = changeScreen(Type::class.java)
+
+    fun <Type : GameScreen> changeScreen(type: Class<Type>) {
+        val current = currentScreen as? GameScreen
+            ?: return setScreen(type)
+
+        val newScreen = getScreen(type) as? GameScreen
+            ?: return setScreen(type)
+
+        current.stage.addAction(Actions.sequence(
+            GameScreen.FadeAction(current.opacity, 0f, current),
+            Actions.run {
+                current.hide()
+
+                newScreen.opacity = 0f
+                newScreen.resize(Gdx.graphics.width, Gdx.graphics.height)
+                newScreen.show()
+                newScreen.stage.addAction(GameScreen.FadeAction(0f, 1f, newScreen))
+
+                currentScreen = newScreen
+            }
+        ))
     }
 }
