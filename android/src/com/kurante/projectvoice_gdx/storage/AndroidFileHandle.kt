@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.badlogic.gdx.Files
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
 import java.io.*
@@ -12,6 +13,41 @@ class AndroidFileHandle(
     private val context: Context,
     private val document: DocumentFile
 ) : FileHandle() {
+    val fileChars = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray()
+    fun randomFileName(): String {
+        val filename = charArrayOf('0', '1', '2', '3', '4', '5')
+
+        for(i in 0..5)
+            filename[i] = fileChars.random()
+
+        return String(filename)
+    }
+
+    fun createDirectory(name: String): AndroidFileHandle? {
+        val created = document.createDirectory(name)
+            ?: return null
+        return AndroidFileHandle(context, created)
+    }
+
+    fun createFile(name: String): AndroidFileHandle? {
+        // Due to SAF, we can't create any file with any arbitrary name
+        // so instead we create an empty txt file and rename it to what we want
+        var tempFile = randomFileName()
+        while(document.findFile("$tempFile.txt") != null)
+            tempFile = randomFileName()
+
+
+        val created = document.createFile("text/plain", "$tempFile.txt")
+            ?: return null
+
+        if(!created.renameTo(name)) {
+            created.delete()
+            return null
+        }
+
+        return AndroidFileHandle(context, created)
+    }
+
     override fun path(): String = document.uri.path!!
     override fun name(): String = document.name!!
 
@@ -141,6 +177,4 @@ class AndroidFileHandle(
         else
             TODO("NOT IMPLEMENTED IN ANDROID")
     }
-
-
 }

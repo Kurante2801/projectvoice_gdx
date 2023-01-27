@@ -47,4 +47,17 @@ class WindowsStorageHandler : StorageHandler {
 
     override fun encode(string: String): String = string
     override fun decode(string: String): String = string
+
+    override fun subdirectory(handle: FileHandle, name: String): FileHandle {
+        val dir = handle.child(name)
+        dir.mkdirs()
+        return dir
+    }
+
+    override fun subfile(handle: FileHandle, name: String): FileHandle {
+        val file = handle.child(name)
+        if(!file.exists())
+            file.writeString("", true)
+        return file
+    }
 }

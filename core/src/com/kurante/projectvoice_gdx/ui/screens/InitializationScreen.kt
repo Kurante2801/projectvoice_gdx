@@ -25,6 +25,9 @@ class InitializationScreen(
         val tree = prefs.get<String?>("LevelTree", null)
             ?: return parent.changeScreen<StorageScreen>() // First time run
 
+        if(true)
+            return parent.changeScreen<StorageScreen>()
+
         val handle = storageHandler.directoryFromString(tree)
 
         val table = scene2d.table {

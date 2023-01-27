@@ -10,4 +10,7 @@ interface StorageHandler {
 
     fun encode(string: String): String
     fun decode(string: String): String
+
+    fun subdirectory(handle: FileHandle, name: String): FileHandle
+    fun subfile(handle: FileHandle, name: String): FileHandle
 }

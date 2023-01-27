@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.GdxRuntimeException
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.ProjectVoice.Companion.getPreferences
 import com.kurante.projectvoice_gdx.level.LevelManager
@@ -16,6 +17,7 @@ import com.kurante.projectvoice_gdx.ui.pvImageTextButton
 import com.kurante.projectvoice_gdx.ui.textField
 import kotlinx.coroutines.launch
 import ktx.actors.onChange
+import ktx.app.Platform
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
 import ktx.preferences.get
@@ -80,11 +82,8 @@ class StorageScreen(
                     browse.isDisabled = handle != null || !LevelManager.loaded
                     next.isDisabled = handle != null || !LevelManager.loaded
 
-                    if(handle != null) {
-                        prefs["LevelTree"] = handle.toString()
-                        prefs.flush()
-                        loadLevels(handle, message, field, browse, next)
-                    }
+                    if(handle != null)
+                        tryLoadLevels(handle, message, field, browse, next)
                 }
             }
 
@@ -98,7 +97,7 @@ class StorageScreen(
                 return@table
             }
 
-            loadLevels(handle, message, field, browse, next)
+            tryLoadLevels(handle, message, field, browse, next)
         }
 
         stage.addActor(table)
@@ -145,15 +144,65 @@ class StorageScreen(
         browse: PVImageTextButton,
         next: PVImageTextButton
     ) {
+        var _handle = handle
+        var nomediaText: String? = null
+
+        // Make sure we're not using the root of the device!
+        if(_handle.path() == "/tree/primary:" || _handle.path() == "/tree/primary:/document/primary:") {
+            _handle = storageHandler.subdirectory(_handle, "Project Voice")
+            if(!_handle.exists() || !_handle.isDirectory)
+                throw GdxRuntimeException("Could not create nor access subfolder 'Project Voice' when granted access to the root of the device")
+        }
+
         message.setText("Loading...")
-        field.text = handle.name()
+        // Create .nomedia
+        Platform.runOnAndroid {
+            var nomedia = _handle.child(".nomedia")
+            if(!nomedia.exists()) {
+                nomedia = storageHandler.subfile(_handle, ".nomedia")
+                nomediaText = if(nomedia.exists()) "Created .nomedia file" else "Could not create .nomedia file"
+            } else
+                nomediaText = "Found .nomedia file"
+        }
+
+        if(nomediaText != null)
+            message.setText("Loading, $nomediaText")
+
+        field.text = _handle.name()
+
+        prefs["LevelTree"] = _handle.toString()
+        prefs.flush()
 
         val executor = newSingleThreadAsyncContext()
         KtxAsync.launch(executor) {
-            LevelManager.loadLevels(handle)
-            message.setText("Success! Loaded ${LevelManager.levels.size} levels")
+            LevelManager.loadLevels(_handle)
+
+            nomediaText = if(nomediaText == null)
+                "Success! Loaded ${LevelManager.levels.size} levels"
+            else
+                "Success! Loaded ${LevelManager.levels.size} levels\n$nomediaText"
+
+            message.setText(nomediaText)
             browse.isDisabled = false
             next.isDisabled = false
+        }
+    }
+
+    private fun tryLoadLevels(
+        handle: FileHandle,
+        message: Label,
+        field: TextField,
+        browse: PVImageTextButton,
+        next: PVImageTextButton
+    ) {
+        try {
+            loadLevels(handle, message, field, browse, next)
+        } catch (e: Exception) {
+            browse.isDisabled = false
+            next.isDisabled = !LevelManager.loaded
+
+            message.setText("Could not load levels.\n${e.message}")
+            e.printStackTrace()
         }
     }
 }

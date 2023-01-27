@@ -3,6 +3,7 @@ package com.kurante.projectvoice_gdx.storage
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.GdxRuntimeException
 import com.kurante.projectvoice_gdx.AndroidLauncher
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
@@ -28,4 +29,26 @@ class AndroidStorageHandler(
 
     override fun encode(string: String): String = Uri.encode(string)
     override fun decode(string: String): String = Uri.decode(string)
+
+    override fun subdirectory(handle: FileHandle, name: String): FileHandle {
+        var sub = handle.child(name)
+
+        if(!sub.exists()) {
+            sub = (handle as AndroidFileHandle).createDirectory(name)
+                ?: throw GdxRuntimeException("(Android) Could not get nor create subdirectory $name on ${handle.name()}")
+        }
+
+        return sub
+    }
+
+    override fun subfile(handle: FileHandle, name: String): FileHandle {
+        var sub = handle.child(name)
+
+        if(!sub.exists()) {
+            sub = (handle as AndroidFileHandle).createFile(name)
+                ?: throw GdxRuntimeException("(Android) Could not get nor create subdirectory $name on ${handle.name()}")
+        }
+
+        return sub
+    }
 }
