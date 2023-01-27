@@ -109,7 +109,7 @@ class StorageScreen(
             setFillParent(true)
             //debug = true
 
-            val message = label("Project Voice requires access to a folder to load levels from\nIt can be an empty folder that you will later add levels to") {
+            label("Project Voice requires access to a folder to load levels from\nIt can be an empty folder that you will later add levels to") {
                 this.setAlignment(Align.center)
                 it.fillX()
             }
@@ -149,24 +149,25 @@ class StorageScreen(
 
         // Make sure we're not using the root of the device!
         if(_handle.path() == "/tree/primary:" || _handle.path() == "/tree/primary:/document/primary:") {
-            _handle = storageHandler.subdirectory(_handle, "Project Voice")
+            _handle = storageHandler.subDirectory(_handle, "Project Voice")
             if(!_handle.exists() || !_handle.isDirectory)
                 throw GdxRuntimeException("Could not create nor access subfolder 'Project Voice' when granted access to the root of the device")
         }
 
         message.setText("Loading...")
+
         // Create .nomedia
         Platform.runOnAndroid {
             var nomedia = _handle.child(".nomedia")
             if(!nomedia.exists()) {
-                nomedia = storageHandler.subfile(_handle, ".nomedia")
+                nomedia = storageHandler.subFile(_handle, ".nomedia")
                 nomediaText = if(nomedia.exists()) "Created .nomedia file" else "Could not create .nomedia file"
             } else
                 nomediaText = "Found .nomedia file"
         }
 
         if(nomediaText != null)
-            message.setText("Loading, $nomediaText")
+            message.setText("Loading. $nomediaText")
 
         field.text = _handle.name()
 

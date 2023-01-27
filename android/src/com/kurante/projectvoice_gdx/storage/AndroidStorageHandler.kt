@@ -30,7 +30,7 @@ class AndroidStorageHandler(
     override fun encode(string: String): String = Uri.encode(string)
     override fun decode(string: String): String = Uri.decode(string)
 
-    override fun subdirectory(handle: FileHandle, name: String): FileHandle {
+    override fun subDirectory(handle: FileHandle, name: String): FileHandle {
         var sub = handle.child(name)
 
         if(!sub.exists()) {
@@ -41,7 +41,7 @@ class AndroidStorageHandler(
         return sub
     }
 
-    override fun subfile(handle: FileHandle, name: String): FileHandle {
+    override fun subFile(handle: FileHandle, name: String): FileHandle {
         var sub = handle.child(name)
 
         if(!sub.exists()) {
