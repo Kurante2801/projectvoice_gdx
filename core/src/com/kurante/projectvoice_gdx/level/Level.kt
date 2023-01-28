@@ -78,13 +78,11 @@ data class Level (
                 // If we're adding additional difficulties, start enumeration from track_extra2.json
                 val path = if (i <= 2) "track_${type.toString().lowercase()}.json" else "track_extra${i - 1}.json"
 
-                charts.add(
-                    ChartSection(
+                charts.add(ChartSection(
                     chartFilename = path,
                     difficulty = difficulty,
                     type = type
-                )
-                )
+                ))
             }
 
             if(charts.isEmpty())

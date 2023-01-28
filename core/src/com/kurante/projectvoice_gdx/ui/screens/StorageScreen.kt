@@ -87,6 +87,12 @@ class StorageScreen(
                 }
             }
 
+            // Try to display a text instead of just an empty box
+            try {
+                val nameHandle = storageHandler.directoryFromString(tree)
+                field.text = nameHandle.name()!!
+            } catch(_: Exception) { }
+
             // Start loading
             if(LevelManager.loaded) return@table
 

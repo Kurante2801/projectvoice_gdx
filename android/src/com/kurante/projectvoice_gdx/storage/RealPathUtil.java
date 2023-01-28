@@ -12,12 +12,12 @@ import android.provider.MediaStore;
 
 import androidx.loader.content.CursorLoader;
 
+// https://gist.github.com/tatocaster/32aad15f6e0c50311626
+// I have no idea how this works
 public class RealPathUtil {
-
     public static String getRealPath(Context context, Uri fileUri) {
         return RealPathUtil.getRealPathFromURI_API19(context, fileUri);
     }
-
 
     /**
      * Get a file path from a Uri. This will get the the path for Storage Access

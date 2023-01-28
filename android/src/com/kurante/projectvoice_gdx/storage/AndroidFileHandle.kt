@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.badlogic.gdx.Files
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
 import java.io.*
@@ -13,7 +12,7 @@ class AndroidFileHandle(
     private val context: Context,
     private val document: DocumentFile
 ) : FileHandle() {
-    val fileChars = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray()
+    private val fileChars = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray()
     fun randomFileName(): String {
         val filename = charArrayOf('0', '1', '2', '3', '4', '5')
 
@@ -35,7 +34,6 @@ class AndroidFileHandle(
         var tempFile = randomFileName()
         while(document.findFile("$tempFile.txt") != null)
             tempFile = randomFileName()
-
 
         val created = document.createFile("text/plain", "$tempFile.txt")
             ?: return null

@@ -42,9 +42,9 @@ class AndroidLauncher : AndroidComponentApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Older devices tend to run older android versions,
-        // using Storage Access Framework is super slow such old devices
-        // so, if we can, we use direct file access instead of SAF
+        // Safe Access Storage is required on Android 11+
+        // however it's SUPER slow, taking up to 19 seconds to load 27 levels on old devices...
+        // so we just don't use it when on android 10 or below
         if(Build.VERSION.SDK_INT <= 29)
             StorageManager.storageHandler = AndroidLegacyStorageHandler(this)
         else

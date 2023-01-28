@@ -5,18 +5,12 @@ import androidx.documentfile.provider.DocumentFile
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.kurante.projectvoice_gdx.AndroidLauncher
-import kotlinx.coroutines.launch
-import ktx.async.KtxAsync
-import ktx.async.newSingleThreadAsyncContext
 
 class AndroidStorageHandler(
     private val launcher: AndroidLauncher
 ) : StorageHandler {
     override fun requestFolderAccess(callback: (FileHandle?) -> Unit) {
-        val executor = newSingleThreadAsyncContext()
-        KtxAsync.launch(executor) {
-            launcher.openDocumentTree(callback)
-        }
+        launcher.openDocumentTree(callback)
     }
 
     override fun fileFromString(string: String): FileHandle {
