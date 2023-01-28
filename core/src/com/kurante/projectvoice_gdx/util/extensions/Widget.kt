@@ -1,22 +1,16 @@
-package com.kurante.projectvoice_gdx.ui
+package com.kurante.projectvoice_gdx.util.extensions
 
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
-import com.kurante.projectvoice_gdx.ui.UiUtil.FOREGROUND2_COLOR
-import com.kurante.projectvoice_gdx.ui.UiUtil.scaledUi
+import com.kurante.projectvoice_gdx.ui.PVImageTextButton
+import com.kurante.projectvoice_gdx.util.UserInterface.FOREGROUND2_COLOR
+import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import ktx.scene2d.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-
-fun Actor.setMainColor(duration: Float = 0.25f) {
-    this.color = UiUtil.mainColor
-    UiUtil.mainColorEvent += { this.addAction(Actions.color(it, duration)) }
-}
 
 // These functions basically call the ktx scene2d functions
 // but styles the elements
@@ -37,7 +31,7 @@ inline fun <S> KWidget<S>.textButton(
     }
 }
 
-@Scene2dDsl
+/*@Scene2dDsl
 @OptIn(ExperimentalContracts::class)
 inline fun <S> KWidget<S>.imageTextButton(
     text: String,
@@ -50,12 +44,15 @@ inline fun <S> KWidget<S>.imageTextButton(
         this.pad(8f.scaledUi())
         this.setMainColor()
 
-        if(drawable != null)
-            this.style.imageUp = drawable
+        if(drawable != null) {
+            this.style = ImageTextButton.ImageTextButtonStyle(this.style).apply {
+                imageUp = drawable
+            }
+        }
 
         init(this, it)
     }
-}
+}*/
 
 @Scene2dDsl
 @OptIn(ExperimentalContracts::class)

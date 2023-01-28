@@ -9,10 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kurante.projectvoice_gdx.ui.GameScreen
-import com.kurante.projectvoice_gdx.ui.UiUtil.BACKGROUND_COLOR
 import com.kurante.projectvoice_gdx.ui.screens.HomeScreen
 import com.kurante.projectvoice_gdx.ui.screens.InitializationScreen
 import com.kurante.projectvoice_gdx.ui.screens.StorageScreen
+import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.async.KtxAsync

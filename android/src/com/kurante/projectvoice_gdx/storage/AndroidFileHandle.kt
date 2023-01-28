@@ -6,6 +6,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
+import com.kurante.projectvoice_gdx.util.extensions.random
 import java.io.*
 
 class AndroidFileHandle(
@@ -13,7 +14,7 @@ class AndroidFileHandle(
     private val document: DocumentFile
 ) : FileHandle() {
     private val fileChars = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray()
-    fun randomFileName(): String {
+    private fun randomFileName(): String {
         val filename = charArrayOf('0', '1', '2', '3', '4', '5')
 
         for(i in 0..5)

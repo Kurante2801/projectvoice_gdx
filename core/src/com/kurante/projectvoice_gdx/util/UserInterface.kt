@@ -1,9 +1,8 @@
-package com.kurante.projectvoice_gdx.ui
+package com.kurante.projectvoice_gdx.util
 
 import com.badlogic.gdx.graphics.Color
-import com.kurante.projectvoice_gdx.CustomEvent
 
-object UiUtil {
+object UserInterface {
     const val UI_SCALE = 1280f / WidthViewport.REFERENCE_WIDTH
     /**
      * Game is developed on a 1280x980 window, but the viewport is larger.

@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.Scaling;
+import com.kurante.projectvoice_gdx.util.UserInterface;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -55,8 +56,8 @@ public class PVImageTextButton extends Button {
         setStyle(style);
         setSize(getPrefWidth(), getPrefHeight());
 
-        setColor(UiUtil.INSTANCE.getMainColor());
-        UiUtil.INSTANCE.getMainColorEvent().plusAssign(mainColor);
+        setColor(UserInterface.INSTANCE.getMainColor());
+        UserInterface.INSTANCE.getMainColorEvent().plusAssign(mainColor);
         //pad(8f / UiUtil.UI_SCALE);
     }
 
@@ -193,11 +194,11 @@ public class PVImageTextButton extends Button {
         super.setDisabled(disabled);
 
         if(disabled) {
-            UiUtil.INSTANCE.getMainColorEvent().minusAssign(mainColor);
-            setColor(UiUtil.INSTANCE.getFOREGROUND1_COLOR());
+            UserInterface.INSTANCE.getMainColorEvent().minusAssign(mainColor);
+            setColor(UserInterface.INSTANCE.getFOREGROUND1_COLOR());
         } else {
-            UiUtil.INSTANCE.getMainColorEvent().plusAssign(mainColor);
-            setColor(UiUtil.INSTANCE.getMainColor());
+            UserInterface.INSTANCE.getMainColorEvent().plusAssign(mainColor);
+            setColor(UserInterface.INSTANCE.getMainColor());
         }
     }
 }

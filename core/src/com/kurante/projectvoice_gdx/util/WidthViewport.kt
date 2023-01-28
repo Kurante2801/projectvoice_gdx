@@ -1,4 +1,4 @@
-package com.kurante.projectvoice_gdx.ui
+package com.kurante.projectvoice_gdx.util
 
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.MathUtils.log2

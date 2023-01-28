@@ -5,6 +5,9 @@ import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.level.LevelManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
 import com.kurante.projectvoice_gdx.ui.GameScreen
+import kotlinx.coroutines.launch
+import ktx.async.KtxAsync
+import ktx.async.newSingleThreadAsyncContext
 import ktx.preferences.get
 import ktx.scene2d.label
 import ktx.scene2d.scene2d
@@ -12,7 +15,7 @@ import ktx.scene2d.table
 
 class InitializationScreen(
     private val parent: ProjectVoice,
-) : GameScreen(parent) {
+) : GameScreen() {
     private val prefs = ProjectVoice.getPreferences()
 
     override fun show() {
@@ -29,14 +32,18 @@ class InitializationScreen(
             label("Loading levels...")
 
             try {
-                LevelManager.loadLevels(handle)
-                this@InitializationScreen.parent.changeScreen<HomeScreen>()
+                KtxAsync.launch(newSingleThreadAsyncContext()) {
+                    LevelManager.loadLevels(handle)
+                    this@InitializationScreen.parent.changeScreen<HomeScreen>()
+                }
             } catch (e: Exception) {
                 this@InitializationScreen.parent.changeScreen<StorageScreen>()
-                e.printStackTrace()
+                Gdx.app.error("InitializationScreen", "Failed to load levels, moving to storage screen.", e)
             }
         }
 
         stage.addActor(table)
     }
+
+
 }

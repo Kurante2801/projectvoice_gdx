@@ -39,13 +39,12 @@ data class Level (
             if(musicFile == null)
                 throw GdxRuntimeException("Music file not found: ${directory.name()}")
 
-            // songconfig.txt is like an INI file
             val songConfig = directory.child("songconfig.txt")
             assert(songConfig.exists())
 
-            // Each line will be: key=value
+            // songconfig.txt is like an INI file, each line will be: key=value
             val data = mutableMapOf<String, String>()
-            for(line in songConfig.readString().split("\n")) {
+            for(line in songConfig.readString().split("\r\n", "\r", "\n")) {
                 val index = line.lastIndexOf('=')
                 if(index < 0) continue
                 data[line.substring(0, index)] = line.substring(index + 1)

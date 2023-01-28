@@ -1,4 +1,4 @@
-package com.kurante.projectvoice_gdx
+package com.kurante.projectvoice_gdx.util
 
 class CustomEvent<T> {
     private val listeners = mutableSetOf<(T) -> Unit>()

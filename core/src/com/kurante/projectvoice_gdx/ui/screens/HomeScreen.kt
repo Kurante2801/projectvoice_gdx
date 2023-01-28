@@ -9,8 +9,8 @@ import ktx.scene2d.scene2d
 import ktx.scene2d.table
 
 class HomeScreen(
-    private val parent: ProjectVoice,
-) : GameScreen(parent) {
+    parent: ProjectVoice,
+) : GameScreen() {
 
     override fun show() {
         Gdx.input.inputProcessor = stage
@@ -20,7 +20,8 @@ class HomeScreen(
             setFillParent(true)
             debug = true
 
-            label(LevelManager.levels.joinToString { "${it.title}\n" })
+            //label(LevelManager.levels.joinToString { "${it.title}\n" })
+            label(LevelManager.levels.random().title)
         }
 
         stage.addActor(table)

@@ -12,9 +12,9 @@ import com.kurante.projectvoice_gdx.level.LevelManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.PVImageTextButton
-import com.kurante.projectvoice_gdx.ui.UiUtil.scaledUi
-import com.kurante.projectvoice_gdx.ui.pvImageTextButton
-import com.kurante.projectvoice_gdx.ui.textField
+import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
+import com.kurante.projectvoice_gdx.util.extensions.textField
+import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import kotlinx.coroutines.launch
 import ktx.actors.onChange
 import ktx.app.Platform
@@ -28,7 +28,7 @@ import ktx.scene2d.table
 
 class StorageScreen(
     private val parent: ProjectVoice,
-) : GameScreen(parent) {
+) : GameScreen() {
     private val prefs = getPreferences()
 
     override fun show() {
@@ -72,6 +72,10 @@ class StorageScreen(
                 it.align(Align.left)
                 it.pad(8f.scaledUi(), 8f.scaledUi(), 0f, 0f)
                 this.group.reverse()
+
+                onChange {
+                    this@StorageScreen.parent.changeScreen<HomeScreen>()
+                }
             }
 
             browse.onChange {
