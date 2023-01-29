@@ -18,7 +18,7 @@ open class GameScreen : KtxScreen {
     var buffer = FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
     var opacity: Float = 1f
     val stage = Stage(WidthViewport())
-    lateinit var table: Table
+    var table: Table? = null
 
     override fun show() {
         Gdx.input.inputProcessor = stage
@@ -30,7 +30,9 @@ open class GameScreen : KtxScreen {
         // Minimizing on windows crashes without this
         if (width == 0 || height == 0) return@postRunnable
 
-        table.padInset()
+        table?.padInset()
+
+        buffer.dispose()
         buffer = FrameBuffer(Pixmap.Format.RGBA8888, width, height, false)
     }
 
