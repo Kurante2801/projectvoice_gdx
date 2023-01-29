@@ -22,14 +22,19 @@ class AndroidLauncher : AndroidComponentApplication() {
         treeCallback?.invoke(it)
         treeCallback = null
 
-        if(it != null)
-            contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        if (it == null) return@registerForActivityResult
+
+        // This looks ugly but that's how the formatter wants it apparently
+        contentResolver.takePersistableUriPermission(
+            it,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )
     }
 
     private var permCallback: (() -> Unit)? = null
     private val permLauncher = registerForActivityResult(RequestMultiplePermissions()) {
-        for(perm in it) {
-            if(!perm.value) {
+        for (perm in it) {
+            if (!perm.value) {
                 permCallback = null
                 break
             }
@@ -45,7 +50,7 @@ class AndroidLauncher : AndroidComponentApplication() {
         // Safe Access Storage is required on Android 11+
         // however it's SUPER slow, taking up to 19 seconds to load 27 levels on old devices...
         // so we just don't use it when on android 10 or below
-        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
             StorageManager.storageHandler = AndroidLegacyStorageHandler(this)
         else
             StorageManager.storageHandler = AndroidStorageHandler(this)
@@ -61,23 +66,27 @@ class AndroidLauncher : AndroidComponentApplication() {
 
     fun openDocumentTree(callback: (AndroidFileHandle?) -> Unit) {
         treeCallback = { uri ->
-            if(uri != null) {
+            if (uri != null) {
                 val document = DocumentFile.fromTreeUri(context, uri)
 
-                if(document != null)
+                if (document != null)
                     callback.invoke(AndroidFileHandle(context, document))
                 else
                     callback(null)
-            }
-            else
+            } else
                 callback.invoke(null)
         }
 
         treeLauncher.launch(null)
     }
 
+    private fun checkPermissions(): Boolean {
+        return checkSelfPermission(context, READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED &&
+                checkSelfPermission(context, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED
+    }
+
     private fun requestLegacyStoragePermissions(callback: () -> Unit) {
-        if(checkSelfPermission(context, READ_EXTERNAL_STORAGE) == PERMISSION_GRANTED && checkSelfPermission(context, WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
+        if (checkPermissions()) {
             callback.invoke()
             return
         }
@@ -94,7 +103,7 @@ class AndroidLauncher : AndroidComponentApplication() {
                 if (document != null) {
                     val path = RealPathUtil.getRealPath(context, document.uri)
                     val handle = Gdx.files.absolute(path)
-                    callback(if(handle.file().canRead()) handle else null)
+                    callback(if (handle.file().canRead()) handle else null)
                 } else
                     callback(null)
             } else

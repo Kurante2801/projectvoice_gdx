@@ -28,7 +28,7 @@ open class GameScreen : KtxScreen {
         stage.viewport.update(width, height, true)
 
         // Minimizing on windows crashes without this
-        if(width == 0 || height == 0) return@postRunnable
+        if (width == 0 || height == 0) return@postRunnable
 
         table.padInset()
         buffer = FrameBuffer(Pixmap.Format.RGBA8888, width, height, false)
@@ -54,6 +54,7 @@ open class GameScreen : KtxScreen {
         init {
             duration = 0.25f
         }
+
         override fun update(percent: Float) {
             screen.opacity = lerp(startAlpha, endAlpha, percent)
         }

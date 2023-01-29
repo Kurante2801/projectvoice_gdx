@@ -38,7 +38,7 @@ class StorageScreen(
         val tree = prefs.get<String?>("LevelTree", null)
             ?: return showFirstTime()
 
-        val msg = if(LevelManager.loaded) "Loaded ${LevelManager.levels.size} levels." else "Loading..."
+        val msg = if (LevelManager.loaded) "Loaded ${LevelManager.levels.size} levels." else "Loading..."
 
         table = scene2d.table {
             setFillParent(true)
@@ -86,7 +86,7 @@ class StorageScreen(
                     browse.isDisabled = handle != null || !LevelManager.loaded
                     next.isDisabled = handle != null || !LevelManager.loaded
 
-                    if(handle != null)
+                    if (handle != null)
                         tryLoadLevels(handle, message, field, browse, next)
                 }
             }
@@ -95,13 +95,13 @@ class StorageScreen(
             try {
                 val nameHandle = storageHandler.directoryFromString(tree)
                 field.text = nameHandle.name()!!
-            } catch(_: Exception) { }
+            } catch (_: Exception) { }
 
             // Start loading
-            if(LevelManager.loaded) return@table
+            if (LevelManager.loaded) return@table
 
             val handle = storageHandler.directoryFromString(tree)
-            if(!handle.isDirectory) {
+            if (!handle.isDirectory) {
                 message.setText("Failed to load levels from the given directory. Please try again")
                 browse.isDisabled = false
                 return@table
@@ -134,7 +134,7 @@ class StorageScreen(
                     isDisabled = true
                     storageHandler.requestFolderAccess { handle ->
                         isDisabled = false
-                        if(handle != null) {
+                        if (handle != null) {
                             prefs["LevelTree"] = handle.toString()
                             prefs.flush()
                             show()
@@ -158,9 +158,9 @@ class StorageScreen(
         var nomediaText: String? = null
 
         // Make sure we're not using the root of the device!
-        if(_handle.path() == "/tree/primary:" || _handle.path() == "/tree/primary:/document/primary:") {
+        if (_handle.path() == "/tree/primary:" || _handle.path() == "/tree/primary:/document/primary:") {
             _handle = storageHandler.subDirectory(_handle, "Project Voice")
-            if(!_handle.exists() || !_handle.isDirectory)
+            if (!_handle.exists() || !_handle.isDirectory)
                 throw GdxRuntimeException("Could not create nor access subfolder 'Project Voice' when granted access to the root of the device")
         }
 
@@ -169,14 +169,15 @@ class StorageScreen(
         // Create .nomedia
         Platform.runOnAndroid {
             var nomedia = _handle.child(".nomedia")
-            if(!nomedia.exists()) {
+            if (!nomedia.exists()) {
                 nomedia = storageHandler.subFile(_handle, ".nomedia")
-                nomediaText = if(nomedia.exists()) "Created .nomedia file" else "Could not create .nomedia file"
+                nomediaText =
+                    if (nomedia.exists()) "Created .nomedia file" else "Could not create .nomedia file"
             } else
                 nomediaText = "Found .nomedia file"
         }
 
-        if(nomediaText != null)
+        if (nomediaText != null)
             message.setText("Loading. $nomediaText")
 
         field.text = _handle.name()
@@ -188,7 +189,7 @@ class StorageScreen(
         KtxAsync.launch(executor) {
             LevelManager.loadLevels(_handle)
 
-            nomediaText = if(nomediaText == null)
+            nomediaText = if (nomediaText == null)
                 "Success! Loaded ${LevelManager.levels.size} levels"
             else
                 "Success! Loaded ${LevelManager.levels.size} levels\n$nomediaText"

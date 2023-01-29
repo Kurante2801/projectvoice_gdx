@@ -57,15 +57,15 @@ class HomeScreen(
                     val rows = ceil(levels.size / columns.toFloat())
 
 
-                    grid@ for(y in 0 until rows) {
-                        for(x in 0 until columns) {
+                    grid@ for (y in 0 until rows) {
+                        for (x in 0 until columns) {
                             val i = x + y * columns
-                            if(i >= levels.size) break@grid
+                            if (i >= levels.size) break@grid
 
                             levelCard(levels[i], this@HomeScreen.parent.assetStorage) { cell ->
                                 cell.growX()
 
-                                val padBottom = if(y + 1 == rows) 0f else 28f.scaledUi()
+                                val padBottom = if (y + 1 == rows) 0f else 28f.scaledUi()
                                 cell.pad(0f, 0f, padBottom, 28f.scaledUi())
                             }
                         }

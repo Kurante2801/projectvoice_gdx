@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 
 object UserInterface {
     const val UI_SCALE = 1280f / WidthViewport.REFERENCE_WIDTH
+
     /**
      * Game is developed on a 1280x980 window, but the viewport is larger.
      * This function converts the Float to match the viewport

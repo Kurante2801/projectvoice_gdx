@@ -14,7 +14,10 @@ class AndroidStorageHandler(
     }
 
     override fun fileFromString(string: String): FileHandle {
-        return AndroidFileHandle(launcher, DocumentFile.fromSingleUri(launcher, Uri.parse(string))!!)
+        return AndroidFileHandle(
+            launcher,
+            DocumentFile.fromSingleUri(launcher, Uri.parse(string))!!
+        )
     }
 
     override fun directoryFromString(string: String): AndroidFileHandle {
@@ -27,7 +30,7 @@ class AndroidStorageHandler(
     override fun subDirectory(handle: FileHandle, name: String): FileHandle {
         var sub = handle.child(name)
 
-        if(!sub.exists()) {
+        if (!sub.exists()) {
             sub = (handle as AndroidFileHandle).createDirectory(name)
                 ?: throw GdxRuntimeException("(Android) Could not get nor create subdirectory $name on ${handle.name()}")
         }
@@ -38,7 +41,7 @@ class AndroidStorageHandler(
     override fun subFile(handle: FileHandle, name: String): FileHandle {
         var sub = handle.child(name)
 
-        if(!sub.exists()) {
+        if (!sub.exists()) {
             sub = (handle as AndroidFileHandle).createFile(name)
                 ?: throw GdxRuntimeException("(Android) Could not get nor create subdirectory $name on ${handle.name()}")
         }

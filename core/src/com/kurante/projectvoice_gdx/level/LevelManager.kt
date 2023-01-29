@@ -11,14 +11,14 @@ object LevelManager {
         loaded = false
         levels.clear()
 
-        for(directory in tree.list()) {
-            if(!directory.isDirectory) {
-                Gdx .app.log("LevelManager", "Skipping ${directory.name()} (not a directory)")
+        for (directory in tree.list()) {
+            if (!directory.isDirectory) {
+                Gdx.app.log("LevelManager", "Skipping ${directory.name()} (not a directory)")
                 continue
             }
 
             val config = directory.child("songconfig.txt")
-            if(!config.exists()) {
+            if (!config.exists()) {
                 Gdx.app.log("LevelManager", "Skipping ${directory.name()} (found no songconfig.txt)")
                 continue
             }

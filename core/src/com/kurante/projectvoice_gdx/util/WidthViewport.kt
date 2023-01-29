@@ -21,7 +21,7 @@ class WidthViewport : Viewport() {
 
     override fun update(screenWidth: Int, screenHeight: Int, centerCamera: Boolean) {
         val scaleFactor = 2f.pow(log2(screenWidth / REFERENCE_WIDTH))
-        setWorldSize(screenWidth /scaleFactor, screenHeight / scaleFactor)
+        setWorldSize(screenWidth / scaleFactor, screenHeight / scaleFactor)
 
         setScreenBounds(0, 0, screenWidth, screenHeight)
         apply(centerCamera)

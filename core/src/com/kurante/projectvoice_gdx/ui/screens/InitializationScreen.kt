@@ -38,7 +38,7 @@ class InitializationScreen(
                 }
             } catch (e: Exception) {
                 this@InitializationScreen.parent.changeScreen<StorageScreen>()
-                Gdx.app.error("InitializationScreen", "Failed to load levels, moving to storage screen.", e)
+                Gdx.app.error("InitializationScreen", "Failed to load levels, moving to storage screen", e)
             }
         }
 

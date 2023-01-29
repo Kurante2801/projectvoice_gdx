@@ -12,7 +12,7 @@ class CustomEvent<T> {
     }
 
     operator fun invoke(value: T) {
-        for(listener in listeners)
+        for (listener in listeners)
             listener.invoke(value)
     }
 }

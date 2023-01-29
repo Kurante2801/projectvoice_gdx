@@ -41,7 +41,7 @@ class LevelCard(
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
-        if(!requestedBackground)
+        if (!requestedBackground)
             requestBackground()
 
         super.draw(batch, parentAlpha)
@@ -49,7 +49,7 @@ class LevelCard(
         batch.color = backgroundColor
         batch.draw(white, x, y, width, height)
 
-        if(background != null) {
+        if (background != null) {
             batch.color = Color.WHITE
             batch.draw(background, x, y, width, height)
         }
@@ -57,12 +57,12 @@ class LevelCard(
 
     private fun requestBackground() {
         requestedBackground = true
-        if(assetStore == null || level.backgroundFilename == null) return
+        if (assetStore == null || level.backgroundFilename == null) return
 
         // TODO: AssetDescriptor? to not reload and cause stutters after changing screens?
         KtxAsync.launch {
             val handle = level.file.child(level.backgroundFilename)
-            if(!handle.exists()) return@launch
+            if (!handle.exists()) return@launch
 
             val pixmap = assetStore.load<Pixmap>(path = handle.toString())
                 .crop(ceil(width), ceil(height), level.backgroundAspectRatio)

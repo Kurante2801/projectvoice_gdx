@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.MathUtils.floor
  * @param width Resulting width
  * @param height Resulting height
  * @param aspectRatio The aspect ratio the original pixmap will be resized to
-*/
+ */
 fun Pixmap.crop(
     width: Int,
     height: Int,
@@ -24,7 +24,7 @@ fun Pixmap.crop(
     val h = height * aspectRatio
     val pixmap = Pixmap(width, height, this.format)
 
-    if(width / height < width / h) {
+    if (width / height < width / h) {
         pixmap.drawPixmap(
             this, 0, 0, this.width, this.height,
             0, floor((height - h) * 0.5f), width, ceil(h)

@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException
 import kotlin.math.min
 
 // todo: localized variables
-data class Level (
+data class Level(
     val file: FileHandle,
     val id: String,
     val title: String,
@@ -27,16 +27,16 @@ data class Level (
             var musicFile: FileHandle? = null
             var previewFile: FileHandle? = null
 
-            for(file in directory.list()) {
-                if(file.extension() !in audioExtensions) continue
+            for (file in directory.list()) {
+                if (file.extension() !in audioExtensions) continue
 
-                when(file.nameWithoutExtension()) {
+                when (file.nameWithoutExtension()) {
                     "song_full" -> musicFile = file
                     "song_pv" -> previewFile = file
                 }
             }
 
-            if(musicFile == null)
+            if (musicFile == null)
                 throw GdxRuntimeException("Music file not found: ${directory.name()}")
 
             val songConfig = directory.child("songconfig.txt")
@@ -44,9 +44,9 @@ data class Level (
 
             // songconfig.txt is like an INI file, each line will be: key=value
             val data = mutableMapOf<String, String>()
-            for(line in songConfig.readString().split("\r\n", "\r", "\n")) {
+            for (line in songConfig.readString().split("\r\n", "\r", "\n")) {
                 val index = line.lastIndexOf('=')
-                if(index < 0) continue
+                if (index < 0) continue
                 data[line.substring(0, index)] = line.substring(index + 1)
             }
 
@@ -55,18 +55,18 @@ data class Level (
             val name = data["name"]
             val author = data["author"]
 
-            if(diff == null) throw GdxRuntimeException("Config file does not have 'diff' defined: ${directory.name()}")
-            if(id == null) throw GdxRuntimeException("Config file does not have 'id' defined: ${directory.name()}")
-            if(name == null) throw GdxRuntimeException("Config file does not have 'name' defined: ${directory.name()}")
-            if(author == null) throw GdxRuntimeException("Config file does not have 'author' defined: ${directory.name()}")
+            if (diff == null) throw GdxRuntimeException("Config file does not have 'diff' defined: ${directory.name()}")
+            if (id == null) throw GdxRuntimeException("Config file does not have 'id' defined: ${directory.name()}")
+            if (name == null) throw GdxRuntimeException("Config file does not have 'name' defined: ${directory.name()}")
+            if (author == null) throw GdxRuntimeException("Config file does not have 'author' defined: ${directory.name()}")
 
             val diffs = diff.split('-')
-            if(diffs.isEmpty()) throw GdxRuntimeException("Could not parse difficulties: ${directory.name()}")
+            if (diffs.isEmpty()) throw GdxRuntimeException("Could not parse difficulties: ${directory.name()}")
 
             val charts = mutableListOf<ChartSection>()
-            for(i in 0..min(diffs.size - 1, 5)) {
+            for (i in 0..min(diffs.size - 1, 5)) {
                 val difficulty = diffs[i].toIntOrNull() ?: 0
-                if(difficulty <= 0) continue
+                if (difficulty <= 0) continue
 
                 val type = when (i) {
                     0 -> DifficultyType.EASY
@@ -75,16 +75,21 @@ data class Level (
                 }
 
                 // If we're adding additional difficulties, start enumeration from track_extra2.json
-                val path = if (i <= 2) "track_${type.toString().lowercase()}.json" else "track_extra${i - 1}.json"
+                val path = if (i <= 2)
+                    "track_${type.toString().lowercase()}.json"
+                else
+                    "track_extra${i - 1}.json"
 
-                charts.add(ChartSection(
-                    chartFilename = path,
-                    difficulty = difficulty,
-                    type = type
-                ))
+                charts.add(
+                    ChartSection(
+                        chartFilename = path,
+                        difficulty = difficulty,
+                        type = type
+                    )
+                )
             }
 
-            if(charts.isEmpty())
+            if (charts.isEmpty())
                 throw GdxRuntimeException("Level does not have any charts: ${directory.name()}")
 
             return Level(

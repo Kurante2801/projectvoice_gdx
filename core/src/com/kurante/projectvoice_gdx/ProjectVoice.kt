@@ -53,7 +53,7 @@ class ProjectVoice : KtxGame<KtxScreen>() {
 
         val screen = currentScreen as? GameScreen
         // Used when rendering fade in/out
-        if(screen != null && screen.opacity < 1f) {
+        if (screen != null && screen.opacity < 1f) {
             screen.renderToBuffer(Gdx.graphics.deltaTime)
 
             batch.use {

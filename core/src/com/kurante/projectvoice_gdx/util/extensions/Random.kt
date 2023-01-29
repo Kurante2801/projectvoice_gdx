@@ -11,7 +11,7 @@ fun <T> Array<out T>.randomOrNull(): T? {
 }
 
 fun <T> Array<out T>.random(): T {
-    if(isEmpty())
+    if (isEmpty())
         throw NoSuchElementException("Array is empty.")
     return elementAt(nextInt(size))
 }
@@ -21,7 +21,7 @@ fun CharArray.randomOrNull(): Char? {
 }
 
 fun CharArray.random(): Char {
-    if(isEmpty())
+    if (isEmpty())
         throw NoSuchElementException("Array is empty.")
     return elementAt(nextInt(size))
 }

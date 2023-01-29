@@ -61,23 +61,24 @@ public class PVImageTextButton extends Button {
         //pad(UserInterface.INSTANCE.scaledUi(8f));
     }
 
-    protected Image newImage () {
-        return new Image((Drawable)null, Scaling.fit);
+    protected Image newImage() {
+        return new Image((Drawable) null, Scaling.fit);
     }
 
-    protected Label newLabel (String text, Label.LabelStyle style) {
+    protected Label newLabel(String text, Label.LabelStyle style) {
         return new Label(text, style);
     }
 
-    public void setStyle (ButtonStyle style) {
-        if (!(style instanceof ImageTextButtonStyle)) throw new IllegalArgumentException("style must be a ImageTextButtonStyle.");
-        this.style = (ImageTextButtonStyle)style;
+    public void setStyle(ButtonStyle style) {
+        if (!(style instanceof ImageTextButtonStyle))
+            throw new IllegalArgumentException("style must be a ImageTextButtonStyle.");
+        this.style = (ImageTextButtonStyle) style;
         super.setStyle(style);
 
         if (image != null) updateImage();
 
         if (label != null) {
-            ImageTextButtonStyle textButtonStyle = (ImageTextButtonStyle)style;
+            ImageTextButtonStyle textButtonStyle = (ImageTextButtonStyle) style;
             LabelStyle labelStyle = label.getStyle();
             labelStyle.font = textButtonStyle.font;
             labelStyle.fontColor = getFontColor();
@@ -85,11 +86,11 @@ public class PVImageTextButton extends Button {
         }
     }
 
-    public ImageTextButtonStyle getStyle () {
+    public ImageTextButtonStyle getStyle() {
         return style;
     }
 
-    protected @Null Drawable getImageDrawable () {
+    protected @Null Drawable getImageDrawable() {
         if (isDisabled() && style.imageDisabled != null) return style.imageDisabled;
         if (isPressed()) {
             if (isChecked() && style.imageCheckedDown != null) return style.imageCheckedDown;
@@ -109,14 +110,15 @@ public class PVImageTextButton extends Button {
         return style.imageUp;
     }
 
-    protected void updateImage () {
+    protected void updateImage() {
         image.setDrawable(getImageDrawable());
     }
 
-    protected @Null Color getFontColor () {
+    protected @Null Color getFontColor() {
         if (isDisabled() && style.disabledFontColor != null) return style.disabledFontColor;
         if (isPressed()) {
-            if (isChecked() && style.checkedDownFontColor != null) return style.checkedDownFontColor;
+            if (isChecked() && style.checkedDownFontColor != null)
+                return style.checkedDownFontColor;
             if (style.downFontColor != null) return style.downFontColor;
         }
         if (isOver()) {
@@ -128,7 +130,8 @@ public class PVImageTextButton extends Button {
         }
         boolean focused = hasKeyboardFocus();
         if (isChecked()) {
-            if (focused && style.checkedFocusedFontColor != null) return style.checkedFocusedFontColor;
+            if (focused && style.checkedFocusedFontColor != null)
+                return style.checkedFocusedFontColor;
             if (style.checkedFontColor != null) return style.checkedFontColor;
             if (isOver() && style.overFontColor != null) return style.overFontColor;
         }
@@ -136,24 +139,24 @@ public class PVImageTextButton extends Button {
         return style.fontColor;
     }
 
-    public void draw (Batch batch, float parentAlpha) {
+    public void draw(Batch batch, float parentAlpha) {
         updateImage();
         label.getStyle().fontColor = getFontColor();
         super.draw(batch, parentAlpha);
     }
 
-    public Image getImage () {
+    public Image getImage() {
         return image;
     }
 
-    public void setLabel (Label label) {
-        if(this.label != null)
+    public void setLabel(Label label) {
+        if (this.label != null)
             group.removeActor(this.label);
         group.addActor(label);
         this.label = label;
     }
 
-    public Label getLabel () {
+    public Label getLabel() {
         return label;
     }
 
@@ -161,17 +164,17 @@ public class PVImageTextButton extends Button {
         return group;
     }
 
-    public void setText (CharSequence text) {
+    public void setText(CharSequence text) {
         label.setText(text);
     }
 
-    public CharSequence getText () {
+    public CharSequence getText() {
         return label.getText();
     }
 
     @Override
     @NotNull
-    public String toString () {
+    public String toString() {
         String name = getName();
         if (name != null) return name;
         String className = getClass().getName();
@@ -193,7 +196,7 @@ public class PVImageTextButton extends Button {
     public void setDisabled(boolean disabled) {
         super.setDisabled(disabled);
 
-        if(disabled) {
+        if (disabled) {
             UserInterface.INSTANCE.getMainColorEvent().minusAssign(mainColor);
             setColor(UserInterface.INSTANCE.getFOREGROUND1_COLOR());
         } else {

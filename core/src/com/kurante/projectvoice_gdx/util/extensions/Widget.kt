@@ -23,7 +23,7 @@ inline fun <S> KWidget<S>.textButton(
 ): KTextButton {
     contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
     return actor(KTextButton(text, Scene2DSkin.defaultSkin, defaultStyle)) {
-        if(it is Cell<*>) {
+        if (it is Cell<*>) {
             it.prefSize(160f.scaledUi(), 48f.scaledUi())
             it.pad(8f.scaledUi())
         }
@@ -67,7 +67,7 @@ inline fun <S> KWidget<S>.pvImageTextButton(
 ): PVImageTextButton {
     contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
     return actor(PVImageTextButton(text, Scene2DSkin.defaultSkin)) {
-        if(drawable != null) {
+        if (drawable != null) {
             this.style = ImageTextButton.ImageTextButtonStyle(this.style).apply {
                 imageUp = drawable
             }
@@ -85,7 +85,7 @@ inline fun <S> KWidget<S>.textField(
 ): TextField {
     contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
     return actor(TextField(text, Scene2DSkin.defaultSkin, defaultStyle)) {
-        if(it is Cell<*>) {
+        if (it is Cell<*>) {
             it.prefSize(160f.scaledUi(), 48f.scaledUi())
             it.pad(8f.scaledUi())
         }

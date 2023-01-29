@@ -9,6 +9,7 @@ interface StorageHandler {
     fun fileFromString(string: String): FileHandle {
         return Gdx.files.absolute(string)
     }
+
     fun directoryFromString(string: String): FileHandle {
         return Gdx.files.absolute(string)
     }
@@ -24,7 +25,7 @@ interface StorageHandler {
 
     fun subFile(handle: FileHandle, name: String): FileHandle {
         val file = handle.child(name)
-        if(!file.exists())
+        if (!file.exists())
             file.writeString("", true)
         return file
     }
