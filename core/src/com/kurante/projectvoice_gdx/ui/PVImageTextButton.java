@@ -58,7 +58,7 @@ public class PVImageTextButton extends Button {
 
         setColor(UserInterface.INSTANCE.getMainColor());
         UserInterface.INSTANCE.getMainColorEvent().plusAssign(mainColor);
-        //pad(8f / UiUtil.UI_SCALE);
+        //pad(UserInterface.INSTANCE.scaledUi(8f));
     }
 
     protected Image newImage () {
@@ -200,5 +200,15 @@ public class PVImageTextButton extends Button {
             UserInterface.INSTANCE.getMainColorEvent().plusAssign(mainColor);
             setColor(UserInterface.INSTANCE.getMainColor());
         }
+    }
+
+    @Override
+    public float getPrefWidth() {
+        return Math.max(super.getPrefWidth(), UserInterface.INSTANCE.scaledUI(160f));
+    }
+
+    @Override
+    public float getPrefHeight() {
+        return Math.max(super.getPrefHeight(), UserInterface.INSTANCE.scaledUI(48f));
     }
 }

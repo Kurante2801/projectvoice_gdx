@@ -15,7 +15,7 @@ data class Level (
     val previewFilename: String? = null,
     val previewTime: Int? = null,
 
-    val backgroundFilename: String,
+    val backgroundFilename: String? = null,
     val backgroundAspectRatio: Float,
     val charts: Array<ChartSection>
 ) {

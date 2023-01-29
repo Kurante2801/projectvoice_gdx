@@ -37,6 +37,12 @@ LabelStyle: {
 		font: regular
 	}
 }
+ScrollPaneStyle: {
+	default: {
+		hScrollKnob: button_up
+		vScrollKnob: button_up
+	}
+}
 TextButtonStyle: {
 	default: {
 		font: bold

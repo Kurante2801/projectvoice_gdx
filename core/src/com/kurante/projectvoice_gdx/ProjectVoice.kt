@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
+import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.HomeScreen
 import com.kurante.projectvoice_gdx.ui.screens.InitializationScreen
@@ -15,6 +16,7 @@ import com.kurante.projectvoice_gdx.ui.screens.StorageScreen
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
+import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
 import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin
@@ -26,6 +28,7 @@ class ProjectVoice : KtxGame<KtxScreen>() {
 
     private lateinit var batch: SpriteBatch
     lateinit var skin: Skin
+    lateinit var assetStorage: AssetStorage
 
     override fun create() {
         Gdx.app.logLevel = Application.LOG_DEBUG
@@ -35,6 +38,9 @@ class ProjectVoice : KtxGame<KtxScreen>() {
         Scene2DSkin.defaultSkin = skin
 
         KtxAsync.initiate()
+        assetStorage = AssetStorage(
+            fileResolver = StorageFileHandleResolver()
+        )
 
         addScreen(InitializationScreen(this))
         addScreen(StorageScreen(this))

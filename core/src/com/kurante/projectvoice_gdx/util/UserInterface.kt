@@ -11,6 +11,9 @@ object UserInterface {
      */
     fun Float.scaledUi() = this / UI_SCALE
 
+    // Java interop
+    fun scaledUI(value: Float) = value / UI_SCALE
+
     val mainColorEvent = CustomEvent<Color>()
     var mainColor: Color = Color.valueOf("#FF4B00")
         set(value) {

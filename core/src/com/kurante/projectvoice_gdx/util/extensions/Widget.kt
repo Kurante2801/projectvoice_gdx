@@ -23,7 +23,11 @@ inline fun <S> KWidget<S>.textButton(
 ): KTextButton {
     contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
     return actor(KTextButton(text, Scene2DSkin.defaultSkin, defaultStyle)) {
-        (it as Cell<*>).prefSize(160f.scaledUi(), 48f.scaledUi())
+        if(it is Cell<*>) {
+            it.prefSize(160f.scaledUi(), 48f.scaledUi())
+            it.pad(8f.scaledUi())
+        }
+
         this.pad(8f.scaledUi())
         this.setMainColor()
 
@@ -63,8 +67,6 @@ inline fun <S> KWidget<S>.pvImageTextButton(
 ): PVImageTextButton {
     contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
     return actor(PVImageTextButton(text, Scene2DSkin.defaultSkin)) {
-        (it as Cell<*>).prefSize(160f.scaledUi(), 48f.scaledUi())
-
         if(drawable != null) {
             this.style = ImageTextButton.ImageTextButtonStyle(this.style).apply {
                 imageUp = drawable
@@ -83,9 +85,11 @@ inline fun <S> KWidget<S>.textField(
 ): TextField {
     contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
     return actor(TextField(text, Scene2DSkin.defaultSkin, defaultStyle)) {
-        val cell = it as Cell<*>
-        cell.prefSize(160f.scaledUi(), 48f.scaledUi())
-        cell.pad(8f.scaledUi())
+        if(it is Cell<*>) {
+            it.prefSize(160f.scaledUi(), 48f.scaledUi())
+            it.pad(8f.scaledUi())
+        }
+
         this.color = FOREGROUND2_COLOR
         init(this, it)
     }

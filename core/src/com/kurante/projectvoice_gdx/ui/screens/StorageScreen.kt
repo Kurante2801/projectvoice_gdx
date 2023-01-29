@@ -12,9 +12,9 @@ import com.kurante.projectvoice_gdx.level.LevelManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.PVImageTextButton
+import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.textField
-import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import kotlinx.coroutines.launch
 import ktx.actors.onChange
 import ktx.app.Platform
@@ -40,7 +40,7 @@ class StorageScreen(
 
         val msg = if(LevelManager.loaded) "Loaded ${LevelManager.levels.size} levels." else "Loading..."
 
-        val table = scene2d.table {
+        table = scene2d.table {
             setFillParent(true)
             //debug = true
 
@@ -115,7 +115,7 @@ class StorageScreen(
 
     // First thing you see upon launching the game for the first time
     private fun showFirstTime() {
-        val table = scene2d.table {
+        table = scene2d.table {
             setFillParent(true)
             //debug = true
 

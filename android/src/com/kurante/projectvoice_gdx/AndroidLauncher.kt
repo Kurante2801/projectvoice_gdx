@@ -45,7 +45,7 @@ class AndroidLauncher : AndroidComponentApplication() {
         // Safe Access Storage is required on Android 11+
         // however it's SUPER slow, taking up to 19 seconds to load 27 levels on old devices...
         // so we just don't use it when on android 10 or below
-        if(Build.VERSION.SDK_INT <= 29)
+        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
             StorageManager.storageHandler = AndroidLegacyStorageHandler(this)
         else
             StorageManager.storageHandler = AndroidStorageHandler(this)
@@ -95,8 +95,6 @@ class AndroidLauncher : AndroidComponentApplication() {
                     val path = RealPathUtil.getRealPath(context, document.uri)
                     val handle = Gdx.files.absolute(path)
                     callback(if(handle.file().canRead()) handle else null)
-
-                    Gdx.app.log("HELL", "CAN READ: ${handle.file().canRead()}")
                 } else
                     callback(null)
             } else

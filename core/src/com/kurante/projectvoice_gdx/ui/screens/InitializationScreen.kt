@@ -27,7 +27,7 @@ class InitializationScreen(
 
         val handle = storageHandler.directoryFromString(tree)
 
-        val table = scene2d.table {
+        table = scene2d.table {
             setFillParent(true)
             label("Loading levels...")
 

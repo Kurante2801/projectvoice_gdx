@@ -63,3 +63,17 @@ selection_shadow
   orig: 67, 51
   offset: 0, 0
   index: -1
+settings_shadow
+  rotate: false
+  xy: 509, 506
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+white
+  rotate: false
+  xy: 649, 689
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
