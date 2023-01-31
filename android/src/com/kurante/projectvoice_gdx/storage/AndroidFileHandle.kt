@@ -47,11 +47,11 @@ class AndroidFileHandle(
         return AndroidFileHandle(context, created)
     }
 
-    override fun path(): String = document.uri.path!!
+    override fun path(): String = document.uri.toString()
     override fun name(): String = document.name!!
 
     override fun type(): Files.FileType = Files.FileType.Absolute
-    override fun toString(): String = document.uri.toString()
+    override fun toString(): String = document.uri.path!!
     override fun isDirectory(): Boolean = document.isDirectory
     override fun exists(): Boolean = document.exists()
     override fun delete(): Boolean = document.delete()
@@ -68,11 +68,11 @@ class AndroidFileHandle(
         return if (i == -1) name else name.substring(0, i)
     }
 
-    override fun pathWithoutExtension(): String {
+    /*override fun pathWithoutExtension(): String {
         val path = path()
         val i = path.lastIndexOf(".")
         return if (i == -1) path else path.substring(0, i)
-    }
+    }*/
 
     override fun read(): InputStream {
         if (!document.exists())

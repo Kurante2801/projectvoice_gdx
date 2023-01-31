@@ -49,7 +49,7 @@ class LevelCard(
                 val handle = level.file.child(level.backgroundFilename)
                 if (!handle.exists()) return@launch
 
-                val pixmap = assetStore.load<Pixmap>(path = handle.toString())
+                val pixmap = assetStore.load<Pixmap>(path = handle.path())
                     .crop(
                         MathUtils.ceil(width),
                         MathUtils.ceil(height),

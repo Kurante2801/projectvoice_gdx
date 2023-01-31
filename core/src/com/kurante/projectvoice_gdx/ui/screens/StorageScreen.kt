@@ -135,7 +135,7 @@ class StorageScreen(
                     storageHandler.requestFolderAccess { handle ->
                         isDisabled = false
                         if (handle != null) {
-                            prefs["LevelTree"] = handle.toString()
+                            prefs["LevelTree"] = handle.path()
                             prefs.flush()
                             show()
                         }
@@ -182,7 +182,7 @@ class StorageScreen(
 
         field.text = _handle.name()
 
-        prefs["LevelTree"] = _handle.toString()
+        prefs["LevelTree"] = _handle.path()
         prefs.flush()
 
         val executor = newSingleThreadAsyncContext()
