@@ -25,6 +25,7 @@ open class GameScreen(
 
     override fun show() {
         Gdx.input.inputProcessor = stage
+        stage.clear()
     }
 
     override fun resize(width: Int, height: Int) = Gdx.app.postRunnable {

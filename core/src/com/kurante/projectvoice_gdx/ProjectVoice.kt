@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.ui.GameScreen
+import com.kurante.projectvoice_gdx.ui.screens.GameplayScreen
 import com.kurante.projectvoice_gdx.ui.screens.HomeScreen
 import com.kurante.projectvoice_gdx.ui.screens.InitializationScreen
 import com.kurante.projectvoice_gdx.ui.screens.StorageScreen
@@ -45,6 +46,7 @@ class ProjectVoice : KtxGame<KtxScreen>() {
         addScreen(InitializationScreen(this))
         addScreen(StorageScreen(this))
         addScreen(HomeScreen(this))
+        addScreen(GameplayScreen(this))
         setScreen<InitializationScreen>()
     }
 

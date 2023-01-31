@@ -17,8 +17,7 @@ class InitializationScreen(parent: ProjectVoice) : GameScreen(parent) {
     private val prefs = ProjectVoice.getPreferences()
 
     override fun show() {
-        Gdx.input.inputProcessor = stage
-        stage.clear()
+        super.show()
 
         val tree = prefs.get<String?>("LevelTree", null)
             ?: return parent.changeScreen<StorageScreen>() // First time run

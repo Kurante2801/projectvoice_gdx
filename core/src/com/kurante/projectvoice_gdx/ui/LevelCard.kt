@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
@@ -25,19 +26,15 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 class LevelCard(
-    private val level: Level,
+    val level: Level,
     private val assetStore: AssetStorage?,
-) : Table() {
+) : Button(defaultSkin.getDrawable("white")) {
     @Suppress("JoinDeclarationAndAssignment")
-    val background: Image
     val image: Image
     val table: Table
 
     init {
-        background = Image(defaultSkin.getRegion("white")).apply {
-            setFillParent(true)
-            color = UserInterface.FOREGROUND1_COLOR
-        }
+        color = UserInterface.FOREGROUND1_COLOR
 
         image = Image(defaultSkin.getRegion("white")).apply {
             setFillParent(true)
@@ -72,7 +69,6 @@ class LevelCard(
             label(level.title)
         }
 
-        addActor(background)
         addActor(image)
         addActor(table)
     }

@@ -64,6 +64,11 @@ class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
 
                                 val padBottom = if (y + 1 == rows) 0f else 28f.scaledUi()
                                 cell.pad(0f, 0f, padBottom, 28f.scaledUi())
+
+                                onChange {
+                                    this@HomeScreen.parent.changeScreen<GameplayScreen>()
+                                    this@HomeScreen.parent.getScreen<GameplayScreen>().initialize(level, level.charts.last())
+                                }
                             }
                         }
 
