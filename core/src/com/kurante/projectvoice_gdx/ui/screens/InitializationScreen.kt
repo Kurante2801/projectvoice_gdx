@@ -13,9 +13,7 @@ import ktx.scene2d.label
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
 
-class InitializationScreen(
-    private val parent: ProjectVoice,
-) : GameScreen() {
+class InitializationScreen(parent: ProjectVoice) : GameScreen(parent) {
     private val prefs = ProjectVoice.getPreferences()
 
     override fun show() {

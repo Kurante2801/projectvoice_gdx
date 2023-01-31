@@ -8,13 +8,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.TemporalAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.ScreenUtils
+import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import com.kurante.projectvoice_gdx.util.WidthViewport
 import com.kurante.projectvoice_gdx.util.extensions.padInset
 import ktx.app.KtxScreen
 import ktx.graphics.use
 
-open class GameScreen : KtxScreen {
+open class GameScreen(
+    val parent: ProjectVoice
+) : KtxScreen {
     var buffer = FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
     var opacity: Float = 1f
     val stage = Stage(WidthViewport())

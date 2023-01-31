@@ -16,10 +16,7 @@ import ktx.scene2d.scene2d
 import ktx.scene2d.scrollPane
 import ktx.scene2d.table
 
-class HomeScreen(
-    val parent: ProjectVoice,
-) : GameScreen() {
-
+class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
     override fun show() {
         Gdx.input.inputProcessor = stage
         stage.clear() // TODO: See if we can avoid this (to remember scroll positions between screens)
