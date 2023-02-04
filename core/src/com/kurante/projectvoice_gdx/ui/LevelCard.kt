@@ -47,17 +47,17 @@ class LevelCard(
                 val handle = level.file.child(level.backgroundFilename)
                 if (!handle.exists()) return@launch
 
-                val pixmap = assetStore.load<Pixmap>(path = handle.path())
-                    .crop(
-                        MathUtils.ceil(width),
-                        MathUtils.ceil(height),
-                        level.backgroundAspectRatio
-                    )
+                val pixmap = assetStore.load<Pixmap>(path = handle.path()).crop(
+                    MathUtils.ceil(width),
+                    MathUtils.ceil(height),
+                    level.backgroundAspectRatio
+                )
 
                 drawable = TextureRegionDrawable(TextureRegion(Texture(pixmap).apply {
                     setFilter(TextureFilter.Linear, TextureFilter.Linear)
                 }))
                 color = Color(0.75f, 0.75f, 0.75f, 1f)
+                assetStore.unload<Pixmap>(handle.path())
             }
 
         }
