@@ -1,67 +1,59 @@
 {
-BitmapFont: {
-	bold: {
-		file: bold.fnt
+"Color": {
+	"SHADOW": {
+		"hex": "0000004b"
+	},
+	"WHITE": {
+		"hex": "ffffffff"
+	},
+	"BUTTON_TEXT": {
+		"hex": "ffffffff"
 	}
-	regular: {
-		file: regular.fnt
+},
+"ButtonStyle": {
+	"default": {
+		"up": "button_up",
+		"down": "button_down"
 	}
-}
-Color: {
-	SHADOW: {
-		hex: 0000004b
+},
+"ImageTextButtonStyle": {
+	"default": {
+		"imageUp": "folder_open_shadow",
+		"font": "bold",
+		"up": "button_up",
+		"down": "button_down"
 	}
-	WHITE: {
-		hex: ffffffff
+},
+"LabelStyle": {
+	"default": {
+		"font": "regular"
 	}
-	BUTTON_TEXT: {
-		hex: ffffffff
+},
+"ScrollPaneStyle": {
+	"default": {
+		"hScrollKnob": "button_up",
+		"vScrollKnob": "button_up"
 	}
-}
-ButtonStyle: {
-	default: {
-		up: button_up
-		down: button_down
+},
+"TextButtonStyle": {
+	"default": {
+		"font": "bold",
+		"up": "button_up",
+		"down": "button_down"
 	}
-}
-ImageTextButtonStyle: {
-	default: {
-		imageUp: folder_open_shadow
-		font: bold
-		up: button_up
-		down: button_down
+},
+"TextFieldStyle": {
+	"default": {
+		"font": "regular",
+		"fontColor": "WHITE",
+		"background": "button_up",
+		"cursor": "cursor_shadow",
+		"selection": "selection_shadow"
 	}
-}
-LabelStyle: {
-	default: {
-		font: regular
-	}
-}
-ScrollPaneStyle: {
-	default: {
-		hScrollKnob: button_up
-		vScrollKnob: button_up
-	}
-}
-TextButtonStyle: {
-	default: {
-		font: bold
-		up: button_up
-		down: button_down
-	}
-}
-TextFieldStyle: {
-	default: {
-		font: regular
-		fontColor: WHITE
-		background: button_up
-		cursor: cursor_shadow
-		selection: selection_shadow
-	}
-}
-TextTooltipStyle: {
-	default: {
-		label: default
+},
+"TextTooltipStyle": {
+	"default": {
+		"label": "default"
 	}
 }
 }

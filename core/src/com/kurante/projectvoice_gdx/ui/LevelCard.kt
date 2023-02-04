@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.kurante.projectvoice_gdx.level.Level
@@ -56,7 +57,7 @@ class LevelCard(
                 drawable = TextureRegionDrawable(TextureRegion(Texture(pixmap).apply {
                     setFilter(TextureFilter.Linear, TextureFilter.Linear)
                 }))
-                color = Color.WHITE
+                color = Color(0.75f, 0.75f, 0.75f, 1f)
             }
 
         }
@@ -66,7 +67,9 @@ class LevelCard(
 
             label(level.artist)
             defaults().row()
-            label(level.title)
+            label(level.title) {
+                style = LabelStyle(defaultSkin.getFont("bold"), null)
+            }
         }
 
         addActor(image)
@@ -75,6 +78,10 @@ class LevelCard(
 
     override fun getPrefHeight(): Float {
         return 214f.scaledUi()
+    }
+
+    override fun getMinHeight(): Float {
+        return width / (16f / 9f)
     }
 }
 

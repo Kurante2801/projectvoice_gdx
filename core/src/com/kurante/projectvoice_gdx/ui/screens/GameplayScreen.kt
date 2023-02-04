@@ -8,6 +8,7 @@ import com.kurante.projectvoice_gdx.game.Legacy
 import com.kurante.projectvoice_gdx.level.ChartSection
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.ui.GameScreen
+import ktx.scene2d.Scene2DSkin.defaultSkin
 import ktx.scene2d.label
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
@@ -32,8 +33,12 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         stage.addActor(table)
 
-        if(initialized)
-            hell.setText("${level.title}\nTracks: ${chart.tracks.size}")
+        if(initialized) {
+            hell.setText("${level.title} by ${level.artist}\nTracks: ${chart.tracks.size}")
+            hell.style = Label.LabelStyle().apply {
+                font = defaultSkin.getFont("bold")
+            }
+        }
     }
 
     fun initialize(level: Level, section: ChartSection) {
