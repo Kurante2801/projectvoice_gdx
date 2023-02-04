@@ -62,15 +62,18 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
     override fun render(delta: Float) {
         super.render(delta)
-        if(this::conductor.isInitialized && conductor.loaded)
-            butt.text = "${conductor.sound.cursorPosition}"
+        if(this::conductor.isInitialized) {
+            conductor.think(delta)
+            if(conductor.loaded)
+                butt.text = "${conductor.sound.cursorPosition}"
+        }
     }
 
     fun initialize(level: Level, section: ChartSection) {
         this.level = level
         chart = Legacy.parseChart(level, section)
         conductor = Conductor(
-            parent.maStorage,
+            parent.assetManager,
             level.file.child(level.musicFilename)
         )
 

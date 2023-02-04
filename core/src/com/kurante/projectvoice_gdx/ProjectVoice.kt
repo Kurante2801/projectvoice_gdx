@@ -3,6 +3,7 @@ package com.kurante.projectvoice_gdx
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
@@ -16,7 +17,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
-import com.kurante.projectvoice_gdx.storage.CacheFileHandleResolver
+import com.kurante.projectvoice_gdx.storage.MiniAudioFileHandleResolver
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.GameplayScreen
@@ -37,7 +38,7 @@ import ktx.scene2d.Scene2DSkin
 
 
 class ProjectVoice(
-    private val miniAudio: MiniAudio = MiniAudio()
+    private val nativeCallback: (ProjectVoice) -> Unit = {}
 ) : KtxGame<KtxScreen>() {
     companion object {
         fun getPreferences(): Preferences = Gdx.app.getPreferences("com.kurante.projectvoice_gdx")
@@ -45,9 +46,11 @@ class ProjectVoice(
 
     private lateinit var batch: SpriteBatch
     lateinit var assetStorage: AssetStorage
-    lateinit var maStorage: AssetStorage
+    lateinit var assetManager: AssetManager
     private val packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false)
     private val generators = mutableListOf<FreeTypeFontGenerator>()
+
+    lateinit var miniAudio: MiniAudio
 
     override fun create() {
         Gdx.app.logLevel = Application.LOG_DEBUG
@@ -95,11 +98,14 @@ class ProjectVoice(
             fileResolver = StorageFileHandleResolver()
         )
 
-        maStorage = AssetStorage(
-            fileResolver = CacheFileHandleResolver()
+        miniAudio = MiniAudio()
+        assetManager = AssetManager(
+            MiniAudioFileHandleResolver()
         ).apply {
-            setLoader<MASound> { MASoundLoader(miniAudio, fileResolver) }
+            setLoader(MASound::class.java, MASoundLoader(miniAudio, fileHandleResolver))
         }
+
+        nativeCallback.invoke(this)
 
         addScreen(InitializationScreen(this))
         addScreen(StorageScreen(this))
