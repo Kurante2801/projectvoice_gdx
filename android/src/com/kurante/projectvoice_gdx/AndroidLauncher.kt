@@ -56,7 +56,6 @@ class AndroidLauncher : AndroidComponentApplication() {
             StorageManager.storageHandler = AndroidStorageHandler(this)
 
         initialize(ProjectVoice {
-            Gdx.app.log("HELL", "${context.assets}")
             it.miniAudio.setupAndroid(context.assets)
         }, AndroidApplicationConfiguration().apply {
             useCompass = false

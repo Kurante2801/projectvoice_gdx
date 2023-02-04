@@ -3,7 +3,7 @@ package com.kurante.projectvoice_gdx
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
-import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
-import com.kurante.projectvoice_gdx.storage.MiniAudioFileHandleResolver
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.GameplayScreen
@@ -46,7 +45,7 @@ class ProjectVoice(
 
     private lateinit var batch: SpriteBatch
     lateinit var assetStorage: AssetStorage
-    lateinit var assetManager: AssetManager
+    lateinit var absoluteStorage: AssetStorage
     private val packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false)
     private val generators = mutableListOf<FreeTypeFontGenerator>()
 
@@ -99,10 +98,11 @@ class ProjectVoice(
         )
 
         miniAudio = MiniAudio()
-        assetManager = AssetManager(
-            MiniAudioFileHandleResolver()
+
+        absoluteStorage = AssetStorage(
+            fileResolver = AbsoluteFileHandleResolver()
         ).apply {
-            setLoader(MASound::class.java, MASoundLoader(miniAudio, fileHandleResolver))
+            setLoader<MASound> { MASoundLoader(miniAudio, fileResolver) }
         }
 
         nativeCallback.invoke(this)

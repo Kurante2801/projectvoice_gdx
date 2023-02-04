@@ -48,4 +48,6 @@ class AndroidStorageHandler(
 
         return sub
     }
+
+    override fun isSAF(): Boolean = true
 }

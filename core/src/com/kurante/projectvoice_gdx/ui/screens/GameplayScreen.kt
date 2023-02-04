@@ -69,11 +69,17 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
         }
     }
 
+    override fun dispose() {
+        if(this::conductor.isInitialized)
+            conductor.dispose()
+        super.dispose()
+    }
+
     fun initialize(level: Level, section: ChartSection) {
         this.level = level
         chart = Legacy.parseChart(level, section)
         conductor = Conductor(
-            parent.assetManager,
+            parent.absoluteStorage,
             level.file.child(level.musicFilename)
         )
 

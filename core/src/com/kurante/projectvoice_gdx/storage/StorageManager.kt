@@ -1,5 +1,7 @@
 package com.kurante.projectvoice_gdx.storage
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.kurante.projectvoice_gdx.util.extensions.random
 
 object StorageManager {
@@ -14,5 +16,14 @@ object StorageManager {
             result[i] = chars.random()
 
         return result.joinToString("")
+    }
+
+    // Necessary for MiniAudio on Android!
+    fun copyToLocal(file: FileHandle): FileHandle {
+        var output = Gdx.files.local("${randomString()}.${file.extension()}")
+        while (output.exists())
+            output = Gdx.files.local("${randomString()}.${file.extension()}")
+        file.copyTo(output)
+        return Gdx.files.absolute(Gdx.files.localStoragePath + output.path())
     }
 }

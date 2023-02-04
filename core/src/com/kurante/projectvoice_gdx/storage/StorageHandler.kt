@@ -29,4 +29,6 @@ interface StorageHandler {
             file.writeString("", true)
         return file
     }
+
+    fun isSAF(): Boolean = false
 }

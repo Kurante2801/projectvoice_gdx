@@ -50,7 +50,7 @@ class AndroidFileHandle(
     override fun path(): String = document.uri.toString()
     override fun name(): String = document.name!!
 
-    override fun type(): Files.FileType = Files.FileType.Absolute
+    override fun type(): Files.FileType = Files.FileType.Local
     override fun toString(): String = document.uri.path!!
     override fun isDirectory(): Boolean = document.isDirectory
     override fun exists(): Boolean = document.exists()
@@ -67,12 +67,6 @@ class AndroidFileHandle(
         val i = name.lastIndexOf('.')
         return if (i == -1) name else name.substring(0, i)
     }
-
-    /*override fun pathWithoutExtension(): String {
-        val path = path()
-        val i = path.lastIndexOf(".")
-        return if (i == -1) path else path.substring(0, i)
-    }*/
 
     override fun read(): InputStream {
         if (!document.exists())
