@@ -5,10 +5,12 @@ package com.kurante.projectvoice_gdx.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
+import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
@@ -29,9 +31,6 @@ class LevelCard(
     @Suppress("JoinDeclarationAndAssignment")
     val image: Image
     val table: Table
-
-    var backgroundBytes: Array<Byte>? = null
-    var backgroundLoaded = false
 
     init {
         color = UserInterface.FOREGROUND1_COLOR
@@ -58,10 +57,37 @@ class LevelCard(
 
         table = scene2d.table {
             setFillParent(true)
+            debug = true
+            pad(8f.scaledUi())
 
-            label(level.artist)
+            horizontalGroup {
+                align(Align.topRight)
+                it.grow()
+                it.minSize(38f.scaledUi())
+                space(8f.scaledUi())
+
+                for(chart in level.charts.sortedWith(compareBy({ it.type }, { it.difficulty }))) {
+                    // Arbitrary, can be changed any time
+                    val diff = if(chart.difficulty > 17) "17+" else chart.difficulty.toString()
+                    textButton(diff) {
+                        color = chart.type.color
+                        isDisabled = true
+                        style.down = style.up
+                    }
+                }
+            }
+
+            defaults().row()
+            label(level.artist) {
+                it.fillX()
+                wrap = true
+                setAlignment(Align.bottomLeft)
+            }
             defaults().row()
             label(level.title) {
+                it.fillX()
+                wrap = true
+                setAlignment(Align.bottomLeft)
                 style = LabelStyle(defaultSkin.getFont("bold"), null)
                 setFontScale(1.25f)
             }

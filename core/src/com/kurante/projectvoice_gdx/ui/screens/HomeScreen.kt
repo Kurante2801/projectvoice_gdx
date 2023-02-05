@@ -23,7 +23,7 @@ class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         table = scene2d.table {
             setFillParent(true)
-            debug = true
+            //debug = true
 
             horizontalGroup {
                 align(Align.right)
