@@ -32,6 +32,9 @@ class Conductor(
     override fun dispose() {
         if(Platform.isAndroidSAF && loaded && file.exists())
             file.delete()
+        KtxAsync.launch(newSingleThreadAsyncContext()) {
+            assetStorage.unload<MASound>(file.path())
+        }
     }
 
     fun think(delta: Float) {

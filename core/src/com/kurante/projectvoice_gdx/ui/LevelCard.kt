@@ -3,11 +3,7 @@
 package com.kurante.projectvoice_gdx.ui
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.Texture.TextureFilter
-import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
@@ -16,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
-import com.kurante.projectvoice_gdx.util.extensions.crop
+import com.kurante.projectvoice_gdx.util.extensions.envelopeRatio
 import kotlinx.coroutines.launch
 import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
@@ -34,6 +30,9 @@ class LevelCard(
     val image: Image
     val table: Table
 
+    var backgroundBytes: Array<Byte>? = null
+    var backgroundLoaded = false
+
     init {
         color = UserInterface.FOREGROUND1_COLOR
 
@@ -47,17 +46,12 @@ class LevelCard(
                 val handle = level.file.child(level.backgroundFilename)
                 if (!handle.exists()) return@launch
 
-                val pixmap = assetStore.load<Pixmap>(path = handle.path()).crop(
-                    MathUtils.ceil(width),
-                    MathUtils.ceil(height),
-                    level.backgroundAspectRatio
-                )
+                val tex = assetStore.load<Texture>(handle.path()).apply {
+                    setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+                }
 
-                drawable = TextureRegionDrawable(TextureRegion(Texture(pixmap).apply {
-                    setFilter(TextureFilter.Linear, TextureFilter.Linear)
-                }))
+                drawable = TextureRegionDrawable(tex.envelopeRatio(level.backgroundAspectRatio))
                 color = Color(0.75f, 0.75f, 0.75f, 1f)
-                assetStore.unload<Pixmap>(handle.path())
             }
 
         }
@@ -69,6 +63,7 @@ class LevelCard(
             defaults().row()
             label(level.title) {
                 style = LabelStyle(defaultSkin.getFont("bold"), null)
+                setFontScale(1.25f)
             }
         }
 
