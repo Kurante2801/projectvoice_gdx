@@ -24,9 +24,7 @@ class AndroidLauncher : AndroidComponentApplication() {
 
         if (it == null) return@registerForActivityResult
 
-        // This looks ugly but that's how the formatter wants it apparently
-        contentResolver.takePersistableUriPermission(
-            it,
+        contentResolver.takePersistableUriPermission(it,
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         )
     }

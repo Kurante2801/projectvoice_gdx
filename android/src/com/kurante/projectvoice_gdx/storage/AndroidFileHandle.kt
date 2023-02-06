@@ -6,23 +6,13 @@ import androidx.documentfile.provider.DocumentFile
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
-import com.kurante.projectvoice_gdx.util.extensions.random
+import com.kurante.projectvoice_gdx.storage.StorageManager.randomString
 import java.io.*
 
 class AndroidFileHandle(
     private val context: Context,
     private val document: DocumentFile
 ) : FileHandle() {
-    private val fileChars = "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray()
-    private fun randomFileName(): String {
-        val filename = charArrayOf('0', '1', '2', '3', '4', '5')
-
-        for (i in 0..5)
-            filename[i] = fileChars.random()
-
-        return String(filename)
-    }
-
     fun createDirectory(name: String): AndroidFileHandle? {
         val created = document.createDirectory(name)
             ?: return null
@@ -32,9 +22,9 @@ class AndroidFileHandle(
     fun createFile(name: String): AndroidFileHandle? {
         // Due to SAF, we can't create any file with any arbitrary name
         // so instead we create an empty txt file and rename it to what we want
-        var tempFile = randomFileName()
+        var tempFile = randomString()
         while (document.findFile("$tempFile.txt") != null)
-            tempFile = randomFileName()
+            tempFile = randomString()
 
         val created = document.createFile("text/plain", "$tempFile.txt")
             ?: return null

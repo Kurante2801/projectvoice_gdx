@@ -183,8 +183,7 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
         prefs["LevelTree"] = _handle.path()
         prefs.flush()
 
-        val executor = newSingleThreadAsyncContext()
-        KtxAsync.launch(executor) {
+        KtxAsync.launch(newSingleThreadAsyncContext()) {
             LevelManager.loadLevels(_handle)
 
             nomediaText = if (nomediaText == null)

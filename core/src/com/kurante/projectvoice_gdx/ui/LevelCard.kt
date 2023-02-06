@@ -17,6 +17,7 @@ import com.kurante.projectvoice_gdx.util.extensions.envelopeRatio
 import kotlinx.coroutines.launch
 import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
+import ktx.async.newSingleThreadAsyncContext
 import ktx.scene2d.*
 import ktx.scene2d.Scene2DSkin.defaultSkin
 import kotlin.contracts.ExperimentalContracts
@@ -40,7 +41,7 @@ class LevelCard(
 
             if (assetStore == null || level.backgroundFilename == null) return@apply
 
-            KtxAsync.launch {
+            KtxAsync.launch(newSingleThreadAsyncContext()) {
                 val handle = level.file.child(level.backgroundFilename)
                 if (!handle.exists()) return@launch
 

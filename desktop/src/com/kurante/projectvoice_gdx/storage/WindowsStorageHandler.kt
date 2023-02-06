@@ -12,8 +12,7 @@ import org.lwjgl.util.nfd.NativeFileDialog
 class WindowsStorageHandler : StorageHandler {
     // https://github.com/spookygames/gdx-nativefilechooser/blob/d0d6bb3b0ee91e174865493a953c69216c8c22f3/desktop-lwjgl/src/main/java/games/spooky/gdx/nativefilechooser/desktop/DesktopFileChooser.java#L68
     override fun requestFolderAccess(callback: (FileHandle?) -> Unit) {
-        val executor = newSingleThreadAsyncContext()
-        KtxAsync.launch(executor) {
+        KtxAsync.launch(newSingleThreadAsyncContext()) {
             openFolderDialog(callback)
         }
     }
