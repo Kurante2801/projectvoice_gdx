@@ -1,6 +1,5 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -29,10 +28,7 @@ import ktx.scene2d.table
 class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
     private val prefs = getPreferences()
 
-    override fun show() {
-        Gdx.input.inputProcessor = stage
-        stage.clear()
-
+    override fun populate() {
         val tree = prefs.get<String?>("LevelTree", null)
             ?: return showFirstTime()
 
@@ -40,7 +36,6 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         table = scene2d.table {
             setFillParent(true)
-            //debug = true
 
             val message = label(msg) {
                 this.setAlignment(Align.center)
@@ -115,7 +110,6 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
     private fun showFirstTime() {
         table = scene2d.table {
             setFillParent(true)
-            //debug = true
 
             label("Project Voice requires access to a folder to load levels from\nIt can be an empty folder that you will later add levels to") {
                 this.setAlignment(Align.center)
@@ -135,7 +129,9 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
                         if (handle != null) {
                             prefs["LevelTree"] = handle.path()
                             prefs.flush()
-                            show()
+
+                            stage.clear()
+                            populate()
                         }
                     }
                 }

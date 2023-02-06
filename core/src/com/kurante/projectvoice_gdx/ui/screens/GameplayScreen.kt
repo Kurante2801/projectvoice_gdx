@@ -12,6 +12,7 @@ import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import ktx.actors.onChange
+import ktx.assets.disposeSafely
 import ktx.scene2d.Scene2DSkin.defaultSkin
 import ktx.scene2d.label
 import ktx.scene2d.scene2d
@@ -28,6 +29,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
     override fun show() {
         super.show()
+        stage.clear()
 
         val table = scene2d.table {
             debug = true
@@ -48,6 +50,13 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 }
             }
 
+            pvImageTextButton("Exit!") {
+                onChange {
+                    initialized = false
+                    conductor.disposeSafely()
+                    this@GameplayScreen.parent.changeScreen<HomeScreen>()
+                }
+            }
         }
 
         stage.addActor(table)
@@ -71,7 +80,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
     override fun dispose() {
         if(this::conductor.isInitialized)
-            conductor.dispose()
+            conductor.disposeSafely()
         super.dispose()
     }
 

@@ -22,10 +22,15 @@ open class GameScreen(
     var opacity: Float = 1f
     val stage = Stage(WidthViewport())
     var table: Table? = null
+    var populated = false
 
     override fun show() {
         Gdx.input.inputProcessor = stage
-        stage.clear()
+
+        if(!populated) {
+            populate()
+            populated = true
+        }
     }
 
     override fun resize(width: Int, height: Int) = Gdx.app.postRunnable {
@@ -51,6 +56,8 @@ open class GameScreen(
             render(delta)
         }
     }
+
+    open fun populate() {}
 
     class FadeAction(
         private val startAlpha: Float,

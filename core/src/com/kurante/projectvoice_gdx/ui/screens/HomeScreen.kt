@@ -1,6 +1,5 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.MathUtils.ceil
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
@@ -17,13 +16,9 @@ import ktx.scene2d.scrollPane
 import ktx.scene2d.table
 
 class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
-    override fun show() {
-        Gdx.input.inputProcessor = stage
-        stage.clear() // TODO: See if we can avoid this (to remember scroll positions between screens)
-
+    override fun populate() {
         table = scene2d.table {
             setFillParent(true)
-            //debug = true
 
             horizontalGroup {
                 align(Align.right)
