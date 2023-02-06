@@ -7,14 +7,14 @@ import com.kurante.projectvoice_gdx.util.UserInterface
 /**
  * Invokes callback once and registers it to be called again when the localization changes
  */
-fun Label.localizationChanged(callback: (I18NBundle) -> Unit) {
+fun Label.onLocalizationChanged(callback: (I18NBundle) -> Unit) {
     callback.invoke(UserInterface.lang)
     UserInterface.localeEvent += callback
 }
 
 fun Label.setLocalizedText(key: String) {
     setText(UserInterface.lang[key])
-    localizationChanged {
+    onLocalizationChanged {
         setText(it[key])
     }
 }

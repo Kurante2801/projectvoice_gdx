@@ -1,6 +1,5 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
@@ -80,7 +79,6 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     }
 
     override fun dispose() {
-        Gdx.app.log("HELL", "DISPOSE CALLED SCREEN")
         if(this::conductor.isInitialized)
             conductor.disposeSafely()
         super.dispose()

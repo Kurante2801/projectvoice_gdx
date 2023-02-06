@@ -39,6 +39,6 @@ object UserInterface {
         lang = if(locale == null || locale == "en")
             I18NBundle.createBundle(handle)
         else
-            I18NBundle.createBundle(handle, Locale(locale))
+            I18NBundle.createBundle(handle, Locale(locale), "UTF-8")
     }
 }

@@ -27,8 +27,8 @@ class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
                 it.growX()
                 it.pad(28f.scaledUi())
 
-                pvImageTextButton("common.options", this@table.skin.getDrawable("settings_shadow")) {
-                    setLocalizedText("common.options")
+                pvImageTextButton("common_options", this@table.skin.getDrawable("settings_shadow")) {
+                    setLocalizedText("common_options")
                     onChange {
                         this@HomeScreen.parent.changeScreen<PreferencesScreen>()
                     }

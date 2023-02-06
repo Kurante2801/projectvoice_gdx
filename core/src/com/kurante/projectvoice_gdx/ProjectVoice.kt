@@ -81,7 +81,6 @@ class ProjectVoice(
                 color = Color.WHITE
                 renderCount = 1
                 incremental = true
-                genMipMaps = true
                 packer = this@ProjectVoice.packer
             }
 

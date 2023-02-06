@@ -60,6 +60,7 @@ project(":core") {
         api group: 'io.github.libktx', name: 'ktx-assets-async', version: ktxVersion
         api group: 'io.github.libktx', name: 'ktx-preferences', version: ktxVersion
         api group: 'io.github.libktx', name: 'ktx-json', version: ktxVersion
+        api group: 'io.github.libktx', name: 'ktx-i18n', version: ktxVersion
 
         api "games.rednblack.miniaudio:miniaudio:$miniaudioVersion"
     }

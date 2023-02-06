@@ -34,7 +34,6 @@ class Conductor(
     }
 
     override fun dispose() {
-        Gdx.app.log("HELL", "DISPOSE CALLED CONDUCTOR")
         KtxAsync.launch {
             if (Platform.isAndroidSAF && file.exists())
                 file.delete()

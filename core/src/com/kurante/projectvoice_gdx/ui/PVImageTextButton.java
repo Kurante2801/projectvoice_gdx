@@ -221,7 +221,7 @@ public class PVImageTextButton extends Button {
         LabelKt.setLocalizedText(label, key);
     }
 
-    public void localizationChanged(Function1<? super I18NBundle, kotlin.Unit> callback) {
-        LabelKt.localizationChanged(label, callback);
+    public void onLocalizationChanged(Function1<? super I18NBundle, kotlin.Unit> callback) {
+        LabelKt.onLocalizationChanged(label, callback);
     }
 }

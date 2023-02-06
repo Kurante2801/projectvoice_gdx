@@ -13,6 +13,7 @@ import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.UserInterface.lang
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
+import com.kurante.projectvoice_gdx.util.extensions.onLocalizationChanged
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.setLocalizedText
 import com.kurante.projectvoice_gdx.util.extensions.textField
@@ -21,6 +22,7 @@ import ktx.actors.onChange
 import ktx.app.Platform
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
+import ktx.i18n.get
 import ktx.preferences.get
 import ktx.preferences.set
 import ktx.scene2d.label
@@ -34,15 +36,23 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
         val tree = prefs.get<String?>("LevelTree", null)
             ?: return showFirstTime()
 
-        val msg = if (LevelManager.loaded) "Loaded ${LevelManager.levels.size} levels." else "Loading..."
-
         table = scene2d.table {
             setFillParent(true)
 
-            val message = label(msg) {
-                this.setAlignment(Align.center)
+            val message = label("") {
+                setAlignment(Align.center)
                 it.colspan(2)
                 it.fillX()
+
+                onLocalizationChanged { bundle ->
+                    setText(if(LevelManager.loaded) {
+                        if(LevelManager.levels.size == 1)
+                            bundle["storage_loadedSingular"]
+                        else
+                            bundle["storage_loadedPlural", LevelManager.levels.size]
+                    } else
+                        bundle["storage_loading"])
+                }
             }
 
             defaults().row()
@@ -54,14 +64,16 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
             }
 
             defaults().center().row()
-            val browse = pvImageTextButton("Browse", skin.getDrawable("folder_open_shadow")) {
+            val browse = pvImageTextButton("storage_browse", skin.getDrawable("folder_open_shadow")) {
+                setLocalizedText("storage_browse")
                 isDisabled = !LevelManager.loaded
                 it.minWidth(200f.scaledUi())
                 it.align(Align.right)
                 it.pad(8f.scaledUi(), 0f, 0f, 8f.scaledUi())
             }
 
-            val next = pvImageTextButton("Next", skin.getDrawable("forward_shadow")) {
+            val next = pvImageTextButton("common_next", skin.getDrawable("forward_shadow")) {
+                setLocalizedText("common_next")
                 isDisabled = !LevelManager.loaded
                 it.minWidth(200f.scaledUi())
                 it.align(Align.left)
@@ -97,7 +109,7 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
 
             val handle = storageHandler.directoryFromString(tree)
             if (!handle.isDirectory) {
-                message.setText("Failed to load levels from the given directory. Please try again")
+                message.setText(lang["storage_failure"])
                 browse.isDisabled = false
                 return@table
             }
@@ -113,16 +125,16 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
         table = scene2d.table {
             setFillParent(true)
 
-            label("storage.request") {
-                setLocalizedText("storage.request")
+            label("storage_request") {
+                setLocalizedText("storage_request")
                 setAlignment(Align.center)
                 it.fillX()
             }
 
             defaults().pad(8f.scaledUi(), 8f.scaledUi(), 8f.scaledUi(), 8f.scaledUi()).row()
 
-            pvImageTextButton("storage.browse", skin.getDrawable("folder_open_shadow")) {
-                setLocalizedText("storage.browse")
+            pvImageTextButton("storage_browse", skin.getDrawable("folder_open_shadow")) {
+                setLocalizedText("storage_browse")
                 it.minWidth(200f.scaledUi())
                 it.uniformX()
 
@@ -162,7 +174,7 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
                 throw GdxRuntimeException("Could not create nor access subfolder 'Project Voice' when granted access to the root of the device")
         }
 
-        message.setText(lang["storage.loading"])
+        message.setText(lang["storage_loading"])
 
         // Create .nomedia
         Platform.runOnAndroid {
@@ -170,13 +182,13 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
             if (!nomedia.exists()) {
                 nomedia = storageHandler.subFile(tree, ".nomedia")
                 nomediaText =
-                    if (nomedia.exists()) lang["storage.nomediaCreated"] else lang["storage.nomediaFailed"]
+                    if (nomedia.exists()) lang["storage_nomediaCreated"] else lang["storage_nomediaFailed"]
             } else
-                nomediaText = lang["storage.nomediaFound"]
+                nomediaText = lang["storage_nomediaFound"]
         }
 
         if (nomediaText != null)
-            message.setText("${lang["storage.loading"]} $nomediaText")
+            message.setText("${lang["storage_loading"]} $nomediaText")
 
         field.text = tree.name()
 
@@ -186,10 +198,10 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
         KtxAsync.launch(newSingleThreadAsyncContext()) {
             LevelManager.loadLevels(tree)
 
-            var success = if(LevelManager.levels.size == 1)
+            var success = "${lang["storage_success"]} " + if(LevelManager.levels.size == 1)
                 lang["storage.successSingular"]
             else
-                lang.format("storage.successPlural", LevelManager.levels.size)
+                lang["storage.successPlural", LevelManager.levels.size]
 
             if(nomediaText != null)
                 success += "\n$nomediaText"
@@ -213,7 +225,7 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
             browse.isDisabled = false
             next.isDisabled = !LevelManager.loaded
 
-            message.setText("Could not load levels.\n${e.message}")
+            message.setText(lang["storage_failure"])
             e.printStackTrace()
         }
     }

@@ -57,7 +57,6 @@ inline fun <S> KWidget<S>.imageTextButton(
         init(this, it)
     }
 }*/
-
 @Scene2dDsl
 @OptIn(ExperimentalContracts::class)
 inline fun <S> KWidget<S>.pvImageTextButton(
