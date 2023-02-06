@@ -19,10 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.ui.GameScreen
-import com.kurante.projectvoice_gdx.ui.screens.GameplayScreen
-import com.kurante.projectvoice_gdx.ui.screens.HomeScreen
-import com.kurante.projectvoice_gdx.ui.screens.InitializationScreen
-import com.kurante.projectvoice_gdx.ui.screens.StorageScreen
+import com.kurante.projectvoice_gdx.ui.screens.*
 import com.kurante.projectvoice_gdx.util.ChadFontData
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import games.rednblack.miniaudio.MASound
@@ -34,6 +31,8 @@ import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
 import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin
+import java.lang.reflect.Type
+import java.util.*
 
 
 class ProjectVoice(
@@ -50,6 +49,8 @@ class ProjectVoice(
     private val generators = mutableListOf<FreeTypeFontGenerator>()
 
     lateinit var miniAudio: MiniAudio
+
+    val screenHistory = ArrayDeque <GameScreen>()
 
     override fun create() {
         Gdx.app.logLevel = Application.LOG_DEBUG
@@ -111,6 +112,7 @@ class ProjectVoice(
         addScreen(StorageScreen(this))
         addScreen(HomeScreen(this))
         addScreen(GameplayScreen(this))
+        addScreen(PreferencesScreen(this))
         setScreen<InitializationScreen>()
     }
 
@@ -160,14 +162,25 @@ class ProjectVoice(
         miniAudio.startEngine()
     }
 
-    inline fun <reified Type : GameScreen> changeScreen() = changeScreen(Type::class.java)
+    inline fun <reified Type : GameScreen> changeScreen(addToHistory: Boolean = true) {
+        changeScreen(Type::class.java, addToHistory)
+    }
 
-    fun <Type : GameScreen> changeScreen(type: Class<Type>) {
+    fun <Type : GameScreen> changeScreen(type: Class<Type>, addToHistory: Boolean = true) {
+        changeScreen(getScreen(type), addToHistory)
+    }
+    fun changeScreen(newScreen: GameScreen, addToHistory: Boolean = true) {
         val current = currentScreen as? GameScreen
-            ?: return setScreen(type)
+        if (current == null) {
+            currentScreen.hide()
+            currentScreen = newScreen
+            currentScreen.resize(Gdx.graphics.width, Gdx.graphics.height)
+            currentScreen.show()
+            return
+        }
 
-        val newScreen = getScreen(type) as? GameScreen
-            ?: return setScreen(type)
+        if(addToHistory)
+            screenHistory.add(newScreen)
 
         current.stage.addAction(Actions.sequence(
             GameScreen.FadeAction(current.opacity, 0f, current),
@@ -183,6 +196,35 @@ class ProjectVoice(
             }
         ))
     }
+
+    fun getPreviousScreen(): GameScreen? {
+        if(screenHistory.isEmpty()) return null
+
+        val screen = screenHistory.peek()
+        // Is our current screen in the history stack?
+        return if(screen::class == currentScreen::class) {
+            if(screenHistory.size > 2) {
+                screenHistory.pop()
+                screenHistory.peek()
+            } else
+                null
+        } else {
+            if(!screenHistory.isEmpty())
+                screenHistory.peek()
+            else
+                null
+        }
+    }
+
+    fun tryPreviousScreen(): Boolean {
+        val screen = getPreviousScreen()
+        if(screen != null) {
+            changeScreen(screen, false)
+            return true
+        }
+        return false
+    }
+
 
     private fun generateFont(
         path: String,

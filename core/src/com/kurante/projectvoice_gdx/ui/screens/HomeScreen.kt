@@ -29,7 +29,7 @@ class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
 
                 pvImageTextButton("Options", this@table.skin.getDrawable("settings_shadow")) {
                     onChange {
-                        this@HomeScreen.parent.changeScreen<StorageScreen>()
+                        this@HomeScreen.parent.changeScreen<PreferencesScreen>()
                     }
                 }
             }
