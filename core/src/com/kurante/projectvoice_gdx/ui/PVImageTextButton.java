@@ -13,9 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.Scaling;
 import com.kurante.projectvoice_gdx.util.UserInterface;
+import com.kurante.projectvoice_gdx.util.extensions.LabelKt;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -213,5 +215,13 @@ public class PVImageTextButton extends Button {
     @Override
     public float getPrefHeight() {
         return Math.max(super.getPrefHeight(), UserInterface.INSTANCE.scaledUI(48f));
+    }
+
+    public void setLocalizedText(String key) {
+        LabelKt.setLocalizedText(label, key);
+    }
+
+    public void localizationChanged(Function1<? super I18NBundle, kotlin.Unit> callback) {
+        LabelKt.localizationChanged(label, callback);
     }
 }

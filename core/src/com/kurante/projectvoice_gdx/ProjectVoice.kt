@@ -22,6 +22,7 @@ import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.*
 import com.kurante.projectvoice_gdx.util.ChadFontData
+import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import games.rednblack.miniaudio.MASound
 import games.rednblack.miniaudio.MiniAudio
@@ -117,6 +118,8 @@ class ProjectVoice(
             setLoader<MASound> { MASoundLoader(miniAudio, fileResolver) }
         }
 
+        UserInterface.setLocale("es") // TODO: Preferences Locale
+
         nativeCallback.invoke(this)
 
         addScreen(InitializationScreen(this))
@@ -124,6 +127,7 @@ class ProjectVoice(
         addScreen(HomeScreen(this))
         addScreen(GameplayScreen(this))
         addScreen(PreferencesScreen(this))
+
         setScreen<InitializationScreen>()
     }
 

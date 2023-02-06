@@ -1,6 +1,9 @@
 package com.kurante.projectvoice_gdx.util
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.utils.I18NBundle
+import java.util.*
 
 object UserInterface {
     const val UI_SCALE = 1280f / WidthViewport.REFERENCE_WIDTH
@@ -25,4 +28,17 @@ object UserInterface {
     val BACKGROUND_COLOR: Color = Color.valueOf("#191919")
     val FOREGROUND1_COLOR: Color = Color.valueOf("#323232")
     val FOREGROUND2_COLOR: Color = Color.valueOf("#4B4B4B")
+
+    // Locale stuff
+    lateinit var lang: I18NBundle
+    val localeEvent = CustomEvent<I18NBundle>()
+
+    fun setLocale(locale: String?) {
+        val handle = Gdx.files.internal("i18n/locale")
+        // English is the default locale
+        lang = if(locale == null || locale == "en")
+            I18NBundle.createBundle(handle)
+        else
+            I18NBundle.createBundle(handle, Locale(locale))
+    }
 }

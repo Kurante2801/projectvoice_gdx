@@ -11,8 +11,10 @@ import com.kurante.projectvoice_gdx.level.LevelManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.PVImageTextButton
+import com.kurante.projectvoice_gdx.util.UserInterface.lang
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
+import com.kurante.projectvoice_gdx.util.extensions.setLocalizedText
 import com.kurante.projectvoice_gdx.util.extensions.textField
 import kotlinx.coroutines.launch
 import ktx.actors.onChange
@@ -111,14 +113,16 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
         table = scene2d.table {
             setFillParent(true)
 
-            label("Project Voice requires access to a folder to load levels from\nIt can be an empty folder that you will later add levels to") {
-                this.setAlignment(Align.center)
+            label("storage.request") {
+                setLocalizedText("storage.request")
+                setAlignment(Align.center)
                 it.fillX()
             }
 
             defaults().pad(8f.scaledUi(), 8f.scaledUi(), 8f.scaledUi(), 8f.scaledUi()).row()
 
-            pvImageTextButton("Browse", skin.getDrawable("folder_open_shadow")) {
+            pvImageTextButton("storage.browse", skin.getDrawable("folder_open_shadow")) {
+                setLocalizedText("storage.browse")
                 it.minWidth(200f.scaledUi())
                 it.uniformX()
 
@@ -148,46 +152,49 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
         browse: PVImageTextButton,
         next: PVImageTextButton
     ) {
-        var _handle = handle
+        var tree = handle
         var nomediaText: String? = null
 
         // Make sure we're not using the root of the device!
-        if (_handle.path() == "/tree/primary:" || _handle.path() == "/tree/primary:/document/primary:") {
-            _handle = storageHandler.subDirectory(_handle, "Project Voice")
-            if (!_handle.exists() || !_handle.isDirectory)
+        if (tree.path() == "/tree/primary:" || tree.path() == "/tree/primary:/document/primary:") {
+            tree = storageHandler.subDirectory(tree, "Project Voice")
+            if (!tree.exists() || !tree.isDirectory)
                 throw GdxRuntimeException("Could not create nor access subfolder 'Project Voice' when granted access to the root of the device")
         }
 
-        message.setText("Loading...")
+        message.setText(lang["storage.loading"])
 
         // Create .nomedia
         Platform.runOnAndroid {
-            var nomedia = _handle.child(".nomedia")
+            var nomedia = tree.child(".nomedia")
             if (!nomedia.exists()) {
-                nomedia = storageHandler.subFile(_handle, ".nomedia")
+                nomedia = storageHandler.subFile(tree, ".nomedia")
                 nomediaText =
-                    if (nomedia.exists()) "Created .nomedia file" else "Could not create .nomedia file"
+                    if (nomedia.exists()) lang["storage.nomediaCreated"] else lang["storage.nomediaFailed"]
             } else
-                nomediaText = "Found .nomedia file"
+                nomediaText = lang["storage.nomediaFound"]
         }
 
         if (nomediaText != null)
-            message.setText("Loading. $nomediaText")
+            message.setText("${lang["storage.loading"]} $nomediaText")
 
-        field.text = _handle.name()
+        field.text = tree.name()
 
-        prefs["LevelTree"] = _handle.path()
+        prefs["LevelTree"] = tree.path()
         prefs.flush()
 
         KtxAsync.launch(newSingleThreadAsyncContext()) {
-            LevelManager.loadLevels(_handle)
+            LevelManager.loadLevels(tree)
 
-            nomediaText = if (nomediaText == null)
-                "Success! Loaded ${LevelManager.levels.size} levels"
+            var success = if(LevelManager.levels.size == 1)
+                lang["storage.successSingular"]
             else
-                "Success! Loaded ${LevelManager.levels.size} levels\n$nomediaText"
+                lang.format("storage.successPlural", LevelManager.levels.size)
 
-            message.setText(nomediaText)
+            if(nomediaText != null)
+                success += "\n$nomediaText"
+
+            message.setText(success)
             browse.isDisabled = false
             next.isDisabled = false
         }
