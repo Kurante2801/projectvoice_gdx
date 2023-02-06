@@ -2,12 +2,17 @@ package com.kurante.projectvoice_gdx.level
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.GdxRuntimeException
+import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
 
 object LevelManager {
     val levels = mutableListOf<Level>()
     var loaded = false
 
     fun loadLevels(tree: FileHandle) {
+        if(!storageHandler.canRead(tree))
+            throw GdxRuntimeException("Cannot read tree: $tree")
+
         loaded = false
         levels.clear()
 

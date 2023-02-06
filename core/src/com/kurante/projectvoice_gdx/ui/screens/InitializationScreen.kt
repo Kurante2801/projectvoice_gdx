@@ -28,14 +28,14 @@ class InitializationScreen(parent: ProjectVoice) : GameScreen(parent) {
             setFillParent(true)
             label("Loading levels...")
 
-            try {
-                KtxAsync.launch(newSingleThreadAsyncContext()) {
+            KtxAsync.launch(newSingleThreadAsyncContext()) {
+                try {
                     LevelManager.loadLevels(handle)
                     this@InitializationScreen.parent.changeScreen<HomeScreen>()
+                } catch (e: Exception) {
+                    this@InitializationScreen.parent.changeScreen<StorageScreen>()
+                    Gdx.app.error("InitializationScreen", "Failed to load levels, moving to storage screen", e)
                 }
-            } catch (e: Exception) {
-                this@InitializationScreen.parent.changeScreen<StorageScreen>()
-                Gdx.app.error("InitializationScreen", "Failed to load levels, moving to storage screen", e)
             }
         }
 

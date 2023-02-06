@@ -14,9 +14,6 @@ interface StorageHandler {
         return Gdx.files.absolute(string)
     }
 
-    fun encode(string: String): String = string
-    fun decode(string: String): String = string
-
     fun subDirectory(handle: FileHandle, name: String): FileHandle {
         val dir = handle.child(name)
         dir.mkdirs()
@@ -31,4 +28,7 @@ interface StorageHandler {
     }
 
     fun isSAF(): Boolean = false
+
+    fun canRead(handle: FileHandle): Boolean = handle.file().canRead()
+    fun canWrite(handle: FileHandle): Boolean = handle.file().canWrite()
 }

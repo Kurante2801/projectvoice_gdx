@@ -160,4 +160,7 @@ class AndroidFileHandle(
         else
             TODO("NOT IMPLEMENTED IN ANDROID")
     }
+
+    fun canRead(): Boolean = document.canRead()
+    fun canWrite(): Boolean = document.canWrite()
 }

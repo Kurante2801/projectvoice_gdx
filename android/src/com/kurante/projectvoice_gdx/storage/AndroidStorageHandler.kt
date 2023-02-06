@@ -24,9 +24,6 @@ class AndroidStorageHandler(
         return AndroidFileHandle(launcher, DocumentFile.fromTreeUri(launcher, Uri.parse(string))!!)
     }
 
-    override fun encode(string: String): String = Uri.encode(string)
-    override fun decode(string: String): String = Uri.decode(string)
-
     override fun subDirectory(handle: FileHandle, name: String): FileHandle {
         var sub = handle.child(name)
 
@@ -50,4 +47,16 @@ class AndroidStorageHandler(
     }
 
     override fun isSAF(): Boolean = true
+
+    override fun canRead(handle: FileHandle): Boolean {
+        if(handle is AndroidFileHandle)
+            return handle.canRead()
+        return handle.file().canRead()
+    }
+
+    override fun canWrite(handle: FileHandle): Boolean {
+        if(handle is AndroidFileHandle)
+            return handle.canWrite()
+        return handle.file().canWrite()
+    }
 }
