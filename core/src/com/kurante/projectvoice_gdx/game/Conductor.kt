@@ -1,5 +1,6 @@
 package com.kurante.projectvoice_gdx.game
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Disposable
 import com.kurante.projectvoice_gdx.storage.StorageManager
@@ -10,30 +11,33 @@ import kotlinx.coroutines.launch
 import ktx.app.Platform
 import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
-import ktx.async.newSingleThreadAsyncContext
 
 class Conductor(
     private val assetStorage: AssetStorage, // Must be absolute for MiniAudio to load!!
     handle: FileHandle,
 ) : Disposable {
-    val file = if(Platform.isAndroidSAF) StorageManager.copyToLocal(handle) else handle
+    val file = if(Platform.isAndroidSAF) StorageManager.copyToCache(handle) else handle
     lateinit var sound: MASound
     var loaded = false
 
     init {
         KtxAsync.launch {
-            sound = assetStorage.load(file.path(), MASoundLoaderParameters().apply {
-                external = true
-            })
-            loaded = true
+            try {
+                sound = assetStorage.load(file.path(), MASoundLoaderParameters().apply {
+                    external = true
+                })
+                loaded = true
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
     override fun dispose() {
-        if(Platform.isAndroidSAF && loaded && file.exists())
-            file.delete()
+        Gdx.app.log("HELL", "DISPOSE CALLED CONDUCTOR")
         KtxAsync.launch {
-            assetStorage.unload<MASound>(file.path())
+            if (Platform.isAndroidSAF && file.exists())
+                file.delete()
         }
     }
 

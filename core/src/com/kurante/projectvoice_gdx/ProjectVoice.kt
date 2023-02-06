@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
+import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.*
 import com.kurante.projectvoice_gdx.util.ChadFontData
@@ -50,9 +51,19 @@ class ProjectVoice(
 
     lateinit var miniAudio: MiniAudio
 
-    val screenHistory = ArrayDeque <GameScreen>()
+    private val screenHistory = ArrayDeque<GameScreen>()
 
     override fun create() {
+        // Create cache
+        StorageManager.cachePath = Gdx.files.localStoragePath + "cache/"
+        StorageManager.cache = Gdx.files.absolute(StorageManager.cachePath)
+
+        // Android does NOT call dispose() when closing the app...
+        // so we must manually remove the cache here
+        StorageManager.cache.mkdirs()
+        for (file in StorageManager.cache.list())
+            file.delete()
+
         Gdx.app.logLevel = Application.LOG_DEBUG
         batch = SpriteBatch()
 
@@ -144,6 +155,7 @@ class ProjectVoice(
     override fun dispose() {
         super.dispose()
         assetStorage.dispose()
+        absoluteStorage.dispose()
         packer.dispose()
 
         for (generator in generators)
@@ -171,6 +183,8 @@ class ProjectVoice(
     }
     fun changeScreen(newScreen: GameScreen, addToHistory: Boolean = true) {
         val current = currentScreen as? GameScreen
+        Gdx.input.inputProcessor = null
+
         if (current == null) {
             currentScreen.hide()
             currentScreen = newScreen
@@ -191,6 +205,7 @@ class ProjectVoice(
                 newScreen.resize(Gdx.graphics.width, Gdx.graphics.height)
                 newScreen.show()
                 newScreen.stage.addAction(GameScreen.FadeAction(0f, 1f, newScreen))
+                Gdx.input.inputProcessor = newScreen.stage
 
                 currentScreen = newScreen
             }

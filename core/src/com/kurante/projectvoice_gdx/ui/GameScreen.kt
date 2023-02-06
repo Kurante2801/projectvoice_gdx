@@ -25,8 +25,6 @@ open class GameScreen(
     var populated = false
 
     override fun show() {
-        Gdx.input.inputProcessor = stage
-
         if(!populated) {
             populate()
             populated = true

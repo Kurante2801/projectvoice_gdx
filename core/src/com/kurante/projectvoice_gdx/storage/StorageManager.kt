@@ -6,6 +6,8 @@ import com.kurante.projectvoice_gdx.util.extensions.random
 
 object StorageManager {
     lateinit var storageHandler: StorageHandler
+    lateinit var cachePath: String
+    lateinit var cache: FileHandle
 
     val chars = "abcdefghijklmnopqrstuvwxyz".toCharArray()
 
@@ -19,11 +21,11 @@ object StorageManager {
     }
 
     // Necessary for MiniAudio on Android!
-    fun copyToLocal(file: FileHandle): FileHandle {
-        var output = Gdx.files.local("${randomString()}.${file.extension()}")
+    fun copyToCache(file: FileHandle): FileHandle {
+        var output = Gdx.files.absolute("$cachePath/${randomString()}.${file.extension()}")
         while (output.exists())
-            output = Gdx.files.local("${randomString()}.${file.extension()}")
+            output = Gdx.files.absolute("$cachePath/${randomString()}.${file.extension()}")
         file.copyTo(output)
-        return Gdx.files.absolute(Gdx.files.localStoragePath + output.path())
+        return output
     }
 }
