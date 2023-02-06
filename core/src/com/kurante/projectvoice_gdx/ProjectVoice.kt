@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
+import com.kurante.projectvoice_gdx.storage.CacheFileHandleResolver
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.GameplayScreen
@@ -24,6 +25,9 @@ import com.kurante.projectvoice_gdx.ui.screens.InitializationScreen
 import com.kurante.projectvoice_gdx.ui.screens.StorageScreen
 import com.kurante.projectvoice_gdx.util.ChadFontData
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
+import games.rednblack.miniaudio.MASound
+import games.rednblack.miniaudio.MiniAudio
+import games.rednblack.miniaudio.loader.MASoundLoader
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.assets.async.AssetStorage
@@ -32,13 +36,16 @@ import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin
 
 
-class ProjectVoice : KtxGame<KtxScreen>() {
+class ProjectVoice(
+    private val miniAudio: MiniAudio = MiniAudio()
+) : KtxGame<KtxScreen>() {
     companion object {
         fun getPreferences(): Preferences = Gdx.app.getPreferences("com.kurante.projectvoice_gdx")
     }
 
     private lateinit var batch: SpriteBatch
     lateinit var assetStorage: AssetStorage
+    lateinit var maStorage: AssetStorage
     private val packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false)
     private val generators = mutableListOf<FreeTypeFontGenerator>()
 
@@ -88,6 +95,12 @@ class ProjectVoice : KtxGame<KtxScreen>() {
             fileResolver = StorageFileHandleResolver()
         )
 
+        maStorage = AssetStorage(
+            fileResolver = CacheFileHandleResolver()
+        ).apply {
+            setLoader<MASound> { MASoundLoader(miniAudio, fileResolver) }
+        }
+
         addScreen(InitializationScreen(this))
         addScreen(StorageScreen(this))
         addScreen(HomeScreen(this))
@@ -122,10 +135,23 @@ class ProjectVoice : KtxGame<KtxScreen>() {
 
     override fun dispose() {
         super.dispose()
+        assetStorage.dispose()
         packer.dispose()
 
         for (generator in generators)
             generator.dispose()
+
+        miniAudio.dispose()
+    }
+
+    override fun pause() {
+        miniAudio.stopEngine()
+        super.pause()
+    }
+
+    override fun resume() {
+        super.resume()
+        miniAudio.startEngine()
     }
 
     inline fun <reified Type : GameScreen> changeScreen() = changeScreen(Type::class.java)

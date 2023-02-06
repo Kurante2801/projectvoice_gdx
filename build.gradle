@@ -1,6 +1,7 @@
 buildscript {
     ext.kotlinVersion = '1.7.21'
     ext.ktxVersion = '1.11.0-rc3'
+    ext.miniaudioVersion = "0.3-SNAPSHOT"
 
     repositories {
         mavenLocal()
@@ -60,6 +61,8 @@ project(":core") {
         api group: 'io.github.libktx', name: 'ktx-assets-async', version: ktxVersion
         api group: 'io.github.libktx', name: 'ktx-preferences', version: ktxVersion
         api group: 'io.github.libktx', name: 'ktx-json', version: ktxVersion
+
+        api "games.rednblack.miniaudio:miniaudio:$miniaudioVersion"
     }
 }
 
@@ -78,6 +81,8 @@ project(":desktop") {
         implementation "org.lwjgl:lwjgl-nfd:3.2.3:natives-windows"
         implementation 'org.lwjgl:lwjgl-nfd:3.3.1'
         implementation 'org.apache.tika:tika-core:2.6.0'
+
+        implementation "games.rednblack.miniaudio:miniaudio:$miniaudioVersion:natives-desktop"
     }
 }
 
@@ -100,6 +105,11 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
+
+        natives "games.rednblack.miniaudio:miniaudio:$miniaudioVersion:natives-armeabi-v7a"
+        natives "games.rednblack.miniaudio:miniaudio:$miniaudioVersion:natives-arm64-v8a"
+        natives "games.rednblack.miniaudio:miniaudio:$miniaudioVersion:natives-x86"
+        natives "games.rednblack.miniaudio:miniaudio:$miniaudioVersion:natives-x86_64"
 
 
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
@@ -124,5 +134,7 @@ project(":ios") {
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
 
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+
+        implementation "games.rednblack.miniaudio:miniaudio:$miniaudioVersion:natives-ios"
     }
 }

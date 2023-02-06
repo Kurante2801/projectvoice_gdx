@@ -15,6 +15,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.badlogic.gdx.backends.android.AndroidComponentApplication
 import com.badlogic.gdx.files.FileHandle
 import com.kurante.projectvoice_gdx.storage.*
+import games.rednblack.miniaudio.MiniAudio
 
 class AndroidLauncher : AndroidComponentApplication() {
     private var treeCallback: ((Uri?) -> Unit)? = null
@@ -55,7 +56,10 @@ class AndroidLauncher : AndroidComponentApplication() {
         else
             StorageManager.storageHandler = AndroidStorageHandler(this)
 
-        initialize(ProjectVoice(), AndroidApplicationConfiguration().apply {
+        val ma = MiniAudio()
+        ma.setupAndroid(context.assets)
+
+        initialize(ProjectVoice(ma), AndroidApplicationConfiguration().apply {
             useCompass = false
             useGyroscope = false
             useAccelerometer = false
