@@ -21,7 +21,7 @@ class Conductor(
     var loaded = false
 
     init {
-        KtxAsync.launch(newSingleThreadAsyncContext()) {
+        KtxAsync.launch {
             sound = assetStorage.load(file.path(), MASoundLoaderParameters().apply {
                 external = true
             })
@@ -32,7 +32,7 @@ class Conductor(
     override fun dispose() {
         if(Platform.isAndroidSAF && loaded && file.exists())
             file.delete()
-        KtxAsync.launch(newSingleThreadAsyncContext()) {
+        KtxAsync.launch {
             assetStorage.unload<MASound>(file.path())
         }
     }
