@@ -5,7 +5,6 @@ package com.kurante.projectvoice_gdx.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -57,7 +56,7 @@ class LevelCard(
 
         table = scene2d.table {
             setFillParent(true)
-            debug = true
+            //debug = true
             pad(8f.scaledUi())
 
             horizontalGroup {
@@ -78,13 +77,23 @@ class LevelCard(
             }
 
             defaults().row()
-            label(level.artist) {
+            var text = if (level.artist.length > 48)
+                level.artist.take(48) + "..."
+            else
+                level.artist
+
+            label(text) {
                 it.fillX()
                 wrap = true
                 setAlignment(Align.bottomLeft)
             }
             defaults().row()
-            label(level.title) {
+
+            text = if (level.title.length > 48)
+                level.title.take(48) + "..."
+            else
+                level.title
+            label(text) {
                 it.fillX()
                 wrap = true
                 setAlignment(Align.bottomLeft)

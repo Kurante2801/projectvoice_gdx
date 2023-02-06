@@ -8,20 +8,12 @@ import com.badlogic.gdx.math.MathUtils.floor
  * Imitates Unity's Aspect Ratio Fitter when set to Envelope Parent.
  * This function name may not be the best...
  */
-fun Texture.envelopeRatio(
-    aspectRatio: Float
-): TextureRegion {
-    return if(width.toFloat() / height <= aspectRatio) {
+fun Texture.envelopeRatio(aspectRatio: Float): TextureRegion {
+    return if((width.toFloat() / height) <= aspectRatio) {
         val h = floor(width / aspectRatio)
-        TextureRegion(this,
-            0, floor((height - h) * 0.5f),
-            width, h
-        )
+        TextureRegion(this, 0, floor((height - h) * 0.5f), width, h)
     } else {
         val w = floor(height * aspectRatio)
-        TextureRegion(this,
-            floor((width - w) * 0.5f), 0,
-            w, height
-        )
+        TextureRegion(this, floor((width - w) * 0.5f), 0, w, height)
     }
 }
