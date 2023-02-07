@@ -199,9 +199,9 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
             LevelManager.loadLevels(tree)
 
             var success = "${lang["storage_success"]} " + if(LevelManager.levels.size == 1)
-                lang["storage.successSingular"]
+                lang["storage_loadedSingular"]
             else
-                lang["storage.successPlural", LevelManager.levels.size]
+                lang["storage_loadedPlural", LevelManager.levels.size]
 
             if(nomediaText != null)
                 success += "\n$nomediaText"

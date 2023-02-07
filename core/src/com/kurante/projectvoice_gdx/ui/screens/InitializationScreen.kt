@@ -20,7 +20,7 @@ class InitializationScreen(parent: ProjectVoice) : GameScreen(parent) {
         super.show()
 
         val tree = prefs.get<String?>("LevelTree", null)
-            ?: return parent.changeScreen<StorageScreen>() // First time run
+            ?: return parent.changeScreen<StorageScreen>(false) // First time run
 
         val handle = storageHandler.directoryFromString(tree)
 
