@@ -54,8 +54,6 @@ class ProjectVoice(
 
     private val screenHistory = ArrayDeque<GameScreen>()
 
-    private lateinit var HELL: BitmapFont
-
     override fun create() {
         // Create cache
         StorageManager.cachePath = Gdx.files.localStoragePath + "cache/"
@@ -104,8 +102,6 @@ class ProjectVoice(
             val atlas = Gdx.files.internal("skin/skin.atlas")
             addRegions(TextureAtlas(atlas))
             load(Gdx.files.internal("skin/skin.json"))
-
-            HELL = bold
         }
 
         KtxAsync.initiate()
@@ -157,10 +153,6 @@ class ProjectVoice(
             }
         } else
             currentScreen.render(Gdx.graphics.deltaTime)
-
-        batch.use {
-            HELL.draw(batch, screenHistory.map{ it::class.simpleName }.joinToString(" "), 10f, Gdx.graphics.height.toFloat())
-        }
     }
 
     override fun dispose() {
@@ -227,7 +219,6 @@ class ProjectVoice(
         if(screenHistory.isEmpty()) return null
 
         val screen = screenHistory.peekLast()
-        Gdx.app.log("HELL", "peekLast: ${screen::class.simpleName} current: ${currentScreen::class.simpleName}")
         // Is our current screen in the history stack?
         return if(screen::class == currentScreen::class) {
             if(screenHistory.size >= 2) {
@@ -244,7 +235,6 @@ class ProjectVoice(
     }
 
     fun tryPreviousScreen(): Boolean {
-        Gdx.app.log("HELL", "tryPreviousScreen called")
         val screen = getPreviousScreen()
         if(screen != null) {
             changeScreen(screen, false)
