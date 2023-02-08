@@ -22,6 +22,7 @@ import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.*
 import com.kurante.projectvoice_gdx.util.ChadFontData
+import com.kurante.projectvoice_gdx.util.ComposedSkinFontless
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import games.rednblack.miniaudio.MASound
@@ -68,7 +69,7 @@ class ProjectVoice(
         Gdx.app.logLevel = Application.LOG_DEBUG
         batch = SpriteBatch()
 
-        Scene2DSkin.defaultSkin = Skin().apply {
+        Scene2DSkin.defaultSkin = ComposedSkinFontless().apply {
             val param = FreeTypeFontParameter().apply {
                 size = 38
                 hinting = Hinting.AutoFull

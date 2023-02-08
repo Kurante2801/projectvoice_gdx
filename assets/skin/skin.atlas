@@ -6,7 +6,7 @@ filter: Linear, Linear
 repeat: none
 button_down
   rotate: false
-  xy: 1, 151
+  xy: 77, 163
   size: 72, 72
   split: 6, 6, 6, 6
   orig: 72, 72
@@ -14,44 +14,44 @@ button_down
   index: -1
 button_up
   rotate: false
-  xy: 1, 77
+  xy: 1, 11
   size: 72, 72
   split: 6, 6, 6, 6
   orig: 72, 72
   offset: 0, 0
   index: -1
-cursor_shadow
+cursor
   rotate: false
-  xy: 75, 106
-  size: 64, 64
-  orig: 64, 64
+  xy: 1, 85
+  size: 74, 74
+  orig: 74, 74
   offset: 0, 0
   index: -1
 folder_open_shadow
   rotate: false
-  xy: 1, 11
+  xy: 77, 97
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 forward_shadow
   rotate: false
-  xy: 144, 159
+  xy: 151, 171
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-selection_shadow
+selection
   rotate: false
-  xy: 75, 172
-  size: 67, 51
-  split: 3, 3, 3, 3
-  orig: 67, 51
+  xy: 1, 161
+  size: 74, 74
+  split: 0, 0, 0, 4
+  orig: 74, 74
   offset: 0, 0
   index: -1
 settings_shadow
   rotate: false
-  xy: 141, 93
+  xy: 77, 31
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
