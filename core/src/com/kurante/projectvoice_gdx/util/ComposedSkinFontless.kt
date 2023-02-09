@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import ktx.json.setSerializer
 
+// Ignores skin composer's fonts (since I'm loading them manually)
 class ComposedSkinFontless() : Skin() {
     override fun getJsonLoader(skinFile: FileHandle): Json {
         return super.getJsonLoader(skinFile).apply {

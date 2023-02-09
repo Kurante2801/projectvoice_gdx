@@ -4,6 +4,13 @@ size: 256, 256
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
+back_shadow
+  rotate: false
+  xy: 143, 97
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 button_down
   rotate: false
   xy: 77, 163

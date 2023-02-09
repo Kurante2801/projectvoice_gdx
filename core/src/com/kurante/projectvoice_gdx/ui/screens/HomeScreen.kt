@@ -10,10 +10,8 @@ import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.setMainColor
 import ktx.actors.onChange
-import ktx.scene2d.horizontalGroup
-import ktx.scene2d.scene2d
-import ktx.scene2d.scrollPane
-import ktx.scene2d.table
+import ktx.scene2d.*
+import ktx.scene2d.Scene2DSkin.defaultSkin
 
 class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
     override fun populate() {
@@ -27,7 +25,7 @@ class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
                 it.growX()
                 it.pad(28f.scaledUi())
 
-                pvImageTextButton("common_options", this@table.skin.getDrawable("settings_shadow")) {
+                pvImageTextButton("common_options", defaultSkin.getDrawable("settings_shadow")) {
                     setLocalizedText("common_options")
                     onChange {
                         this@HomeScreen.parent.changeScreen<PreferencesScreen>()

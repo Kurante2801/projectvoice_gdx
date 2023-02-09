@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.level.Level
@@ -71,7 +72,9 @@ class LevelCard(
                     textButton(diff) {
                         color = chart.type.color
                         isDisabled = true
-                        style.down = style.up
+                        style = TextButtonStyle(style).apply {
+                            down = up
+                        }
                     }
                 }
             }

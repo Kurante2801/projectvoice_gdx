@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
-public class PVImageTextButton extends Button {
+public class PVImageTextButton extends Button implements MainColorElement {
     private final Image image;
     private Label label;
     private final HorizontalGroup group;
@@ -58,9 +58,7 @@ public class PVImageTextButton extends Button {
         setStyle(style);
         setSize(getPrefWidth(), getPrefHeight());
 
-        setColor(UserInterface.INSTANCE.getMainColor());
-        UserInterface.INSTANCE.getMainColorEvent().plusAssign(mainColor);
-        //pad(UserInterface.INSTANCE.scaledUi(8f));
+        setMainColor(true);
     }
 
     protected Image newImage() {
@@ -186,7 +184,7 @@ public class PVImageTextButton extends Button {
                 + label.getText();
     }
 
-    private final Function1<? super Color, kotlin.Unit> mainColor = new Function1<Color, Unit>() {
+    public final Function1<? super Color, kotlin.Unit> mainColor = new Function1<Color, Unit>() {
         @Override
         public Unit invoke(Color color) {
             addAction(Actions.color(color, 0.25f));
@@ -195,16 +193,20 @@ public class PVImageTextButton extends Button {
     };
 
     @Override
-    public void setDisabled(boolean disabled) {
-        super.setDisabled(disabled);
-
-        if (disabled) {
-            UserInterface.INSTANCE.getMainColorEvent().minusAssign(mainColor);
-            setColor(UserInterface.INSTANCE.getFOREGROUND1_COLOR());
-        } else {
+    public void setMainColor(boolean enabled) {
+        if(enabled) {
             UserInterface.INSTANCE.getMainColorEvent().plusAssign(mainColor);
             setColor(UserInterface.INSTANCE.getMainColor());
+        } else {
+            UserInterface.INSTANCE.getMainColorEvent().minusAssign(mainColor);
+            setColor(UserInterface.INSTANCE.getFOREGROUND1_COLOR());
         }
+    }
+
+    @Override
+    public void setDisabled(boolean disabled) {
+        super.setDisabled(disabled);
+        setMainColor(!disabled);
     }
 
     @Override

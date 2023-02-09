@@ -17,48 +17,6 @@ import kotlin.contracts.contract
 
 @Scene2dDsl
 @OptIn(ExperimentalContracts::class)
-inline fun <S> KWidget<S>.textButton(
-    text: String,
-    init: (@Scene2dDsl KTextButton).(S) -> Unit = {}
-): KTextButton {
-    contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
-    return actor(KTextButton(text, Scene2DSkin.defaultSkin, defaultStyle)) {
-        if (it is Cell<*>) {
-            it.prefSize(160f.scaledUi(), 48f.scaledUi())
-            it.pad(8f.scaledUi())
-        }
-
-        this.pad(8f.scaledUi())
-        this.setMainColor()
-
-        init(this, it)
-    }
-}
-
-/*@Scene2dDsl
-@OptIn(ExperimentalContracts::class)
-inline fun <S> KWidget<S>.imageTextButton(
-    text: String,
-    drawable: Drawable? = null,
-    init: (@Scene2dDsl KImageTextButton).(S) -> Unit = {}
-): KImageTextButton {
-    contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
-    return actor(KImageTextButton(text, Scene2DSkin.defaultSkin, defaultStyle)) {
-        (it as Cell<*>).prefSize(160f.scaledUi(), 48f.scaledUi())
-        this.pad(8f.scaledUi())
-        this.setMainColor()
-
-        if(drawable != null) {
-            this.style = ImageTextButton.ImageTextButtonStyle(this.style).apply {
-                imageUp = drawable
-            }
-        }
-
-        init(this, it)
-    }
-}*/
-@Scene2dDsl
-@OptIn(ExperimentalContracts::class)
 inline fun <S> KWidget<S>.pvImageTextButton(
     text: String,
     drawable: Drawable? = null,
@@ -93,4 +51,3 @@ inline fun <S> KWidget<S>.textField(
         init(this, it)
     }
 }
-
