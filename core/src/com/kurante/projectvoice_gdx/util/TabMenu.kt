@@ -1,10 +1,7 @@
 package com.kurante.projectvoice_gdx.util
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.math.MathUtils.lerp
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -14,18 +11,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton.ImageTextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.Align
-import com.kurante.projectvoice_gdx.ui.MainColorElement
-import com.kurante.projectvoice_gdx.ui.PVImageTextButton
-import com.kurante.projectvoice_gdx.ui.PVTextButton
-import com.kurante.projectvoice_gdx.ui.pvTextButton
+import com.kurante.projectvoice_gdx.ui.widgets.MainColorElement
+import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
+import com.kurante.projectvoice_gdx.ui.widgets.PVTextButton
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
-import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import ktx.actors.onChange
-import ktx.graphics.color
-import ktx.graphics.use
 import ktx.scene2d.*
 import ktx.scene2d.Scene2DSkin.defaultSkin
-import java.time.temporal.Temporal
 
 class TabMenu(
     val canToggle: Boolean = false
@@ -144,7 +136,10 @@ class TabMenu(
     }
 
     fun addTab(text: String, drawable: Drawable, content: Actor) {
-        val button = PVImageTextButton(text, defaultSkin)
+        val button = PVImageTextButton(
+            text,
+            defaultSkin
+        )
         button.style = ImageTextButtonStyle(button.style).apply {
             imageUp = drawable
         }

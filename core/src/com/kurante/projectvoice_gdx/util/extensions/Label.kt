@@ -1,5 +1,6 @@
 package com.kurante.projectvoice_gdx.util.extensions
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.I18NBundle
 import com.kurante.projectvoice_gdx.util.UserInterface
@@ -14,7 +15,7 @@ fun Label.onLocalizationChanged(callback: (I18NBundle) -> Unit) {
 
 fun Label.setLocalizedText(key: String) {
     setText(UserInterface.lang[key])
-    onLocalizationChanged {
-        setText(it[key])
+    onLocalizationChanged { bundle ->
+        setText(bundle[key])
     }
 }

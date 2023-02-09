@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.utils.PropertiesUtils
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.storage.StorageManager
@@ -25,8 +26,7 @@ import com.kurante.projectvoice_gdx.util.ChadFontData
 import com.kurante.projectvoice_gdx.util.ComposedSkinFontless
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
-import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
-import com.kurante.projectvoice_gdx.util.WidthViewport.Companion.REFERENCE_WIDTH
+import com.kurante.projectvoice_gdx.util.extensions.lastIndexOfOrNull
 import games.rednblack.miniaudio.MASound
 import games.rednblack.miniaudio.MiniAudio
 import games.rednblack.miniaudio.loader.MASoundLoader
@@ -36,7 +36,6 @@ import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
 import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin
-import java.lang.reflect.Type
 import java.util.*
 
 
@@ -125,7 +124,9 @@ class ProjectVoice(
             setLoader<MASound> { MASoundLoader(miniAudio, fileResolver) }
         }
 
-        UserInterface.setLocale("es") // TODO: Preferences Locale
+        PlayerPreferences.locales["en"] = "English"
+        PlayerPreferences.locales["es"] = "Español"
+        UserInterface.setLocale(PlayerPreferences.locale)
 
         nativeCallback.invoke(this)
 

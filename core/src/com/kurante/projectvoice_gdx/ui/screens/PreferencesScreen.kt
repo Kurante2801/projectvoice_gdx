@@ -2,24 +2,30 @@ package com.kurante.projectvoice_gdx.ui.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
+import com.kurante.projectvoice_gdx.PlayerPreferences
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.ui.GameScreen
-import com.kurante.projectvoice_gdx.ui.pvTextButton
+import com.kurante.projectvoice_gdx.ui.widgets.SelectionPreferenceSection
 import com.kurante.projectvoice_gdx.util.TabMenu
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.padInset
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
+import com.kurante.projectvoice_gdx.util.extensions.setMainColor
 import ktx.actors.onChange
 import ktx.scene2d.*
 import ktx.scene2d.Scene2DSkin.defaultSkin
-import java.util.Random
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 class PreferencesScreen(parent: ProjectVoice) : GameScreen(parent) {
     private val tabMenu = TabMenu()
 
     override fun populate() {
+        // Table only holds the return button
         table = scene2d.table {
             setFillParent(true)
 
@@ -48,38 +54,34 @@ class PreferencesScreen(parent: ProjectVoice) : GameScreen(parent) {
             }
         }
 
-        tabMenu.apply {
-            setFillParent(true)
+        tabMenu.setFillParent(true)
 
-            addTab("Tab 1", scene2d.table {
-                setFillParent(true)
+        // Preferences begin here
+        addTabLocalized("prefs_tab_general") {
+            val section = SelectionPreferenceSection("prefs_language_title", "prefs_language_subtext")
+            {
+                it.addChoice("English", "en")
+                it.addChoice("Español", "es")
 
-                pvImageTextButton("Tab 1") {
-                    onChange {
-                        Gdx.app.log("HELL", "TAB 1 PRESSED")
-                    }
+                onChange {
+                    PlayerPreferences.locale = it.selected.data as String
                 }
-            })
+            }
+            add(section).growX()
 
-            addTab("Tab 2", scene2d.table {
-                setFillParent(true)
 
-                pvImageTextButton("Tab 2") {
-                    onChange {
-                        Gdx.app.log("HELL", "TAB 2 PRESSED")
-                    }
-                }
-            })
+            defaults().row()
+            container {
+                it.grow()
+            }
+        }
 
-            addTab("Tab 3", "settings_shadow", scene2d.table {
-                setFillParent(true)
+        addTabLocalized("prefs_tab_notes") {
+            pvImageTextButton("Tab 2")
+        }
 
-                pvImageTextButton("Tab 3") {
-                    onChange {
-                        Gdx.app.log("HELL", "TAB 3 PRESSED")
-                    }
-                }
-            })
+        addTabLocalized("prefs_tab_others") {
+            pvImageTextButton("Tab 3")
         }
 
         stage.addActor(tabMenu)
@@ -89,5 +91,27 @@ class PreferencesScreen(parent: ProjectVoice) : GameScreen(parent) {
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
         tabMenu.padInset()
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    private fun addTabLocalized(
+        key: String,
+        init: (@Scene2dDsl KTableWidget).(Actor) -> Unit = {}
+    ) {
+        contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
+
+        tabMenu.addTabLocalized(key, scene2d.table {
+            setFillParent(true)
+            scrollPane {
+                fadeScrollBars = false
+                it.grow()
+                setMainColor()
+
+                this.table {
+                    this.pad(0f, 0f, 0f, 28f.scaledUi())
+                    init(this, it)
+                }
+            }
+        })
     }
 }

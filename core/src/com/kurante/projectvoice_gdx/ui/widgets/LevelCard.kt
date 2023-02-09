@@ -1,6 +1,6 @@
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package com.kurante.projectvoice_gdx.ui
+package com.kurante.projectvoice_gdx.ui.widgets
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture

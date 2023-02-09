@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.level.LevelManager
 import com.kurante.projectvoice_gdx.ui.GameScreen
-import com.kurante.projectvoice_gdx.ui.levelCard
+import com.kurante.projectvoice_gdx.ui.widgets.levelCard
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.setMainColor

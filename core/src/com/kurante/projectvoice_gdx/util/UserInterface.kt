@@ -36,9 +36,10 @@ object UserInterface {
     fun setLocale(locale: String?) {
         val handle = Gdx.files.internal("i18n/locale")
         // English is the default locale
-        lang = if(locale == null || locale == "en")
+        lang = if(locale == null)
             I18NBundle.createBundle(handle, "UTF-8")
         else
             I18NBundle.createBundle(handle, Locale(locale), "UTF-8")
+        localeEvent.invoke(lang)
     }
 }

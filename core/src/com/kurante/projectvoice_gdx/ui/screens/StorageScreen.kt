@@ -10,7 +10,7 @@ import com.kurante.projectvoice_gdx.ProjectVoice.Companion.getPreferences
 import com.kurante.projectvoice_gdx.level.LevelManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
 import com.kurante.projectvoice_gdx.ui.GameScreen
-import com.kurante.projectvoice_gdx.ui.PVImageTextButton
+import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.UserInterface.lang
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.onLocalizationChanged

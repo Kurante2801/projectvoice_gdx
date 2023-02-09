@@ -1,11 +1,10 @@
 package com.kurante.projectvoice_gdx.util.extensions
 
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
-import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton.ImageTextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
-import com.kurante.projectvoice_gdx.ui.PVImageTextButton
+import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.UserInterface.FOREGROUND2_COLOR
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import ktx.scene2d.*
@@ -25,7 +24,12 @@ inline fun <S> KWidget<S>.pvImageTextButton(
     init: (@Scene2dDsl PVImageTextButton).(S) -> Unit = {}
 ): PVImageTextButton {
     contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
-    return actor(PVImageTextButton(text, defaultSkin)) {
+    return actor(
+        PVImageTextButton(
+            text,
+            defaultSkin
+        )
+    ) {
         if (drawable != null) {
             this.style = ImageTextButtonStyle(this.style).apply {
                 imageUp = drawable

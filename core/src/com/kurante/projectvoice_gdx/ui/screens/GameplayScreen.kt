@@ -9,7 +9,7 @@ import com.kurante.projectvoice_gdx.game.Legacy
 import com.kurante.projectvoice_gdx.level.ChartSection
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.ui.GameScreen
-import com.kurante.projectvoice_gdx.ui.PVImageTextButton
+import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import ktx.actors.onChange
 import ktx.assets.disposeSafely
