@@ -25,6 +25,8 @@ import com.kurante.projectvoice_gdx.util.ChadFontData
 import com.kurante.projectvoice_gdx.util.ComposedSkinFontless
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
+import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
+import com.kurante.projectvoice_gdx.util.WidthViewport.Companion.REFERENCE_WIDTH
 import games.rednblack.miniaudio.MASound
 import games.rednblack.miniaudio.MiniAudio
 import games.rednblack.miniaudio.loader.MASoundLoader
@@ -54,6 +56,8 @@ class ProjectVoice(
     lateinit var miniAudio: MiniAudio
 
     private val screenHistory = ArrayDeque<GameScreen>()
+
+    private lateinit var fpsFont: BitmapFont
 
     override fun create() {
         // Create cache
@@ -92,6 +96,9 @@ class ProjectVoice(
             // Rubik Fonts
             val regular = generateFont("skin/rubik_regular.ttf", param)
             val bold = generateFont("skin/rubik_semibold.ttf", param)
+
+            param.size = 22
+            fpsFont = generateFont("skin/rubik_semibold.ttf", param)
 
             // Apply fallbacks
             (regular.data as ChadFontData).fallbackFonts.add(regularJP.data as ChadFontData)
@@ -154,6 +161,13 @@ class ProjectVoice(
             }
         } else
             currentScreen.render(Gdx.graphics.deltaTime)
+
+        batch.use {
+            fpsFont.draw(
+                batch, "FPS: ${Gdx.graphics.framesPerSecond}",
+                Gdx.graphics.safeInsetLeft + 12f, 36f
+            )
+        }
     }
 
     override fun dispose() {
@@ -178,6 +192,11 @@ class ProjectVoice(
         miniAudio.startEngine()
     }
 
+    override fun resize(width: Int, height: Int) {
+        super.resize(width, height)
+        batch = SpriteBatch()
+    }
+
     inline fun <reified Type : GameScreen> changeScreen(addToHistory: Boolean = true) {
         changeScreen(Type::class.java, addToHistory)
     }
@@ -185,6 +204,7 @@ class ProjectVoice(
     fun <Type : GameScreen> changeScreen(type: Class<Type>, addToHistory: Boolean = true) {
         changeScreen(getScreen(type), addToHistory)
     }
+
     fun changeScreen(newScreen: GameScreen, addToHistory: Boolean = true) {
         val current = currentScreen as? GameScreen
         Gdx.input.inputProcessor = null
@@ -197,7 +217,7 @@ class ProjectVoice(
             return
         }
 
-        if(addToHistory)
+        if (addToHistory)
             screenHistory.add(newScreen)
 
         current.stage.addAction(Actions.sequence(
@@ -217,18 +237,18 @@ class ProjectVoice(
     }
 
     fun getPreviousScreen(): GameScreen? {
-        if(screenHistory.isEmpty()) return null
+        if (screenHistory.isEmpty()) return null
 
         val screen = screenHistory.peekLast()
         // Is our current screen in the history stack?
-        return if(screen::class == currentScreen::class) {
-            if(screenHistory.size >= 2) {
+        return if (screen::class == currentScreen::class) {
+            if (screenHistory.size >= 2) {
                 screenHistory.pollLast()
                 screenHistory.peekLast()
             } else
                 null
         } else {
-            if(!screenHistory.isEmpty())
+            if (!screenHistory.isEmpty())
                 screenHistory.peekLast()
             else
                 null
@@ -237,7 +257,7 @@ class ProjectVoice(
 
     fun tryPreviousScreen(): Boolean {
         val screen = getPreviousScreen()
-        if(screen != null) {
+        if (screen != null) {
             changeScreen(screen, false)
             return true
         }
