@@ -3,9 +3,7 @@ package com.kurante.projectvoice_gdx.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton.ImageTextButtonStyle
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.I18NBundle
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
@@ -21,7 +19,7 @@ import kotlin.contracts.contract
 import kotlin.math.max
 
 class PVTextButton(text: String) : TextButton(text, defaultSkin), MainColorElement {
-    var mainColor = { color: Color ->
+    var mainColorChanged = { color: Color ->
         addAction(Actions.color(color, 0.25f))
     }
 
@@ -29,7 +27,7 @@ class PVTextButton(text: String) : TextButton(text, defaultSkin), MainColorEleme
         style = defaultSkin.get(ImageTextButtonStyle::class.java)
 
         color = UserInterface.mainColor
-        UserInterface.mainColorEvent += mainColor
+        UserInterface.mainColorEvent += mainColorChanged
     }
 
     override fun getPrefWidth(): Float {
@@ -42,10 +40,10 @@ class PVTextButton(text: String) : TextButton(text, defaultSkin), MainColorEleme
 
     override fun setMainColor(enabled: Boolean) {
         if (enabled) {
-            UserInterface.mainColorEvent += mainColor
+            UserInterface.mainColorEvent += mainColorChanged
             color = UserInterface.mainColor
         } else {
-            UserInterface.mainColorEvent -= mainColor
+            UserInterface.mainColorEvent -= mainColorChanged
             color = UserInterface.FOREGROUND1_COLOR
         }
     }

@@ -184,21 +184,18 @@ public class PVImageTextButton extends Button implements MainColorElement {
                 + label.getText();
     }
 
-    public final Function1<? super Color, kotlin.Unit> mainColor = new Function1<Color, Unit>() {
-        @Override
-        public Unit invoke(Color color) {
-            addAction(Actions.color(color, 0.25f));
-            return null;
-        }
+    public final Function1<Color, Unit> mainColorChanged = color -> {
+        addAction(Actions.color(color, 0.25f));
+        return null;
     };
 
     @Override
     public void setMainColor(boolean enabled) {
-        if(enabled) {
-            UserInterface.INSTANCE.getMainColorEvent().plusAssign(mainColor);
+        if (enabled) {
+            UserInterface.INSTANCE.getMainColorEvent().plusAssign(mainColorChanged);
             setColor(UserInterface.INSTANCE.getMainColor());
         } else {
-            UserInterface.INSTANCE.getMainColorEvent().minusAssign(mainColor);
+            UserInterface.INSTANCE.getMainColorEvent().minusAssign(mainColorChanged);
             setColor(UserInterface.INSTANCE.getFOREGROUND1_COLOR());
         }
     }
@@ -223,7 +220,7 @@ public class PVImageTextButton extends Button implements MainColorElement {
         LabelKt.setLocalizedText(label, key);
     }
 
-    public void onLocalizationChanged(Function1<? super I18NBundle, kotlin.Unit> callback) {
+    public void onLocalizationChanged(Function1<I18NBundle, Unit> callback) {
         LabelKt.onLocalizationChanged(label, callback);
     }
 }

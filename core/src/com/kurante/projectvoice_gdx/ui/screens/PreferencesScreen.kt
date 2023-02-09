@@ -50,18 +50,35 @@ class PreferencesScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         tabMenu.apply {
             setFillParent(true)
-            debug = true
 
             addTab("Tab 1", scene2d.table {
                 setFillParent(true)
-                debug = true
-                pvImageTextButton("Tab 1")
+
+                pvImageTextButton("Tab 1") {
+                    onChange {
+                        Gdx.app.log("HELL", "TAB 1 PRESSED")
+                    }
+                }
             })
 
             addTab("Tab 2", scene2d.table {
                 setFillParent(true)
-                debug = true
-                pvImageTextButton("Tab 2")
+
+                pvImageTextButton("Tab 2") {
+                    onChange {
+                        Gdx.app.log("HELL", "TAB 2 PRESSED")
+                    }
+                }
+            })
+
+            addTab("Tab 3", "settings_shadow", scene2d.table {
+                setFillParent(true)
+
+                pvImageTextButton("Tab 3") {
+                    onChange {
+                        Gdx.app.log("HELL", "TAB 3 PRESSED")
+                    }
+                }
             })
         }
 

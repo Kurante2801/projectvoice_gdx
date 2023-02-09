@@ -2,12 +2,14 @@ package com.kurante.projectvoice_gdx.util.extensions
 
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton.ImageTextButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.kurante.projectvoice_gdx.ui.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.UserInterface.FOREGROUND2_COLOR
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import ktx.scene2d.*
+import ktx.scene2d.Scene2DSkin.defaultSkin
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -23,9 +25,9 @@ inline fun <S> KWidget<S>.pvImageTextButton(
     init: (@Scene2dDsl PVImageTextButton).(S) -> Unit = {}
 ): PVImageTextButton {
     contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
-    return actor(PVImageTextButton(text, Scene2DSkin.defaultSkin)) {
+    return actor(PVImageTextButton(text, defaultSkin)) {
         if (drawable != null) {
-            this.style = ImageTextButton.ImageTextButtonStyle(this.style).apply {
+            this.style = ImageTextButtonStyle(this.style).apply {
                 imageUp = drawable
             }
         }
@@ -41,7 +43,7 @@ inline fun <S> KWidget<S>.textField(
     init: (@Scene2dDsl TextField).(S) -> Unit = {}
 ): TextField {
     contract { callsInPlace(init, InvocationKind.EXACTLY_ONCE) }
-    return actor(TextField(text, Scene2DSkin.defaultSkin, defaultStyle)) {
+    return actor(TextField(text, defaultSkin, defaultStyle)) {
         if (it is Cell<*>) {
             it.prefSize(160f.scaledUi(), 48f.scaledUi())
             it.pad(8f.scaledUi())
