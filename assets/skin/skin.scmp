@@ -182,6 +182,66 @@ atlasData: {
 			type: TEXTURE
 			hidden: false
 		}
+		{
+			file: D:/usuario/Downloads/pv_exports/sliderknob.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: sliderknob
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: TEXTURE
+			hidden: false
+		}
+		{
+			file: D:/usuario/Downloads/pv_exports/sliderbackground.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: sliderbackground
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
+			hidden: false
+		}
+		{
+			file: D:/usuario/Downloads/pv_exports/list_drawable.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: list_drawable
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
+			hidden: false
+		}
 	]
 	fontDrawables: []
 }
@@ -225,7 +285,7 @@ jsonData: {
 			name: bold
 			file: D:/usuario/Downloads/Rubik/static/rubik_semibold.ttf
 			previewTTF: IBMPlexSerif-Medium
-			useCustomSerializer: true
+			useCustomSerializer: false
 			size: 38
 			mono: false
 			hinting: AutoFull
@@ -254,7 +314,7 @@ jsonData: {
 			name: bold_jp
 			file: D:/usuario/Downloads/Noto_Sans_JP/notosansjp_bold.otf
 			previewTTF: IBMPlexSerif-Medium
-			useCustomSerializer: true
+			useCustomSerializer: false
 			size: 38
 			mono: false
 			hinting: AutoFull
@@ -283,7 +343,7 @@ jsonData: {
 			name: regular
 			file: D:/usuario/Downloads/Rubik/static/rubik_regular.ttf
 			previewTTF: IBMPlexSerif-Medium
-			useCustomSerializer: true
+			useCustomSerializer: false
 			size: 38
 			mono: false
 			hinting: AutoFull
@@ -312,7 +372,7 @@ jsonData: {
 			name: regular_jp
 			file: D:/usuario/Downloads/Noto_Sans_JP/notosansjp_medium.otf
 			previewTTF: IBMPlexSerif-Medium
-			useCustomSerializer: true
+			useCustomSerializer: false
 			size: 38
 			mono: false
 			hinting: AutoFull
@@ -1357,7 +1417,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: false
-						value: null
+						value: sliderbackground
 					}
 					disabledBackground: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -1369,7 +1429,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knob
 						optional: true
-						value: null
+						value: sliderknob
 					}
 					disabledKnob: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -1462,7 +1522,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: false
-						value: null
+						value: button_up
 					}
 					disabledBackground: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -1521,7 +1581,7 @@ jsonData: {
 						type: com.badlogic.gdx.graphics.g2d.BitmapFont
 						name: font
 						optional: false
-						value: regular
+						value: bold
 					}
 					fontColor: {
 						type: com.badlogic.gdx.graphics.Color
@@ -1663,7 +1723,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: true
-						value: button_up
+						value: list_drawable
 					}
 				}
 				deletable: false
@@ -1921,7 +1981,94 @@ jsonData: {
 			}
 		]
 	}
-	customClasses: []
+	customClasses: [
+		{
+			fullyQualifiedName: com.kotcrab.vis.ui.widget.spinner.Spinner$SpinnerStyle
+			displayName: SpinnerStyle
+			styles: [
+				{
+					name: default
+					properties: []
+					deletable: false
+				}
+			]
+			templateStyle: {
+				name: template
+				properties: []
+				deletable: true
+			}
+			declareAfterUIclasses: false
+		}
+		{
+			fullyQualifiedName: com.kotcrab.vis.ui.widget.VisTextField$VisTextFieldStyle
+			displayName: VisTextFieldStyle
+			styles: [
+				{
+					name: default
+					properties: [
+						{
+							name: font
+							type: FONT
+							value: bold
+						}
+						{
+							name: fontColor
+							type: COLOR
+							value: WHITE
+						}
+						{
+							name: background
+							type: DRAWABLE
+							value: button_up
+						}
+						{
+							name: cursor
+							type: DRAWABLE
+							value: cursor
+						}
+						{
+							name: selection
+							type: DRAWABLE
+							value: selection
+						}
+					]
+					deletable: false
+				}
+			]
+			templateStyle: {
+				name: template
+				properties: [
+					{
+						name: font
+						type: FONT
+						value: null
+					}
+					{
+						name: fontColor
+						type: COLOR
+						value: null
+					}
+					{
+						name: background
+						type: DRAWABLE
+						value: null
+					}
+					{
+						name: cursor
+						type: DRAWABLE
+						value: null
+					}
+					{
+						name: selection
+						type: DRAWABLE
+						value: null
+					}
+				]
+				deletable: true
+			}
+			declareAfterUIclasses: false
+		}
+	]
 }
 preferences: {
 	simple-names: {

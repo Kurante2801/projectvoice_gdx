@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.PropertiesUtils
 import com.badlogic.gdx.utils.ScreenUtils
+import com.kotcrab.vis.ui.VisUI
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.randomString
@@ -38,6 +39,7 @@ import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
 import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin
+import ktx.scene2d.Scene2DSkin.defaultSkin
 import java.util.*
 
 
@@ -74,51 +76,7 @@ class ProjectVoice(
         Gdx.app.logLevel = Application.LOG_DEBUG
         batch = SpriteBatch()
 
-        Scene2DSkin.defaultSkin = ComposedSkinFontless().apply {
-            var param = FreeTypeFontParameter().apply {
-                size = 38
-                hinting = Hinting.AutoFull
-                gamma = 1f
-                shadowOffsetX = 2
-                shadowOffsetY = 2
-                shadowColor = Color(0f, 0f, 0f, 0.29f)
-                minFilter = Texture.TextureFilter.Linear
-                magFilter = Texture.TextureFilter.Linear
-                color = Color.WHITE
-                renderCount = 1
-                incremental = true
-                packer = this@ProjectVoice.packer
-            }
-
-            // Rubik Fonts
-            val regular = generateFont("skin/rubik_regular.ttf", param)
-            val bold = generateFont("skin/rubik_semibold.ttf", param)
-
-            // JP Fonts
-            param = param.copy {
-                characters = randomString(480)
-            }
-            val regularJP = generateFont("skin/notosansjp_medium.otf", param)
-            val boldJP = generateFont("skin/notosansjp_bold.otf", param)
-            // Fixes font being offset vertically
-            boldJP.data.ascent = 4f
-            regularJP.data.ascent = 4f
-
-            fpsFont = generateFont("skin/rubik_semibold.ttf", param.copy {
-                size = 22
-            })
-
-            // Apply fallbacks
-            (regular.data as ChadFontData).fallbackFonts.add(regularJP.data as ChadFontData)
-            (bold.data as ChadFontData).fallbackFonts.add(boldJP.data as ChadFontData)
-
-            add("regular", regular)
-            add("bold", bold)
-
-            val atlas = Gdx.files.internal("skin/skin.atlas")
-            addRegions(TextureAtlas(atlas))
-            load(Gdx.files.internal("skin/skin.json"))
-        }
+        loadSkin()
 
         KtxAsync.initiate()
         assetStorage = AssetStorage(
@@ -274,6 +232,54 @@ class ProjectVoice(
         return false
     }
 
+    private fun loadSkin() {
+        VisUI.load()
+        defaultSkin = VisUI.getSkin().apply {
+            var param = FreeTypeFontParameter().apply {
+                size = 38
+                hinting = Hinting.AutoFull
+                gamma = 1f
+                shadowOffsetX = 2
+                shadowOffsetY = 2
+                shadowColor = Color(0f, 0f, 0f, 0.29f)
+                minFilter = Texture.TextureFilter.Linear
+                magFilter = Texture.TextureFilter.Linear
+                color = Color.WHITE
+                renderCount = 1
+                incremental = true
+                packer = this@ProjectVoice.packer
+            }
+
+            // Rubik Fonts
+            val regular = generateFont("skin/rubik_regular.ttf", param)
+            val bold = generateFont("skin/rubik_semibold.ttf", param)
+
+            // JP Fonts
+            param = param.copy {
+                characters = randomString(480)
+            }
+            val regularJP = generateFont("skin/notosansjp_medium.otf", param)
+            val boldJP = generateFont("skin/notosansjp_bold.otf", param)
+            // Fixes font being offset vertically
+            boldJP.data.ascent = 4f
+            regularJP.data.ascent = 4f
+
+            fpsFont = generateFont("skin/rubik_semibold.ttf", param.copy {
+                size = 22
+            })
+
+            // Apply fallbacks
+            (regular.data as ChadFontData).fallbackFonts.add(regularJP.data as ChadFontData)
+            (bold.data as ChadFontData).fallbackFonts.add(boldJP.data as ChadFontData)
+
+            add("regular", regular)
+            add("bold", bold)
+
+            val atlas = Gdx.files.internal("skin/skin.atlas")
+            addRegions(TextureAtlas(atlas))
+            load(Gdx.files.internal("skin/skin.json"))
+        }
+    }
 
     private fun generateFont(
         path: String,

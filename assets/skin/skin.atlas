@@ -1,19 +1,19 @@
 
 skin.png
-size: 256, 256
+size: 512, 512
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
 back_shadow
   rotate: false
-  xy: 143, 97
+  xy: 1, 1
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 button_down
   rotate: false
-  xy: 77, 163
+  xy: 207, 415
   size: 72, 72
   split: 6, 6, 6, 6
   orig: 72, 72
@@ -21,7 +21,7 @@ button_down
   index: -1
 button_up
   rotate: false
-  xy: 1, 11
+  xy: 1, 133
   size: 72, 72
   split: 6, 6, 6, 6
   orig: 72, 72
@@ -29,28 +29,36 @@ button_up
   index: -1
 cursor
   rotate: false
-  xy: 1, 85
+  xy: 131, 413
   size: 74, 74
   orig: 74, 74
   offset: 0, 0
   index: -1
 folder_open_shadow
   rotate: false
-  xy: 77, 97
+  xy: 281, 423
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 forward_shadow
   rotate: false
-  xy: 151, 171
+  xy: 1, 67
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
+list_drawable
+  rotate: false
+  xy: 1, 359
+  size: 128, 128
+  split: 8, 8, 8, 8
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
 selection
   rotate: false
-  xy: 1, 161
+  xy: 1, 283
   size: 74, 74
   split: 0, 0, 0, 4
   orig: 74, 74
@@ -58,14 +66,29 @@ selection
   index: -1
 settings_shadow
   rotate: false
-  xy: 77, 31
+  xy: 347, 423
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
+sliderbackground
+  rotate: false
+  xy: 77, 319
+  size: 38, 38
+  split: 6, 6, 6, 6
+  orig: 38, 38
+  offset: 0, 0
+  index: -1
+sliderknob
+  rotate: false
+  xy: 1, 207
+  size: 74, 74
+  orig: 74, 74
+  offset: 0, 0
+  index: -1
 white
   rotate: false
-  xy: 1, 1
+  xy: 131, 403
   size: 8, 8
   orig: 8, 8
   offset: 0, 0

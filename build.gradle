@@ -1,6 +1,6 @@
 buildscript {
-    ext.kotlinVersion = '1.7.21'
-    ext.ktxVersion = '1.11.0-rc3'
+    ext.kotlinVersion = '1.8.0'
+    ext.ktxVersion = '1.11.0-rc4'
     ext.miniaudioVersion = "0.3-SNAPSHOT"
 
     repositories {
@@ -61,6 +61,8 @@ project(":core") {
         api group: 'io.github.libktx', name: 'ktx-preferences', version: ktxVersion
         api group: 'io.github.libktx', name: 'ktx-json', version: ktxVersion
         api group: 'io.github.libktx', name: 'ktx-i18n', version: ktxVersion
+        api group: 'io.github.libktx', name: 'ktx-vis', version: ktxVersion
+        api group: 'io.github.libktx', name: 'ktx-vis-style', version: ktxVersion
 
         api "games.rednblack.miniaudio:miniaudio:$miniaudioVersion"
     }
