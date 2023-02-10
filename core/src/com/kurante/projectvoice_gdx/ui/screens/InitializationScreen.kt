@@ -42,6 +42,4 @@ class InitializationScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         stage.addActor(table)
     }
-
-
 }

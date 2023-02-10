@@ -20,12 +20,14 @@ import com.badlogic.gdx.utils.PropertiesUtils
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.storage.StorageManager
+import com.kurante.projectvoice_gdx.storage.StorageManager.randomString
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.*
 import com.kurante.projectvoice_gdx.util.ChadFontData
 import com.kurante.projectvoice_gdx.util.ComposedSkinFontless
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
+import com.kurante.projectvoice_gdx.util.extensions.copy
 import com.kurante.projectvoice_gdx.util.extensions.lastIndexOfOrNull
 import games.rednblack.miniaudio.MASound
 import games.rednblack.miniaudio.MiniAudio
@@ -73,7 +75,7 @@ class ProjectVoice(
         batch = SpriteBatch()
 
         Scene2DSkin.defaultSkin = ComposedSkinFontless().apply {
-            val param = FreeTypeFontParameter().apply {
+            var param = FreeTypeFontParameter().apply {
                 size = 38
                 hinting = Hinting.AutoFull
                 gamma = 1f
@@ -88,16 +90,23 @@ class ProjectVoice(
                 packer = this@ProjectVoice.packer
             }
 
-            // JP Fonts
-            val regularJP = generateFont("skin/notosansjp_regular.otf", param)
-            val boldJP = generateFont("skin/notosansjp_medium.otf", param)
-
             // Rubik Fonts
             val regular = generateFont("skin/rubik_regular.ttf", param)
             val bold = generateFont("skin/rubik_semibold.ttf", param)
 
-            param.size = 22
-            fpsFont = generateFont("skin/rubik_semibold.ttf", param)
+            // JP Fonts
+            param = param.copy {
+                characters = randomString(480)
+            }
+            val regularJP = generateFont("skin/notosansjp_medium.otf", param)
+            val boldJP = generateFont("skin/notosansjp_bold.otf", param)
+            // Fixes font being offset vertically
+            boldJP.data.ascent = 4f
+            regularJP.data.ascent = 4f
+
+            fpsFont = generateFont("skin/rubik_semibold.ttf", param.copy {
+                size = 22
+            })
 
             // Apply fallbacks
             (regular.data as ChadFontData).fallbackFonts.add(regularJP.data as ChadFontData)
