@@ -1,5 +1,7 @@
 package com.kurante.projectvoice_gdx.game
 
+import com.badlogic.gdx.graphics.Color
+
 
 data class Chart(
     val startTime: Int = 0,
@@ -14,7 +16,9 @@ data class Track(
     val despawnTime: Int,
     val despawnDuration: Int,
 
-    val moveTransitions: Array<Transition>
+    val moveTransitions: Array<Transition>,
+    val scaleTransitions: Array<Transition>,
+    val colorTransitions: Array<ColorTransition>,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -36,6 +40,32 @@ data class Track(
 
         return moveTransitions.last()
     }
+
+    fun getScaleTransition(time: Int): Transition {
+        var result = scaleTransitions.first()
+
+        for (transition in scaleTransitions) {
+            if (time >= transition.startTime)
+                result = transition
+            else
+                return result
+        }
+
+        return scaleTransitions.last()
+    }
+
+    fun getColorTransition(time: Int): ColorTransition {
+        var result = colorTransitions.first()
+
+        for (transition in colorTransitions) {
+            if (time >= transition.startTime)
+                result = transition
+            else
+                return result
+        }
+
+        return colorTransitions.last()
+    }
 }
 
 data class Transition(
@@ -44,4 +74,12 @@ data class Transition(
     val endTime: Int,
     val startValue: Float,
     val endValue: Float,
+)
+
+data class ColorTransition(
+    val easing: TransitionEase,
+    val startTime: Int,
+    val endTime: Int,
+    val startValue: Color,
+    val endValue: Color,
 )

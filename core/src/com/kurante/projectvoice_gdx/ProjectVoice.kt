@@ -45,6 +45,7 @@ class ProjectVoice(
     private val nativeCallback: (ProjectVoice) -> Unit = {}
 ) : KtxGame<KtxScreen>() {
     companion object {
+        const val PI = 3.1415927f
         fun getPreferences(): Preferences = Gdx.app.getPreferences("com.kurante.projectvoice_gdx")
     }
 

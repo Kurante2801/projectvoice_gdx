@@ -2,6 +2,7 @@ package com.kurante.projectvoice_gdx.util
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.I18NBundle
 import java.util.*
 
@@ -17,6 +18,8 @@ object UserInterface {
 
     // Java interop
     fun scaledUI(value: Float) = value / UI_SCALE
+
+    fun Float.scaledStage(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
 
     val mainColorEvent = CustomEvent<Color>()
     var mainColor: Color = Color.valueOf("#FF4B00")

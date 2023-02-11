@@ -1,5 +1,6 @@
 package com.kurante.projectvoice_gdx.game
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Json
 import com.kurante.projectvoice_gdx.level.ChartSection
 import com.kurante.projectvoice_gdx.level.Level
@@ -19,21 +20,37 @@ object Legacy {
         legacyTracks.sortBy { it.Start }
 
         for (legacyTrack in legacyTracks) {
-            // Fix EXITs
-            val moves = mutableListOf<Transition>()
-            convertTransitions(legacyTrack, legacyTrack.Move, legacyTrack.X).forEachIndexed { i, it ->
-                if (it.easing == TransitionEase.EXIT) {
-                    moves.add(Transition(
-                        startTime = it.startTime,
-                        endTime = it.endTime,
-                        startValue = it.startValue,
-                        endValue = it.endValue,
-                        easing = TransitionEase.EXIT_MOVE,
-                    ))
-                } else
-                    moves.add(it)
-            }
+            val moveTransitions = convertTransitions(
+                legacyTrack,
+                legacyTrack.Move,
+                legacyTrack.X,
+                TransitionEase.EXIT_MOVE
+            )
+            val scaleTransitions = convertTransitions(
+                legacyTrack,
+                legacyTrack.Scale,
+                legacyTrack.Size,
+                TransitionEase.EXIT_SCALE
+            )
+            val colorTransitions = mutableListOf<ColorTransition>()
 
+            // Parse colors
+            convertTransitions(
+                legacyTrack,
+                legacyTrack.ColorChange,
+                legacyTrack.Color.toFloat(),
+                TransitionEase.EXIT_COLOR
+            ).forEach {
+                colorTransitions.add(
+                    ColorTransition(
+                        startTime = it.startTime,
+                        endTime = it.startTime,
+                        startValue = parseColor(it.startValue),
+                        endValue = parseColor(it.endValue),
+                        easing = it.easing,
+                    )
+                )
+            }
 
             tracks.add(
                 Track(
@@ -42,7 +59,9 @@ object Legacy {
                     despawnTime = legacyTrack.End.toMillis(),
                     despawnDuration = 250,
                     spawnDuration = if (legacyTrack.EntranceOn) 350 else 0,
-                    moveTransitions = moves.toTypedArray()
+                    moveTransitions = moveTransitions,
+                    scaleTransitions = scaleTransitions,
+                    colorTransitions = colorTransitions.toTypedArray(),
                 )
             )
         }
@@ -54,19 +73,22 @@ object Legacy {
         legacyTrack: LegacyTrack,
         legacy: Array<LegacyTransition>,
         initial: Float,
+        exit: TransitionEase,
     ): Array<Transition> {
         var initialValue = initial
         val transitions = mutableListOf<Transition>()
 
         // No transitions, so we create one transition with just the initial value
         if (legacy.isEmpty()) {
-            transitions.add(Transition(
-                startTime = legacyTrack.Start.toMillis(),
-                endTime = legacyTrack.End.toMillis(),
-                startValue = initialValue,
-                endValue = initialValue,
-                easing = TransitionEase.NONE,
-            ))
+            transitions.add(
+                Transition(
+                    startTime = legacyTrack.Start.toMillis(),
+                    endTime = legacyTrack.End.toMillis(),
+                    startValue = initialValue,
+                    endValue = initialValue,
+                    easing = TransitionEase.NONE,
+                )
+            )
 
             return transitions.toTypedArray()
         }
@@ -74,13 +96,15 @@ object Legacy {
         // Fix gaps from spawn to initial transition
         var transition = legacy[0]
         if (transition.Start.toMillis() != legacyTrack.Start.toMillis()) {
-            transitions.add(Transition(
-                startTime = legacyTrack.Start.toMillis(),
-                endTime = transition.Start.toMillis(),
-                startValue = initialValue,
-                endValue = initialValue,
-                easing = TransitionEase.NONE,
-            ))
+            transitions.add(
+                Transition(
+                    startTime = legacyTrack.Start.toMillis(),
+                    endTime = transition.Start.toMillis(),
+                    startValue = initialValue,
+                    endValue = initialValue,
+                    easing = TransitionEase.NONE,
+                )
+            )
         }
 
         // Convert transitions
@@ -91,13 +115,20 @@ object Legacy {
             if (i > 0)
                 initialValue = transitions.last().endValue
 
-            transitions.add(Transition(
-                startTime = transition.Start.toMillis(),
-                endTime = transition.End.toMillis(),
-                startValue = initialValue,
-                endValue = transition.To,
-                easing = parseEase(transition.Ease)
-            ))
+            // EXIT transition is different for move, scale and color
+            var ease = parseEase(transition.Ease)
+            if (ease == TransitionEase.EXIT)
+                ease = exit
+
+            transitions.add(
+                Transition(
+                    startTime = transition.Start.toMillis(),
+                    endTime = transition.End.toMillis(),
+                    startValue = initialValue,
+                    endValue = transition.To,
+                    easing = ease
+                )
+            )
         }
 
         transitions.sortBy { it.startTime }
@@ -128,6 +159,19 @@ object Legacy {
         "easeoutinelastic" -> TransitionEase.ELASTIC_OUTIN
         else -> TransitionEase.NONE
     }
+
+    fun parseColor(value: Float): Color = when (value) {
+        0f -> Color.valueOf("#F98F95")
+        1f -> Color.valueOf("#F9E5A1")
+        2f -> Color.valueOf("#D3D3D3")
+        3f -> Color.valueOf("#77D1DE")
+        4f -> Color.valueOf("#97D384")
+        5f -> Color.valueOf("#F3B67E")
+        6f -> Color.valueOf("#E2A0CB")
+        7f -> Color.valueOf("#8CBCE7")
+        8f -> Color.valueOf("#76DBCB")
+        else -> Color.valueOf("#AEA6F0")
+    }
 }
 
 data class LegacyTrack(
@@ -138,7 +182,9 @@ data class LegacyTrack(
     val Start: Float = 0f,
     val End: Float = 10f,
     val Color: Int = 1,
-    val Move: Array<LegacyTransition> = arrayOf()
+    val Move: Array<LegacyTransition> = arrayOf(),
+    val Scale: Array<LegacyTransition> = arrayOf(),
+    val ColorChange: Array<LegacyTransition> = arrayOf(),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
