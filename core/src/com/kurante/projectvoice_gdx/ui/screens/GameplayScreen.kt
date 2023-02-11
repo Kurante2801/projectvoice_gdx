@@ -19,6 +19,7 @@ import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import com.kurante.projectvoice_gdx.util.extensions.toSeconds
 import ktx.actors.onChange
 import ktx.assets.disposeSafely
+import ktx.graphics.use
 import ktx.scene2d.*
 import ktx.scene2d.Scene2DSkin.defaultSkin
 import java.text.DecimalFormat
@@ -32,7 +33,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     private lateinit var pauseButton: PVImageTextButton
     private lateinit var statusText: Label
 
-    var white = defaultSkin.getDrawable("white")
+    val white = defaultSkin.getDrawable("white")
 
     override fun populate() {
         table = scene2d.table {
@@ -97,8 +98,24 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
         val time = conductor.time
         val e = 0.5f.mapRange(0f, 1f, 0.09375f, 0.90625f)
 
+        val width = stage.width
+        val height = stage.height
+        val heightHalf = height * 0.5f
+
+        stage.batch.begin()
         for (track in chart.tracks) {
             if (time < track.spawnTime || time > track.despawnTime + track.despawnDuration) continue
+
+            val w = 0.10546875f * width
+
+            val moveTransition = track.getMoveTransition(time)
+            val x = moveTransition.easing.easeFunction(
+                time.mapRange(moveTransition.startTime, moveTransition.endTime, 0, 1),
+                moveTransition.startValue, moveTransition.endValue
+            ) * width - w * 0.5f
+
+            white.draw(stage.batch, x, 0f, w, height)
         }
+        stage.batch.end()
     }
 }

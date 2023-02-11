@@ -23,6 +23,19 @@ data class Track(
     }
 
     override fun hashCode(): Int = id.hashCode()
+
+    fun getMoveTransition(time: Int): Transition {
+        var result = moveTransitions.first()
+
+        for (transition in moveTransitions) {
+            if (time >= transition.startTime)
+                result = transition
+            else
+                return result
+        }
+
+        return moveTransitions.last()
+    }
 }
 
 data class Transition(
