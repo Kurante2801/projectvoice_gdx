@@ -64,8 +64,9 @@ SelectBoxStyle: {
 }
 SliderStyle: {
 	default-horizontal: {
-		background: sliderbackground
+		background: blank
 		knob: sliderknob
+		knobBefore: sliderbackground
 	}
 	default-vertical: {
 		background: button_up

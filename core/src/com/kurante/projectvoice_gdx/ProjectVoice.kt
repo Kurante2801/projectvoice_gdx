@@ -7,26 +7,24 @@ import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.PixmapPacker
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.*
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.PropertiesUtils
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kotcrab.vis.ui.VisUI
+import com.kotcrab.vis.ui.VisUI.SkinScale
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.randomString
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.*
-import com.kurante.projectvoice_gdx.util.ChadFontData
-import com.kurante.projectvoice_gdx.util.ComposedSkinFontless
-import com.kurante.projectvoice_gdx.util.UserInterface
+import com.kurante.projectvoice_gdx.util.*
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import com.kurante.projectvoice_gdx.util.extensions.copy
 import com.kurante.projectvoice_gdx.util.extensions.lastIndexOfOrNull
@@ -233,7 +231,7 @@ class ProjectVoice(
     }
 
     private fun loadSkin() {
-        VisUI.load()
+        VisUI.load(SkinScale.X2)
         defaultSkin = VisUI.getSkin().apply {
             var param = FreeTypeFontParameter().apply {
                 size = 38
@@ -278,6 +276,17 @@ class ProjectVoice(
             val atlas = Gdx.files.internal("skin/skin.atlas")
             addRegions(TextureAtlas(atlas))
             load(Gdx.files.internal("skin/skin.json"))
+
+            //val sliderTex = TintedNinePatchDrawable(get("sliderbackground", NinePatch::class.java), true)
+            val style = SliderStyle().apply {
+                background = getDrawable("blank")
+                knob = TintedTextureRegionDrawable(get("sliderknob", TextureRegion::class.java), UserInterface.FOREGROUND2_COLOR)
+                knobDown = TintedTextureRegionDrawable(get("sliderknob", TextureRegion::class.java), true)
+                knobBefore = TintedNinePatchDrawable(get("sliderbackground", NinePatch::class.java), true)
+                knobAfter = TintedNinePatchDrawable(get("sliderbackground", NinePatch::class.java), UserInterface.FOREGROUND1_COLOR)
+            }
+
+            add("default-horizontal", style)
         }
     }
 

@@ -11,6 +11,13 @@ back_shadow
   orig: 64, 64
   offset: 0, 0
   index: -1
+blank
+  rotate: false
+  xy: 413, 479
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
 button_down
   rotate: false
   xy: 207, 415
@@ -73,10 +80,10 @@ settings_shadow
   index: -1
 sliderbackground
   rotate: false
-  xy: 77, 319
-  size: 38, 38
-  split: 6, 6, 6, 6
-  orig: 38, 38
+  xy: 77, 325
+  size: 32, 32
+  split: 12, 12, 6, 6
+  orig: 32, 32
   offset: 0, 0
   index: -1
 sliderknob

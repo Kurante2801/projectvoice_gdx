@@ -203,6 +203,26 @@ atlasData: {
 			hidden: false
 		}
 		{
+			file: D:/usuario/Downloads/pv_exports/list_drawable.9.png
+			bgColor: {
+				r: 1
+				g: 1
+				b: 1
+				a: 1
+			}
+			tint: null
+			tintName: null
+			name: list_drawable
+			tiled: false
+			minWidth: -1
+			minHeight: -1
+			customized: false
+			tenPatchData: null
+			tvgData: null
+			type: NINE_PATCH
+			hidden: false
+		}
+		{
 			file: D:/usuario/Downloads/pv_exports/sliderbackground.9.png
 			bgColor: {
 				r: 1
@@ -223,7 +243,7 @@ atlasData: {
 			hidden: false
 		}
 		{
-			file: D:/usuario/Downloads/pv_exports/list_drawable.9.png
+			file: D:/usuario/Downloads/pv_exports/blank.png
 			bgColor: {
 				r: 1
 				g: 1
@@ -232,14 +252,14 @@ atlasData: {
 			}
 			tint: null
 			tintName: null
-			name: list_drawable
+			name: blank
 			tiled: false
 			minWidth: -1
 			minHeight: -1
 			customized: false
 			tenPatchData: null
 			tvgData: null
-			type: NINE_PATCH
+			type: TEXTURE
 			hidden: false
 		}
 	]
@@ -1417,7 +1437,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: background
 						optional: false
-						value: sliderbackground
+						value: blank
 					}
 					disabledBackground: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -1441,7 +1461,7 @@ jsonData: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
 						name: knobBefore
 						optional: true
-						value: null
+						value: sliderbackground
 					}
 					disabledKnobBefore: {
 						type: com.badlogic.gdx.scenes.scene2d.utils.Drawable
