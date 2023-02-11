@@ -13,6 +13,7 @@ import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
+import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import com.kurante.projectvoice_gdx.util.extensions.toSeconds
@@ -30,6 +31,8 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
     private lateinit var pauseButton: PVImageTextButton
     private lateinit var statusText: Label
+
+    var white = defaultSkin.getDrawable("white")
 
     override fun populate() {
         table = scene2d.table {
@@ -68,6 +71,10 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 statusText.setText("BEGUN: ${conductor.begunPlaying} PAUSED: ${conductor.paused} MAX: ${conductor.maxTime} LENGTH: ${conductor.sound.length} FILE: ${conductor.file.name()}")
             }
         }
+
+        if (initialized)
+            gameplayRender()
+
         super.render(delta)
     }
 
@@ -84,5 +91,14 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             initialized = true
         }
             conductor.minTime = 10f.toMillis()
+    }
+
+    fun gameplayRender() {
+        val time = conductor.time
+        val e = 0.5f.mapRange(0f, 1f, 0.09375f, 0.90625f)
+
+        for (track in chart.tracks) {
+            if (time < track.spawnTime || time > track.despawnTime + track.despawnDuration) continue
+        }
     }
 }

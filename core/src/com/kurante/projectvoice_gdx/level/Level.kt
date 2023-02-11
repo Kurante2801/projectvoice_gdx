@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException
 import kotlin.math.min
 
 // todo: localized variables
-data class Level(
+data class  Level(
     val file: FileHandle,
     val id: String,
     val title: String,

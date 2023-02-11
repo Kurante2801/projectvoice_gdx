@@ -1,5 +1,6 @@
 package com.kurante.projectvoice_gdx.game
 
+
 data class Chart(
     val startTime: Int = 0,
     val musicOffset: Int = 0,
@@ -12,6 +13,8 @@ data class Track(
     val spawnDuration: Int,
     val despawnTime: Int,
     val despawnDuration: Int,
+
+    val moveTransitions: Array<Transition>
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -21,3 +24,11 @@ data class Track(
 
     override fun hashCode(): Int = id.hashCode()
 }
+
+data class Transition(
+    val easing: TransitionEase,
+    val startTime: Int,
+    val endTime: Int,
+    val startValue: Float,
+    val endValue: Float,
+)
