@@ -35,6 +35,7 @@ class Conductor(
         KtxAsync.launch {
             try {
                 sound = assetStorage.load(file.path(), MASoundLoaderParameters().apply { external = true })
+                sound.isLooping = false
                 loaded = true
 
                 // We can't seek reliably so we MUST play the sound from start
@@ -53,8 +54,10 @@ class Conductor(
         if (Platform.isAndroidSAF && file.exists()) {
             KtxAsync.launch {
                 file.delete()
+                sound.dispose()
             }
-        }
+        } else
+            sound.dispose()
     }
 
     fun act(delta: Float) {

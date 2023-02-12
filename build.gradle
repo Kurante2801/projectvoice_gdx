@@ -1,7 +1,7 @@
 buildscript {
     ext.kotlinVersion = '1.8.0'
     ext.ktxVersion = '1.11.0-rc4'
-    ext.miniaudioVersion = "0.3-SNAPSHOT"
+    ext.miniaudioVersion = "0.4-SNAPSHOT"
 
     repositories {
         mavenLocal()
