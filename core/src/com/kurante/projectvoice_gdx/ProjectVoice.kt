@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
@@ -52,6 +53,7 @@ class ProjectVoice(
     private lateinit var batch: SpriteBatch
     lateinit var assetStorage: AssetStorage
     lateinit var absoluteStorage: AssetStorage
+    lateinit var internalStorage: AssetStorage
     private val packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false)
     private val generators = mutableListOf<FreeTypeFontGenerator>()
 
@@ -80,6 +82,9 @@ class ProjectVoice(
         KtxAsync.initiate()
         assetStorage = AssetStorage(
             fileResolver = StorageFileHandleResolver()
+        )
+        internalStorage = AssetStorage(
+            fileResolver = InternalFileHandleResolver()
         )
 
         miniAudio = MiniAudio()
@@ -141,6 +146,7 @@ class ProjectVoice(
         super.dispose()
         assetStorage.dispose()
         absoluteStorage.dispose()
+        internalStorage.dispose()
         packer.dispose()
 
         for (generator in generators)

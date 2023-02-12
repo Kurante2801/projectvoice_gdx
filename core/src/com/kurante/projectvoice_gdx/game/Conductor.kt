@@ -1,20 +1,16 @@
 package com.kurante.projectvoice_gdx.game
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Disposable
 import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.util.extensions.isAndroidSAF
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
-import com.kurante.projectvoice_gdx.util.extensions.toSeconds
 import games.rednblack.miniaudio.MASound
 import games.rednblack.miniaudio.loader.MASoundLoaderParameters
 import kotlinx.coroutines.launch
 import ktx.app.Platform
 import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
-import kotlin.math.max
-import kotlin.math.min
 
 class Conductor(
     private val assetStorage: AssetStorage, // Must be absolute for MiniAudio to load!!
@@ -62,7 +58,7 @@ class Conductor(
     }
 
     fun act(delta: Float) {
-        if (paused && sound.isPlaying) sound.pause()
+        if (loaded && paused && sound.isPlaying) sound.pause()
         if (!loaded || paused) return
 
         if (!begunPlaying) {

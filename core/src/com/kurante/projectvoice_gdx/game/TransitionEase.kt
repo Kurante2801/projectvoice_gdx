@@ -1,15 +1,33 @@
 package com.kurante.projectvoice_gdx.game
 
+import com.badlogic.gdx.graphics.Color
 import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.math.sin
 import com.kurante.projectvoice_gdx.ProjectVoice.Companion.PI
+import com.kurante.projectvoice_gdx.util.extensions.mapRange
+
+interface ITransitionEase {
+    val easeFunction: (Float, Float, Float) -> Float
+
+    fun fromTime(
+        time: Int,
+        startTime: Int,
+        endTime: Int,
+        startValue: Float,
+        endValue: Float,
+    ): Float {
+        val percent = time.mapRange(startTime, endTime, 0, 1)
+        return easeFunction(percent.coerceIn(0f, 1f), startValue, endValue)
+    }
+}
+
 
 // https://github.com/AndrewFM/VoezEditor/blob/master/Assets/Scripts/ProjectData.cs#L548
 enum class TransitionEase(
-    val easeFunction: (Float, Float, Float) -> Float
-) {
+    override val easeFunction: (Float, Float, Float) -> Float
+) : ITransitionEase {
     NONE({ _, _, end -> end }),
     LINEAR({ perc, start, end ->
         (end - start) * perc + start

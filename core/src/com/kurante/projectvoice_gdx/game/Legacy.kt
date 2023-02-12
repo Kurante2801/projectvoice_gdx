@@ -12,8 +12,7 @@ object Legacy {
         val json = Json()
         json.ignoreUnknownFields = true
 
-        val legacyTracks =
-            json.fromJson<Array<LegacyTrack>>(level.file.child(section.chartFilename))
+        val legacyTracks = json.fromJson<Array<LegacyTrack>>(level.file.child(section.chartFilename))
         val tracks = mutableListOf<Track>()
 
         // Sort the same way as editor
@@ -32,25 +31,21 @@ object Legacy {
                 legacyTrack.Size,
                 TransitionEase.EXIT_SCALE
             )
-            val colorTransitions = mutableListOf<ColorTransition>()
 
-            // Parse colors
-            convertTransitions(
+            val colorTransitions = convertTransitions(
                 legacyTrack,
                 legacyTrack.ColorChange,
-                legacyTrack.Color.toFloat(),
+                legacyTrack.Color,
                 TransitionEase.EXIT_COLOR
-            ).forEach {
-                colorTransitions.add(
-                    ColorTransition(
-                        startTime = it.startTime,
-                        endTime = it.startTime,
-                        startValue = parseColor(it.startValue),
-                        endValue = parseColor(it.endValue),
-                        easing = it.easing,
-                    )
+            ).map {
+                ColorTransition(
+                    startTime = it.startTime,
+                    endTime = it.endTime,
+                    startValue = parseColor(it.startValue.toInt()),
+                    endValue = parseColor(it.endValue.toInt()),
+                    easing = it.easing,
                 )
-            }
+            }.toTypedArray()
 
             tracks.add(
                 Track(
@@ -61,7 +56,7 @@ object Legacy {
                     spawnDuration = if (legacyTrack.EntranceOn) 350 else 0,
                     moveTransitions = moveTransitions,
                     scaleTransitions = scaleTransitions,
-                    colorTransitions = colorTransitions.toTypedArray(),
+                    colorTransitions = colorTransitions,
                 )
             )
         }
@@ -108,7 +103,6 @@ object Legacy {
         }
 
         // Convert transitions
-        //legacy.forEachIndexed { i, _ ->
         for (i in legacy.indices) {
             transition = legacy[i]
             // If this is not the first legacy transition, we get the value from the previous transition
@@ -160,18 +154,21 @@ object Legacy {
         else -> TransitionEase.NONE
     }
 
-    fun parseColor(value: Float): Color = when (value) {
-        0f -> Color.valueOf("#F98F95")
-        1f -> Color.valueOf("#F9E5A1")
-        2f -> Color.valueOf("#D3D3D3")
-        3f -> Color.valueOf("#77D1DE")
-        4f -> Color.valueOf("#97D384")
-        5f -> Color.valueOf("#F3B67E")
-        6f -> Color.valueOf("#E2A0CB")
-        7f -> Color.valueOf("#8CBCE7")
-        8f -> Color.valueOf("#76DBCB")
-        else -> Color.valueOf("#AEA6F0")
-    }
+    // In legacy, colors are stored as numbers that map to these values
+    val colors = arrayOf(
+        "#F98F95",
+        "#F9E5A1",
+        "#D3D3D3",
+        "#77D1DE",
+        "#97D384",
+        "#F3B67E",
+        "#E2A0CB",
+        "#8CBCE7",
+        "#76DBCB",
+        "#AEA6F0"
+    )
+
+    fun parseColor(value: Int): Color = Color.valueOf(colors.elementAtOrNull(value) ?: "#FFFFFFFF")
 }
 
 data class LegacyTrack(
@@ -181,7 +178,7 @@ data class LegacyTrack(
     val Size: Float = 1f,
     val Start: Float = 0f,
     val End: Float = 10f,
-    val Color: Int = 1,
+    val Color: Float = 1f,
     val Move: Array<LegacyTransition> = arrayOf(),
     val Scale: Array<LegacyTransition> = arrayOf(),
     val ColorChange: Array<LegacyTransition> = arrayOf(),
@@ -197,7 +194,7 @@ data class LegacyTrack(
 
 data class LegacyTransition(
     val To: Float = 0f,
-    val Ease: String = "linear",
+    val Ease: String = "easelinear",
     val Start: Float = 0f,
     val End: Float = 0f,
 )
