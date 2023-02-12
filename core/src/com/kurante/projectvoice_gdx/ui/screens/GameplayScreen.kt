@@ -1,6 +1,5 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture.TextureFilter
@@ -8,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.kurante.projectvoice_gdx.ProjectVoice
@@ -30,13 +28,14 @@ import ktx.assets.disposeSafely
 import ktx.async.KtxAsync
 import ktx.graphics.use
 import ktx.scene2d.*
-import ktx.scene2d.Scene2DSkin.defaultSkin
 import java.text.DecimalFormat
 import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.round
 
 class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     data class TrackDrawInstruction(
-        val x: Float,
+        val center: Float,
         val width: Float,
         val color: Color
     )
@@ -137,7 +136,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             packer.pack("background", parent.internalStorage.load<Pixmap>("game/track_background.png"))
             packer.pack("line", parent.internalStorage.load<Pixmap>("game/track_line.png"))
 
-            atlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
+            atlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
 
             background = atlas.findRegion("background")
             line = atlas.findRegion("line")
@@ -151,18 +150,19 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         val width = stage.width
         val height = stage.height
-        val trackWidth = width * 0.115f
-        val lineThick = 4f.scaledStage(stage)
+        val trackWidth = round(width * 0.115f)
+        val borderThick = 3f.scaledStage(stage)
+        val centerThick = 2f.scaledStage(stage)
 
         drawCalls.clear()
         for (track in chart.tracks) {
             if (time < track.spawnTime || time > track.despawnTime + track.despawnDuration) continue
 
-            val w = track.getWidth(time, trackWidth, 12f.scaledStage(stage))
-            val x = track.getPosition(time) * width - w * 0.5f
-            val c = track.getColor(time)
-
-            drawCalls.add(TrackDrawInstruction(x, w, c))
+            drawCalls.add(TrackDrawInstruction(
+                center = round(track.getPosition(time) * width),
+                width = round(track.getWidth(time, trackWidth, 12f.scaledStage(stage))),
+                color = track.getColor(time),
+            ))
         }
 
         val original = stage.batch.color
@@ -171,18 +171,19 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             // Draw backgrounds here
             for (call in drawCalls) {
                 it.color = call.color
-                it.draw(background, call.x, 0f, call.width, height)
+                it.draw(background, call.center - call.width * 0.5f, 0f, call.width, height)
             }
             // Draw white borders here
             it.color = Color.WHITE
             for (call in drawCalls) {
-                it.draw(line, call.x, 0f, lineThick, height * 1.7083f)
-                it.draw(line, call.x + call.width - lineThick, 0f, lineThick, height * 1.7083f)
+                val half = call.width * 0.5f
+                it.draw(line, call.center - half, height * -0.688f, borderThick, height * 1.7083f)
+                it.draw(line, call.center + half - borderThick * 0.5f, height * -0.688f, borderThick, height * 1.7083f)
             }
             // Draw black centers here
             it.color = Color.BLACK
             for (call in drawCalls) {
-                it.draw(line, call.x + call.width * 0.5f, height * -0.2f, lineThick, height   * 1.8f)
+                it.draw(line, call.center - centerThick * 0.5f, height * -0.688f, centerThick, height * 1.7083f)
             }
             // Draw notes here
             // Draw effects here?

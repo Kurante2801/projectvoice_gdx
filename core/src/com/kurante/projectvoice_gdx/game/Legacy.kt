@@ -107,7 +107,7 @@ object Legacy {
             transition = legacy[i]
             // If this is not the first legacy transition, we get the value from the previous transition
             if (i > 0)
-                initialValue = transitions.last().endValue
+                initialValue = transitions[transitions.size - 1].endValue
 
             // EXIT transition is different for move, scale and color
             var ease = parseEase(transition.Ease)

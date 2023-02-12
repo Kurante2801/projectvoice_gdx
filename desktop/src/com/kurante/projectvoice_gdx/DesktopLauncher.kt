@@ -12,7 +12,7 @@ object DesktopLauncher {
         StorageManager.storageHandler = WindowsStorageHandler()
 
         Lwjgl3Application(ProjectVoice(), Lwjgl3ApplicationConfiguration().apply {
-            setForegroundFPS(60)
+            setForegroundFPS(144)
             setTitle("Project Voice")
             setWindowedMode(1280, 960)
             setWindowSizeLimits(640, 480, -1, -1)
