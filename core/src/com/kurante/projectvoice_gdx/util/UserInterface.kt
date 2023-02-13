@@ -8,6 +8,7 @@ import java.util.*
 
 object UserInterface {
     const val UI_SCALE = 1280f / WidthViewport.REFERENCE_WIDTH
+    const val REFERENCE_HEIGHT = 1845f
 
     /**
      * Game is developed on a 1280x980 window, but the viewport is larger.
@@ -15,7 +16,8 @@ object UserInterface {
      * (on a window with a width of 1280 pixels, an input value of X will be X visually.
      */
     fun Float.scaledUi() = this / UI_SCALE
-    fun Float.scaledStage(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
+    fun Float.scaledStageX(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
+    fun Float.scaledStageY(stage: Stage) = this * REFERENCE_HEIGHT / stage.height
 
 
     // Java interop

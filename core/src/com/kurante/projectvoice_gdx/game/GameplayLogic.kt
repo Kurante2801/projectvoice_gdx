@@ -1,13 +1,14 @@
 package com.kurante.projectvoice_gdx.game
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.math.MathUtils.round
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Disposable
-import com.kurante.projectvoice_gdx.util.UserInterface.scaledStage
-import ktx.assets.disposeSafely
+import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
+import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
 import ktx.graphics.use
 
 class GameplayLogic(
@@ -28,6 +29,7 @@ class GameplayLogic(
     val trackBackground = trackAtlas.findRegion("background")
     val trackLine = trackAtlas.findRegion("line")
     val trackGlow = trackAtlas.findRegion("glow")
+    val judgementLine = trackAtlas.findRegion("white")
 
     init {
         for (track in chart.tracks)
@@ -43,9 +45,10 @@ class GameplayLogic(
         val width = stage.width
         val height = stage.height
         val trackWidth = width * 0.115f
-        val borderThick: Float = 3f.scaledStage(stage)
-        val centerThick: Float = 2f.scaledStage(stage)
-        val glowWidth: Float = 12f.scaledStage(stage)
+        val borderThick: Float = 3f.scaledStageX(stage)
+        val centerThick: Float = 2f.scaledStageX(stage)
+        val glowWidth: Float = 12f.scaledStageX(stage)
+        val judgementThick: Float = 2f.scaledStageY(stage)
 
         for ((track, call) in data) {
             call.shouldDraw = time >= track.spawnTime && time <= track.despawnTime + track.despawnDuration
@@ -84,8 +87,11 @@ class GameplayLogic(
             it.color = Color.BLACK
             for ((_, call) in data) {
                 if (!call.shouldDraw) continue
-                it.draw(trackLine, call.center - centerThick * 0.5f, height * -0.688f, borderThick, height * 1.7083f)
+                it.draw(trackLine, call.center - centerThick * 0.5f, height * -0.688f, centerThick, height * 1.7083f)
             }
+            // JUDGEMENT LINE
+            it.color = Color.WHITE
+            it.draw(judgementLine, 0f, height * 0.167f - judgementThick * 0.5f, width, judgementThick)
             // NOTES
             // EFFECTS
         }

@@ -93,6 +93,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             packer.pack("background", parent.internalStorage.load<Pixmap>("game/track_background.png"))
             packer.pack("line", parent.internalStorage.load<Pixmap>("game/track_line.png"))
             packer.pack("glow", parent.internalStorage.load<Pixmap>("game/track_glow.png"))
+            packer.pack("white", parent.internalStorage.load<Pixmap>("game/white.png"))
 
             val trackAtlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
             logic = GameplayLogic(conductor, chart, trackAtlas)
