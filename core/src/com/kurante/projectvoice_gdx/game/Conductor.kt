@@ -14,13 +14,21 @@ import ktx.async.KtxAsync
 
 class Conductor(
     private val assetStorage: AssetStorage, // Must be absolute for MiniAudio to load!!
-    handle: FileHandle,
-    postLoaded: (Conductor?) -> Unit = {},
+    private val handle: FileHandle,
+    val sound: MASound,
 ) : Disposable {
-    val file = if(Platform.isAndroidSAF) StorageManager.copyToCache(handle) else handle
-    lateinit var sound: MASound
+    companion object {
+        suspend fun load(assetStorage: AssetStorage, handle: FileHandle): Conductor {
+            val file = if (Platform.isAndroidSAF) StorageManager.copyToCache(handle) else handle
+            val sound = assetStorage.load(file.path(), MASoundLoaderParameters().apply { external = true })
+            val conductor = Conductor(assetStorage, file, sound)
+            conductor.maxTime = sound.length.toMillis()
+            conductor.shouldDelete = Platform.isAndroidSAF
+            return conductor
+        }
+    }
 
-    var loaded = false
+    var shouldDelete = false
     var begunPlaying = false
     var paused = true
 
@@ -32,37 +40,23 @@ class Conductor(
 
 
     init {
-        KtxAsync.launch {
-            try {
-                sound = assetStorage.load(file.path(), MASoundLoaderParameters().apply { external = true })
-                sound.isLooping = false
-                loaded = true
-
-                // We can't seek reliably so we MUST play the sound from start
-                minTime = minTime.coerceAtMost(0)
-                time = minTime
-
-                postLoaded.invoke(this@Conductor)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                postLoaded.invoke(null)
-            }
-        }
+        minTime = minTime.coerceAtMost(0)
+        time = minTime
     }
 
     override fun dispose() {
-        if (Platform.isAndroidSAF && file.exists()) {
-            KtxAsync.launch {
-                file.delete()
-                sound.dispose()
-            }
-        } else
-            sound.dispose()
+        KtxAsync.launch {
+            assetStorage.unload<MASound>(handle.path())
+            if (shouldDelete && handle.exists())
+                handle.delete()
+        }
     }
 
     fun act(delta: Float) {
-        if (loaded && paused && sound.isPlaying) sound.pause()
-        if (!loaded || paused) return
+        if (paused) {
+            if (sound.isPlaying) sound.pause()
+            return
+        }
 
         if (!begunPlaying) {
             if (time >= 0) {
@@ -73,12 +67,12 @@ class Conductor(
             return
         }
 
-        if (time >= maxTime) {
+        /*if (time >= maxTime) {
             if (sound.isPlaying) sound.pause()
             return
-        }
+        }*/
 
         if (!sound.isPlaying) sound.play()
-        time = sound.cursorPosition.toMillis()
+        time = (sound.cursorPosition).toMillis()
     }
 }

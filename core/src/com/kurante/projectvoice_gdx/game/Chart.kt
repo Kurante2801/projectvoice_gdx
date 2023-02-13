@@ -26,6 +26,18 @@ data class Track(
         // 120px at a window width of 1280px
         const val MARGIN_MIN = 0.09375f
         const val MARGIN_MAX = 0.90625f
+        private val colorHolder = Color(1f, 1f, 1f, 1f)
+
+        fun lerpColor(from: Color, to: Color, percent: Float): Color {
+            colorHolder.set(
+                from.r + percent * (to.r - from.r),
+                from.g + percent * (to.g - from.g),
+                from.b + percent * (to.b - from.b),
+                from.a + percent * (to.a - from.a),
+            )
+
+            return colorHolder.clamp()
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -64,23 +76,36 @@ data class Track(
 
     fun getPosition(time: Int): Float {
         val transition = getTransition(time, moveTransitions)
-        val x = transition.easing.fromTime(time, transition.startTime, transition.endTime, transition.startValue, transition.endValue)
+        val x = transition.easing.fromTime(
+            time,
+            transition.startTime,
+            transition.endTime,
+            transition.startValue,
+            transition.endValue
+        )
         // Editor has a margin of 120px on both left and right (with a window width of 1280px)
         // This means that if the track's position is 0, its center will be at 120px (at a window width of 1280px)
         return x.mapRange(0f, 1f, MARGIN_MIN, MARGIN_MAX)
     }
 
-    fun getWidth(time: Int, trackWidth: Float, trackBorders: Float): Float {
+    fun getWidth(time: Int, trackWidth: Float, glowWidth: Float): Float {
         val transition = getTransition(time, scaleTransitions)
-        val w = transition.easing.fromTime(time, transition.startTime, transition.endTime, transition.startValue, transition.endValue)
-        // Track's border glows make the track visually smaller
-        return abs(w * trackWidth - trackBorders)
+        val w = transition.easing.fromTime(
+            time,
+            transition.startTime,
+            transition.endTime,
+            transition.startValue,
+            transition.endValue
+        )
+        return abs(w * trackWidth - glowWidth)
     }
 
     fun getColor(time: Int): Color {
         val transition = getColorTransition(time)
-        val percent = transition.easing.fromTime(time, transition.startTime, transition.endTime, 0f, 1f)
-        return transition.startValue.lerp(transition.endValue, percent)
+        val percent =
+            transition.easing.fromTime(time, transition.startTime, transition.endTime, 0f, 1f)
+        //return transition.startValue.lerp(transition.endValue, percent)
+        return lerpColor(transition.startValue, transition.endValue, percent)
     }
 }
 

@@ -15,11 +15,12 @@ object UserInterface {
      * (on a window with a width of 1280 pixels, an input value of X will be X visually.
      */
     fun Float.scaledUi() = this / UI_SCALE
+    fun Float.scaledStage(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
+
 
     // Java interop
     fun scaledUI(value: Float) = value / UI_SCALE
 
-    fun Float.scaledStage(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
 
     val mainColorEvent = CustomEvent<Color>()
     var mainColor: Color = Color.valueOf("#FF4B00")
