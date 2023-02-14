@@ -1,14 +1,15 @@
 package com.kurante.projectvoice_gdx.game
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.MathUtils.round
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Disposable
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
+import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import ktx.graphics.use
 
 class GameplayLogic(
@@ -18,10 +19,19 @@ class GameplayLogic(
 ) : Disposable {
     private data class DrawCall(
         var center: Int = 240,
-        var width: Float = 1f,
+        var width: Float = 100f,
+        var scaleY: Float = 1f,
         var color: Color = Color(1f, 1f, 1f, 1f),
         var shouldDraw: Boolean = false,
+        var animating: Boolean = false,
     )
+
+    companion object {
+        // Track's line is larger than the screen and is centered at the judgement line
+        // This is so that it looks centered when the tracks spawn and despawn with animation
+        const val LINE_POS_MULTIPLIER = 0.16666666f
+        const val LINE_HEIGHT_MULTIPLIER = 1.7083f
+    }
 
     private val data = mutableMapOf<Track, DrawCall>()
 
@@ -53,45 +63,69 @@ class GameplayLogic(
         for ((track, call) in data) {
             call.shouldDraw = time >= track.spawnTime && time <= track.despawnTime + track.despawnDuration
 
-            if (call.shouldDraw) {
-                call.center = round(track.getPosition(time) * width)
-                call.width = track.getWidth(time, trackWidth, glowWidth)
-                call.color.set(track.getColor(time))
+            if (!call.shouldDraw) continue
+            call.animating = false
+            var scaleX = 1f
+            call.scaleY = 1f
+
+            val sinceDespawn = time - track.despawnTime
+            if (sinceDespawn >= 0) {
+                val t = (sinceDespawn.toFloat() / track.despawnDuration).coerceIn(0f, 1f)
+                scaleX = 1f - Interpolation.pow3Out.apply(t)
+                call.scaleY = 1f - Interpolation.linear.apply(t)
+                call.animating = true
             }
+
+            if (!call.animating && track.spawnDuration > 0) {
+                val sinceSpawn = time - track.spawnTime
+                if (sinceSpawn <= track.spawnDuration) {
+                    val t = (sinceSpawn.toFloat() / track.spawnDuration).coerceIn(0f, 1f)
+                    scaleX = Interpolation.elasticOut.apply(t)
+                    call.scaleY = Interpolation.exp10.apply(t)
+                    call.animating = true
+                }
+            }
+
+            call.center = round(track.getPosition(time) * width)
+            call.width = track.getWidth(time, trackWidth, glowWidth) * scaleX
+            call.color.set(track.getColor(time))
         }
 
         batch.use {
             it.enableBlending()
 
             // LEFT & RIGHT GLOWS
-            for ((_, call) in data) {
-                if(!call.shouldDraw) continue
+            forEachDrawable(data) { call ->
                 it.color = call.color
-                it.draw(trackGlow, call.center - call.width * 0.5f - glowWidth, 0f, glowWidth, height)
-                it.draw(trackGlow, call.center + call.width * 0.5f + glowWidth, 0f, -glowWidth, height)
+                val half = call.width * 0.5f
+
+                it.draw(trackGlow, call.center - half - glowWidth, height * call.scaleY.mapRange(0.1666f, 0f), glowWidth, height * call.scaleY)
+                it.draw(trackGlow, call.center + half + glowWidth, height * call.scaleY.mapRange(0.1666f, 0f), -glowWidth, height * call.scaleY)
             }
             // BACKGROUND
-            for ((_, call) in data) {
-                if (!call.shouldDraw) continue
+            forEachDrawable(data) { call ->
                 it.color = call.color
-                it.draw(trackBackground, call.center - call.width * 0.5f, 0f, call.width, height)
+                it.draw(trackBackground, call.center - call.width * 0.5f, height * call.scaleY.mapRange(0.1666f, 0f), call.width, height * call.scaleY)
             }
             // LEFT & RIGHT BORDERS
             it.color = Color.WHITE
-            for ((_, call) in data) {
-                if (!call.shouldDraw) continue
-                it.draw(trackLine, call.center - call.width * 0.5f, height * -0.688f, borderThick, height * 1.7083f)
-                it.draw(trackLine, call.center + call.width * 0.5f - borderThick, height * -0.688f, borderThick, height * 1.7083f)
+            forEachDrawable(data) { call ->
+                val half = call.width * 0.5f
+                val tall = (height * LINE_HEIGHT_MULTIPLIER) * call.scaleY
+                val y = (height * LINE_POS_MULTIPLIER) - tall * 0.5f
+                it.draw(trackLine, call.center - half, y, borderThick, tall)
+                it.draw(trackLine, call.center + half - borderThick, y, borderThick, tall)
             }
             // BLACK CENTER
-            it.color = Color.BLACK
-            for ((_, call) in data) {
-                if (!call.shouldDraw) continue
-                it.draw(trackLine, call.center - centerThick * 0.5f, height * -0.688f, centerThick, height * 1.7083f)
+            forEachDrawable(data) { call ->
+                it.color = it.color.set(0f, 0f, 0f, call.scaleY)
+                val tall = (height * LINE_HEIGHT_MULTIPLIER) * call.scaleY
+                val y = (height * LINE_POS_MULTIPLIER) - tall * 0.5f
+                it.draw(trackLine, call.center - borderThick * 0.5f, y, borderThick, tall)
             }
             // JUDGEMENT LINE
             it.color = Color.WHITE
-            it.draw(judgementLine, 0f, height * 0.167f - judgementThick * 0.5f, width, judgementThick)
+            it.draw(judgementLine, 0f, height * LINE_POS_MULTIPLIER - judgementThick * 0.5f, width, judgementThick)
             // NOTES
             // EFFECTS
         }
@@ -107,4 +141,11 @@ class GameplayLogic(
     }
 
     fun getPaused() = conductor.paused
+
+    private fun forEachDrawable(data: MutableMap<Track, DrawCall>, action: (DrawCall) -> Unit) {
+        for (call in data.values) {
+            if (call.shouldDraw)
+                action(call)
+        }
+    }
 }
