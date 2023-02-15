@@ -48,7 +48,7 @@ class AndroidCallbacks(private val launcher: AndroidLauncher) : NativeCallbacks(
     }
 
     override fun getStorageHandler(): StorageHandler {
-        // Safe Access Storage is required on Android 11+
+        // Storage Access Framework (SAF) is required on Android 11+
         // however it's SUPER slow, taking up to 19 seconds to load 27 levels on old devices...
         // so we just don't use it when on android 10 or below
         return if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
