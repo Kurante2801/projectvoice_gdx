@@ -83,10 +83,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         KtxAsync.launch {
             val packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false)
-            val conductor = Conductor.load(
-                assetStorage = parent.absoluteStorage,
-                handle = level.file.child(level.musicFilename),
-            )
+            val conductor = parent.loadConductor(level.file.child(level.musicFilename))
 
             packer.packToTexture = true
 

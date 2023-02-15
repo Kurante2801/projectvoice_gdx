@@ -53,9 +53,7 @@ class AndroidLauncher : AndroidComponentApplication() {
         else
             StorageManager.storageHandler = AndroidStorageHandler(this)
 
-        initialize(ProjectVoice {
-            it.miniAudio.setupAndroid(context.assets)
-        }, AndroidApplicationConfiguration().apply {
+        initialize(ProjectVoice(), AndroidApplicationConfiguration().apply {
             useCompass = false
             useGyroscope = false
             useAccelerometer = false

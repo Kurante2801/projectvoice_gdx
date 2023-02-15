@@ -7,6 +7,7 @@ import kotlin.math.abs
 
 data class Chart(
     val startTime: Int = 0,
+    val endTime: Int?,
     val musicOffset: Int = 0,
     val tracks: Array<Track> = arrayOf()
 )

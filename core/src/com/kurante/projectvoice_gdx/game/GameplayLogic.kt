@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Disposable
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
+import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import ktx.graphics.use
 import java.lang.Integer.max
 import kotlin.math.pow
@@ -37,12 +38,12 @@ class GameplayLogic(
         const val LINE_HEIGHT_MULTIPLIER = 1.7083f
 
         const val C4 = (2f * PI) / 3f
-        //fun spawnWidthAnim(x: Float) = 2f.pow(-10f * x) * sin((x * 10f - 0.75f) * C4) + 1
+        fun spawnWidthAnim(x: Float) = 2f.pow(-10f * x) * sin((x * 10f - 0.75f) * C4) + 1
         fun spawnHeightAnim(x: Float): Float = 1f - (1f - x).pow(4)
 
-        val spawnCurve = Bezier
     }
 
+    var maxTime = conductor.maxTime
     private val data = mutableMapOf<Track, DrawCall>()
 
     // TEXTURES
@@ -52,12 +53,17 @@ class GameplayLogic(
     val judgementLine = trackAtlas.findRegion("white")
 
     init {
+        if (chart.endTime != null)
+            maxTime = chart.endTime
+
         for (track in chart.tracks) {
             // Ensure despawn_time isn't lower than spawn_time + spawn_duration
             if (track.spawnDuration > 0f)
                 track.despawnTime = track.spawnTime + max(track.despawnTime - track.spawnTime, track.spawnDuration)
 
             data[track] = DrawCall()
+            // Ensure game doesn't end too soon
+            maxTime = max(maxTime, track.despawnTime + track.despawnDuration + 1f.toMillis())
         }
     }
 

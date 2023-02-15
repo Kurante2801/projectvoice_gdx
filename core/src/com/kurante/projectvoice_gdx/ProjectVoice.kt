@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
@@ -28,22 +29,17 @@ import com.kurante.projectvoice_gdx.ui.screens.*
 import com.kurante.projectvoice_gdx.util.*
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import com.kurante.projectvoice_gdx.util.extensions.copy
-import com.kurante.projectvoice_gdx.util.extensions.lastIndexOfOrNull
-import games.rednblack.miniaudio.MASound
-import games.rednblack.miniaudio.MiniAudio
-import games.rednblack.miniaudio.loader.MASoundLoader
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
 import ktx.graphics.use
-import ktx.scene2d.Scene2DSkin
 import ktx.scene2d.Scene2DSkin.defaultSkin
 import java.util.*
 
 
 class ProjectVoice(
-    private val nativeCallback: (ProjectVoice) -> Unit = {}
+    private val nativeCallbacks: NativeCallbacks
 ) : KtxGame<KtxScreen>() {
     companion object {
         const val PI = 3.1415927f
@@ -56,8 +52,6 @@ class ProjectVoice(
     lateinit var internalStorage: AssetStorage
     private val packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false)
     private val generators = mutableListOf<FreeTypeFontGenerator>()
-
-    lateinit var miniAudio: MiniAudio
 
     private val screenHistory = ArrayDeque<GameScreen>()
 
@@ -87,19 +81,16 @@ class ProjectVoice(
             fileResolver = InternalFileHandleResolver()
         )
 
-        miniAudio = MiniAudio()
 
         absoluteStorage = AssetStorage(
             fileResolver = AbsoluteFileHandleResolver()
-        ).apply {
-            setLoader<MASound> { MASoundLoader(miniAudio, fileResolver) }
-        }
+        )
 
         PlayerPreferences.locales["en"] = "English"
         PlayerPreferences.locales["es"] = "Español"
         UserInterface.setLocale(PlayerPreferences.locale)
 
-        nativeCallback.invoke(this)
+        nativeCallbacks.create(this)
 
         addScreen(InitializationScreen(this))
         addScreen(StorageScreen(this))
@@ -152,17 +143,17 @@ class ProjectVoice(
         for (generator in generators)
             generator.dispose()
 
-        miniAudio.dispose()
+        nativeCallbacks.dispose(this)
     }
 
     override fun pause() {
-        miniAudio.stopEngine()
         super.pause()
+        nativeCallbacks.pause(this)
     }
 
     override fun resume() {
         super.resume()
-        miniAudio.startEngine()
+        nativeCallbacks.resume(this)
     }
 
     override fun resize(width: Int, height: Int) {
@@ -305,4 +296,6 @@ class ProjectVoice(
         generators.add(generator)
         return generator.generateFont(parameter, ChadFontData(generator))
     }
+
+    suspend fun loadConductor(handle: FileHandle) = nativeCallbacks.loadConductor(this, handle)
 }

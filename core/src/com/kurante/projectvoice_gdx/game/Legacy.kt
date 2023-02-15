@@ -61,7 +61,7 @@ object Legacy {
             )
         }
 
-        return Chart(0, 0, tracks.toTypedArray())
+        return Chart(0, null, 0, tracks.toTypedArray())
     }
 
     fun convertTransitions(
