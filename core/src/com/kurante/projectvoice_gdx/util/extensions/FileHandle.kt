@@ -13,5 +13,5 @@ fun FileHandle.copyToCache(): FileHandle {
 }
 
 fun FileHandle.absoluteFromLocal(): FileHandle {
-    return Gdx.files.absolute("${Gdx.files.localStoragePath}/${path()}")
+    return Gdx.files.absolute(Gdx.files.localStoragePath + path())
 }
