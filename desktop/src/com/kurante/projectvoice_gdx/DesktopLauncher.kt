@@ -15,42 +15,8 @@ import kotlin.math.min
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 object DesktopLauncher {
-    lateinit var miniAudio: MiniAudio
-
-    class DesktopCallbacks : NativeCallbacks() {
-        override fun create(game: ProjectVoice) {
-            miniAudio = MiniAudio()
-            game.absoluteStorage.setLoader {
-                MASoundLoader(miniAudio, game.absoluteStorage.fileResolver)
-            }
-        }
-
-        override fun pause(game: ProjectVoice) {
-            miniAudio.stopEngine()
-        }
-
-        override fun resume(game: ProjectVoice) {
-            miniAudio.startEngine()
-        }
-
-        override fun dispose(game: ProjectVoice) {
-            miniAudio.dispose()
-        }
-
-        override suspend fun loadConductor(game: ProjectVoice, handle: FileHandle): Conductor {
-            val sound = game.absoluteStorage.load(handle.path(), MASoundLoaderParameters().apply {
-                external = true
-            })
-            return MiniAudioConductor(game.absoluteStorage, handle, sound)
-        }
-    }
-
-
     @JvmStatic
     fun main(arg: Array<String>) {
-        // Native code
-        StorageManager.storageHandler = WindowsStorageHandler()
-
         Lwjgl3Application(ProjectVoice(DesktopCallbacks()), Lwjgl3ApplicationConfiguration().apply {
             setForegroundFPS(144)
             setTitle("Project Voice")

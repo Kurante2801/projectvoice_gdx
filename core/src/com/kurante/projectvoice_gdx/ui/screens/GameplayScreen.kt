@@ -50,6 +50,12 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                     }
                 }
 
+                pvImageTextButton("LEAVE") {
+                    onChange {
+                        this@GameplayScreen.parent.changeScreen<HomeScreen>()
+                    }
+                }
+
                 statusText = label("")
             }
             defaults().row()

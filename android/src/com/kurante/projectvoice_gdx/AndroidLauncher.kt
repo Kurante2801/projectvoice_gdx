@@ -2,19 +2,22 @@ package com.kurante.projectvoice_gdx
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.documentfile.provider.DocumentFile
+import barsoosayque.libgdxoboe.OboeAudio
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.badlogic.gdx.backends.android.AndroidComponentApplication
 import com.badlogic.gdx.files.FileHandle
-import com.kurante.projectvoice_gdx.storage.*
+import com.kurante.projectvoice_gdx.storage.AndroidFileHandle
+import com.kurante.projectvoice_gdx.storage.OpenDocumentTreePersistent
+import com.kurante.projectvoice_gdx.storage.RealPathUtil
 
 class AndroidLauncher : AndroidComponentApplication() {
     private var treeCallback: ((Uri?) -> Unit)? = null
@@ -45,15 +48,7 @@ class AndroidLauncher : AndroidComponentApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Safe Access Storage is required on Android 11+
-        // however it's SUPER slow, taking up to 19 seconds to load 27 levels on old devices...
-        // so we just don't use it when on android 10 or below
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
-            StorageManager.storageHandler = AndroidLegacyStorageHandler(this)
-        else
-            StorageManager.storageHandler = AndroidStorageHandler(this)
-
-        initialize(ProjectVoice(), AndroidApplicationConfiguration().apply {
+        initialize(ProjectVoice(AndroidCallbacks(this)), AndroidApplicationConfiguration().apply {
             useCompass = false
             useGyroscope = false
             useAccelerometer = false
@@ -61,6 +56,9 @@ class AndroidLauncher : AndroidComponentApplication() {
             useRotationVectorSensor = false
         })
     }
+
+    override fun createAudio(context: Context, config: AndroidApplicationConfiguration) =
+        OboeAudio(context.assets)
 
     fun openDocumentTree(callback: (AndroidFileHandle?) -> Unit) {
         treeCallback = { uri ->

@@ -91,6 +91,7 @@ class ProjectVoice(
         UserInterface.setLocale(PlayerPreferences.locale)
 
         nativeCallbacks.create(this)
+        StorageManager.storageHandler = nativeCallbacks.getStorageHandler()
 
         addScreen(InitializationScreen(this))
         addScreen(StorageScreen(this))

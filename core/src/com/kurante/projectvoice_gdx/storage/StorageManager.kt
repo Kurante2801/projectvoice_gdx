@@ -19,13 +19,4 @@ object StorageManager {
 
         return result.joinToString("")
     }
-
-    // Necessary for MiniAudio on Android!
-    fun copyToCache(file: FileHandle): FileHandle {
-        var output = Gdx.files.absolute("$cachePath/${randomString()}.${file.extension()}")
-        while (output.exists())
-            output = Gdx.files.absolute("$cachePath/${randomString()}.${file.extension()}")
-        file.copyTo(output)
-        return output
-    }
 }

@@ -3,7 +3,7 @@ package com.kurante.projectvoice_gdx.game
 import com.badlogic.gdx.utils.Disposable
 
 abstract class Conductor : Disposable {
-    open var paused: Boolean = false
+    open var paused: Boolean = true
 
     // MILLISECONDS
     var time: Int = 0
