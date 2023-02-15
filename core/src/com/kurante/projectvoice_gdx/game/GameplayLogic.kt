@@ -3,14 +3,18 @@ package com.kurante.projectvoice_gdx.game
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.math.Bezier
 import com.badlogic.gdx.math.Interpolation
-import com.badlogic.gdx.math.MathUtils.round
+import com.badlogic.gdx.math.MathUtils.*
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Disposable
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import ktx.graphics.use
+import java.lang.Integer.max
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class GameplayLogic(
     private val conductor: Conductor,
@@ -31,6 +35,12 @@ class GameplayLogic(
         // This is so that it looks centered when the tracks spawn and despawn with animation
         const val LINE_POS_MULTIPLIER = 0.16666666f
         const val LINE_HEIGHT_MULTIPLIER = 1.7083f
+
+        const val C4 = (2f * PI) / 3f
+        //fun spawnWidthAnim(x: Float) = 2f.pow(-10f * x) * sin((x * 10f - 0.75f) * C4) + 1
+        fun spawnHeightAnim(x: Float): Float = 1f - (1f - x).pow(4)
+
+        val spawnCurve = Bezier
     }
 
     private val data = mutableMapOf<Track, DrawCall>()
@@ -42,8 +52,13 @@ class GameplayLogic(
     val judgementLine = trackAtlas.findRegion("white")
 
     init {
-        for (track in chart.tracks)
+        for (track in chart.tracks) {
+            // Ensure despawn_time isn't lower than spawn_time + spawn_duration
+            if (track.spawnDuration > 0f)
+                track.despawnTime = track.spawnTime + max(track.despawnTime - track.spawnTime, track.spawnDuration)
+
             data[track] = DrawCall()
+        }
     }
 
     fun act(delta: Float) {
@@ -71,7 +86,7 @@ class GameplayLogic(
             val sinceDespawn = time - track.despawnTime
             if (sinceDespawn >= 0) {
                 val t = (sinceDespawn.toFloat() / track.despawnDuration).coerceIn(0f, 1f)
-                scaleX = 1f - Interpolation.pow3Out.apply(t)
+                scaleX = 1f - TransitionEase.ELASTIC_OUT.evaluate(t)
                 call.scaleY = 1f - Interpolation.linear.apply(t)
                 call.animating = true
             }
@@ -80,8 +95,8 @@ class GameplayLogic(
                 val sinceSpawn = time - track.spawnTime
                 if (sinceSpawn <= track.spawnDuration) {
                     val t = (sinceSpawn.toFloat() / track.spawnDuration).coerceIn(0f, 1f)
-                    scaleX = Interpolation.elasticOut.apply(t)
-                    call.scaleY = Interpolation.exp10.apply(t)
+                    scaleX = spawnWidthAnim(1f - t)
+                    call.scaleY = spawnHeightAnim(t)
                     call.animating = true
                 }
             }
@@ -121,7 +136,7 @@ class GameplayLogic(
                 it.color = it.color.set(0f, 0f, 0f, call.scaleY)
                 val tall = (height * LINE_HEIGHT_MULTIPLIER) * call.scaleY
                 val y = (height * LINE_POS_MULTIPLIER) - tall * 0.5f
-                it.draw(trackLine, call.center - borderThick * 0.5f, y, borderThick, tall)
+                it.draw(trackLine, call.center - centerThick * 0.5f, y, centerThick, tall)
             }
             // JUDGEMENT LINE
             it.color = Color.WHITE

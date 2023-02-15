@@ -15,7 +15,7 @@ data class Track(
     val id: Int,
     val spawnTime: Int,
     val spawnDuration: Int,
-    val despawnTime: Int,
+    var despawnTime: Int,
     val despawnDuration: Int,
 
     val moveTransitions: Array<Transition>,
