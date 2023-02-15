@@ -13,7 +13,6 @@ class AndroidFileHandle(
     private val context: Context,
     private val document: DocumentFile
 ) : FileHandle() {
-    val uri: Uri = document.uri
     fun createDirectory(name: String): AndroidFileHandle? {
         val created = document.createDirectory(name)
             ?: return null
