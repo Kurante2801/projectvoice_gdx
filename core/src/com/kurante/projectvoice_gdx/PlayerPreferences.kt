@@ -21,5 +21,13 @@ object PlayerPreferences {
 
             prefs["locale"] = value
             UserInterface.setLocale(value)
+            prefs.flush()
+        }
+
+    var musicVolume: Float
+        get() = prefs["musicVolume"] ?: 1f
+        set(value) {
+            prefs["musicVolume"] = value
+            prefs.flush()
         }
 }

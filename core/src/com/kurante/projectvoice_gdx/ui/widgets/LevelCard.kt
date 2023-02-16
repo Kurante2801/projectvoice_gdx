@@ -57,7 +57,6 @@ class LevelCard(
 
         table = scene2d.table {
             setFillParent(true)
-            //debug = true
             pad(8f.scaledUi())
 
             horizontalGroup {

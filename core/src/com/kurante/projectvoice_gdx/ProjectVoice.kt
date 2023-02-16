@@ -29,6 +29,8 @@ import com.kurante.projectvoice_gdx.ui.screens.*
 import com.kurante.projectvoice_gdx.util.*
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import com.kurante.projectvoice_gdx.util.extensions.copy
+import de.tomgrill.gdxdialogs.core.GDXDialogs
+import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.assets.async.AssetStorage
@@ -57,6 +59,8 @@ class ProjectVoice(
 
     private lateinit var fpsFont: BitmapFont
 
+    lateinit var dialogs: GDXDialogs
+
     override fun create() {
         // Create cache
         StorageManager.cachePath = Gdx.files.localStoragePath + "cache/"
@@ -70,6 +74,7 @@ class ProjectVoice(
 
         Gdx.app.logLevel = Application.LOG_DEBUG
         batch = SpriteBatch()
+        dialogs = GDXDialogsSystem.install()
 
         loadSkin()
 

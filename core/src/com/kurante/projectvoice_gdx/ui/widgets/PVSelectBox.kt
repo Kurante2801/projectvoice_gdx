@@ -1,8 +1,11 @@
 package com.kurante.projectvoice_gdx.ui.widgets
 
+import com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.utils.Array
+import com.kurante.projectvoice_gdx.PlayerPreferences
 import com.kurante.projectvoice_gdx.ui.widgets.PVSelectBox.SelectionElement
+import com.kurante.projectvoice_gdx.util.TintedNinePatchDrawable
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import ktx.scene2d.KWidget
@@ -21,6 +24,9 @@ class PVSelectBox : SelectBox<SelectionElement>(defaultSkin) {
     init {
         color = UserInterface.FOREGROUND1_COLOR
         scrollPane.list.color = UserInterface.FOREGROUND2_COLOR
+        scrollPane.list.style = ListStyle(scrollPane.list.style).apply {
+            selection = TintedNinePatchDrawable(defaultSkin.getPatch("button_up"), true)
+        }
     }
 
     override fun getMinWidth(): Float {
@@ -37,6 +43,13 @@ class PVSelectBox : SelectBox<SelectionElement>(defaultSkin) {
 
     fun addChoice(text: String, data: Any) {
         items.add(SelectionElement(text, data))
+    }
+
+    fun setSelectedData(data: Any) {
+        this.items.forEach {
+            if (it.data == data)
+                selected = it
+        }
     }
 }
 

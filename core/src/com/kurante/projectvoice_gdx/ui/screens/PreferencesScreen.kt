@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Array
 import com.kotcrab.vis.ui.widget.spinner.FloatSpinnerModel
 import com.kurante.projectvoice_gdx.PlayerPreferences
 import com.kurante.projectvoice_gdx.ProjectVoice
@@ -11,6 +12,7 @@ import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.widgets.PVSlider
 import com.kurante.projectvoice_gdx.ui.widgets.PreferenceSection
 import com.kurante.projectvoice_gdx.ui.widgets.SelectionPreferenceSection
+import com.kurante.projectvoice_gdx.ui.widgets.SliderPreferenceSection
 import com.kurante.projectvoice_gdx.util.TabMenu
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
@@ -61,24 +63,24 @@ class PreferencesScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         // Preferences begin here
         addTabLocalized("prefs_tab_general") {
-            val language = SelectionPreferenceSection("prefs_language_title", "prefs_language_subtext")
+            add(SelectionPreferenceSection("prefs_language_title", "prefs_language_subtext")
             {
                 it.addChoice("English", "en")
                 it.addChoice("Español", "es")
+                it.setSelectedData(PlayerPreferences.locale)
 
                 onChange {
                     PlayerPreferences.locale = it.selected.data as String
                 }
-            }
-            add(language).growX().row()
+            }).growX().pad(0f, 0f, 8f.scaledUi(), 0f).row()
 
-            val music = PreferenceSection().apply {
-                initialize("prefs_tab_general", "prefs_language_title") { container, cell ->
-                    container.addActor(PVSlider(50f, 0f, 100f, 25f))
+            add(SliderPreferenceSection(
+                "prefs_music_title", "prefs_music_subtext", PlayerPreferences.musicVolume * 100f, 0f, 100f, 5f, this@PreferencesScreen.parent.dialogs
+            ) {
+                onChange {
+                    PlayerPreferences.musicVolume = it.value / 100f
                 }
-            }
-
-            add(music).growX().row()
+            }).growX().pad(0f, 0f, 8f.scaledUi(), 0f).row()
 
             defaults().row()
             container {

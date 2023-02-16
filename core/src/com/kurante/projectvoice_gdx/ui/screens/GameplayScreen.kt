@@ -1,7 +1,5 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
@@ -9,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
-import com.kurante.projectvoice_gdx.game.Conductor
 import com.kurante.projectvoice_gdx.game.GameplayLogic
 import com.kurante.projectvoice_gdx.game.Legacy
 import com.kurante.projectvoice_gdx.level.ChartSection
@@ -25,7 +22,6 @@ import ktx.assets.disposeSafely
 import ktx.async.KtxAsync
 import ktx.scene2d.*
 import java.text.DecimalFormat
-import kotlin.math.log
 
 class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     lateinit var level: Level

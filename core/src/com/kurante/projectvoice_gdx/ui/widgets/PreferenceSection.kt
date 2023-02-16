@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.storage.StorageManager.randomString
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.setLocalizedText
+import de.tomgrill.gdxdialogs.core.GDXDialogs
 import ktx.scene2d.*
 import ktx.scene2d.Scene2DSkin.defaultSkin
 
@@ -36,6 +37,7 @@ open class PreferenceSection : Table(), KTable {
                 defaults().row()
                 label(subtextKey) {
                     it.growX()
+                    it.minHeight(0f)
                     color = Color(0.8f, 0.8f, 0.8f, 1f)
                     wrap = true
                     setLocalizedText(subtextKey)
@@ -62,6 +64,24 @@ class SelectionPreferenceSection(
             container.pvSelectBox {
                 init(this)
             }
+        }
+    }
+}
+
+class SliderPreferenceSection(
+    titleKey: String,
+    subtextKey: String,
+    value: Float,
+    min: Float,
+    max: Float,
+    step: Float,
+    dialogs: GDXDialogs,
+    init: (@Scene2dDsl PVSlider) -> Unit
+) : PreferenceSection() {
+    init {
+        val slider = PVSlider(value, min, max, step, dialogs).apply(init)
+        initialize(titleKey, subtextKey) { container, _ ->
+            container.addActor(slider)
         }
     }
 }

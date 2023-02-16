@@ -3,7 +3,6 @@ package com.kurante.projectvoice_gdx.game
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.MathUtils.*
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Disposable
@@ -14,7 +13,6 @@ import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import ktx.graphics.use
 import java.lang.Integer.max
-import kotlin.math.pow
 
 class GameplayLogic(
     private val conductor: Conductor,
