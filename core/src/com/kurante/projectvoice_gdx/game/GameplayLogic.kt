@@ -45,6 +45,7 @@ class GameplayLogic(
 
     var maxTime = conductor.maxTime
     private val data = mutableMapOf<Track, DrawCall>()
+    val time: Int get() = conductor.time
 
     // TEXTURES
     val trackBackground = trackAtlas.findRegion("background")

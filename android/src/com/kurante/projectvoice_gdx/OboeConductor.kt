@@ -24,10 +24,8 @@ class OboeConductor(
 
     init {
         maxTime = duration
+        minTime = minTime.coerceAtMost(0)
         time = minTime
-
-        if (time > 0)
-            music.position = time.toSeconds()
     }
 
     override fun dispose() {
@@ -52,6 +50,7 @@ class OboeConductor(
         else {
             if (!music.isPlaying)
                 music.play()
+            // music.position may return the same value, so we interpolate until we get a new value
             if (lastReport == music.position)
                 time += delta.toMillis()
             else {

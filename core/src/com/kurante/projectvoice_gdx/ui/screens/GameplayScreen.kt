@@ -18,20 +18,25 @@ import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
+import com.kurante.projectvoice_gdx.util.extensions.toSeconds
 import kotlinx.coroutines.launch
 import ktx.actors.onChange
 import ktx.assets.disposeSafely
 import ktx.async.KtxAsync
 import ktx.scene2d.*
+import java.text.DecimalFormat
+import kotlin.math.log
 
 class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
-
     lateinit var level: Level
     lateinit var logic: GameplayLogic
     private var initialized = false
 
     private lateinit var pauseButton: PVImageTextButton
+    private lateinit var exitButton: PVImageTextButton
     private lateinit var statusText: Label
+
+    private val formatter = DecimalFormat("0.##")
 
     override fun populate() {
         table = scene2d.table {
@@ -50,7 +55,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                     }
                 }
 
-                pvImageTextButton("LEAVE") {
+                exitButton = pvImageTextButton("LEAVE") {
                     onChange {
                         this@GameplayScreen.parent.changeScreen<HomeScreen>()
                     }
@@ -72,6 +77,9 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
         if (initialized) {
             logic.act(delta)
             logic.render(stage, stage.batch as SpriteBatch)
+
+            pauseButton.text = formatter.format(logic.time/*.toSeconds()*/)
+            exitButton.text = formatter.format(logic.maxTime.toSeconds())
         }
 
         super.render(delta)
@@ -103,7 +111,6 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             packer.dispose()
 
             initialized = true
-
         }
     }
 }
