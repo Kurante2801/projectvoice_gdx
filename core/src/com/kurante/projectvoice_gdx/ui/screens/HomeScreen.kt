@@ -1,7 +1,10 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
-import com.badlogic.gdx.math.MathUtils.ceil
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle
 import com.badlogic.gdx.utils.Align
+import com.kotcrab.vis.ui.layout.GridGroup
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.level.LevelManager
 import com.kurante.projectvoice_gdx.ui.GameScreen
@@ -12,8 +15,10 @@ import com.kurante.projectvoice_gdx.util.extensions.setMainColor
 import ktx.actors.onChange
 import ktx.scene2d.*
 import ktx.scene2d.Scene2DSkin.defaultSkin
+import ktx.scene2d.vis.gridGroup
 
-class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
+class HomeScreen(game: ProjectVoice) : GameScreen(game) {
+    lateinit var grid: GridGroup
     override fun populate() {
         table = scene2d.table {
             setFillParent(true)
@@ -28,7 +33,7 @@ class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
                 pvImageTextButton("common_options", defaultSkin.getDrawable("settings_shadow")) {
                     setLocalizedText("common_options")
                     onChange {
-                        this@HomeScreen.parent.changeScreen<PreferencesScreen>()
+                        this@HomeScreen.game.changeScreen<PreferencesScreen>()
                     }
                 }
             }
@@ -39,39 +44,42 @@ class HomeScreen(parent: ProjectVoice) : GameScreen(parent) {
                 it.grow()
                 it.pad(0f, 28f.scaledUi(), 28f.scaledUi(), 28f.scaledUi())
                 fadeScrollBars = false
+                setScrollingDisabled(true, false)
                 setMainColor()
 
-                table {
+                grid = gridGroup {
+                    spacing = 28f.scaledUi()
+
                     val levels = LevelManager.levels.sortedBy { level -> level.title }
-
-                    val columns = 3
-                    val rows = ceil(levels.size / columns.toFloat())
-
-
-                    grid@ for (y in 0 until rows) {
-                        for (x in 0 until columns) {
-                            val i = x + y * columns
-                            if (i >= levels.size) break@grid
-
-                            levelCard(levels[i], this@HomeScreen.parent.assetStorage) { cell ->
-                                cell.growX()
-
-                                val padBottom = if (y + 1 == rows) 0f else 28f.scaledUi()
-                                cell.pad(0f, 0f, padBottom, 28f.scaledUi())
-
-                                onChange {
-                                    this@HomeScreen.parent.changeScreen<GameplayScreen>()
-                                    this@HomeScreen.parent.getScreen<GameplayScreen>().initialize(level, level.charts.last())
-                                }
+                    for (level in levels) {
+                        levelCard(level, this@HomeScreen.game.assetStorage) {
+                            onChange {
+                                game.changeScreen<GameplayScreen>()
+                                game.getScreen<GameplayScreen>().initialize(level, level.charts.last())
                             }
                         }
-
-                        defaults().row()
                     }
                 }
+
+                setGridSize()
             }
         }
 
         stage.addActor(table)
+    }
+
+    override fun resize(width: Int, height: Int) {
+        super.resize(width, height)
+        setGridSize()
+    }
+
+    private fun setGridSize() {
+        val w = (stage.width - game.safeLeft().scaledUi() - game.safeRight().scaledUi() - 28f.scaledUi() * 6) / 3f
+
+        grid.apply {
+            itemWidth = w
+            itemHeight = w / (16f / 9f)
+            invalidateHierarchy()
+        }
     }
 }

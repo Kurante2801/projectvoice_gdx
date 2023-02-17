@@ -108,9 +108,9 @@ class LevelCard(
         addActor(table)
     }
 
-    override fun getPrefHeight(): Float {
+    /*override fun getPrefHeight(): Float {
         return 214f.scaledUi()
-    }
+    }*/
 
     override fun getMinHeight(): Float {
         return width / (16f / 9f)

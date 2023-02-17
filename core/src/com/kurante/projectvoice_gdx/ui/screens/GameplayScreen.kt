@@ -53,7 +53,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
                 exitButton = pvImageTextButton("LEAVE") {
                     onChange {
-                        this@GameplayScreen.parent.changeScreen<HomeScreen>()
+                        this@GameplayScreen.game.changeScreen<HomeScreen>()
                     }
                 }
 
@@ -93,14 +93,14 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         KtxAsync.launch {
             val packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false)
-            val conductor = parent.loadConductor(level.file.child(level.musicFilename))
+            val conductor = game.loadConductor(level.file.child(level.musicFilename))
 
             packer.packToTexture = true
 
-            packer.pack("background", parent.internalStorage.load<Pixmap>("game/track_background.png"))
-            packer.pack("line", parent.internalStorage.load<Pixmap>("game/track_line.png"))
-            packer.pack("glow", parent.internalStorage.load<Pixmap>("game/track_glow.png"))
-            packer.pack("white", parent.internalStorage.load<Pixmap>("game/white.png"))
+            packer.pack("background", game.internalStorage.load<Pixmap>("game/track_background.png"))
+            packer.pack("line", game.internalStorage.load<Pixmap>("game/track_line.png"))
+            packer.pack("glow", game.internalStorage.load<Pixmap>("game/track_glow.png"))
+            packer.pack("white", game.internalStorage.load<Pixmap>("game/white.png"))
 
             val trackAtlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
             logic = GameplayLogic(conductor, chart, trackAtlas)

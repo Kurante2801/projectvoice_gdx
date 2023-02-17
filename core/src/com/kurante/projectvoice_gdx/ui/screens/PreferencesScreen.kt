@@ -1,18 +1,11 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.utils.Array
-import com.kotcrab.vis.ui.widget.spinner.FloatSpinnerModel
 import com.kurante.projectvoice_gdx.PlayerPreferences
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.ui.GameScreen
-import com.kurante.projectvoice_gdx.ui.widgets.PVSlider
-import com.kurante.projectvoice_gdx.ui.widgets.PreferenceSection
-import com.kurante.projectvoice_gdx.ui.widgets.SelectionPreferenceSection
-import com.kurante.projectvoice_gdx.ui.widgets.SliderPreferenceSection
 import com.kurante.projectvoice_gdx.util.TabMenu
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
@@ -25,8 +18,9 @@ import ktx.scene2d.Scene2DSkin.defaultSkin
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import com.kurante.projectvoice_gdx.ui.widgets.*
 
-class PreferencesScreen(parent: ProjectVoice) : GameScreen(parent) {
+class PreferencesScreen(game: ProjectVoice) : GameScreen(game) {
     private val tabMenu = TabMenu()
 
     override fun populate() {
@@ -46,7 +40,7 @@ class PreferencesScreen(parent: ProjectVoice) : GameScreen(parent) {
 
                     onChange {
                         UserInterface.mainColor = Color.CYAN
-                        this@PreferencesScreen.parent.changeScreen<HomeScreen>()
+                        game.changeScreen<HomeScreen>()
                     }
                 }
             }
@@ -67,20 +61,27 @@ class PreferencesScreen(parent: ProjectVoice) : GameScreen(parent) {
             {
                 it.addChoice("English", "en")
                 it.addChoice("Español", "es")
-                it.setSelectedData(PlayerPreferences.locale)
+                it.setSelectedData(game.prefs.locale)
 
                 onChange {
-                    PlayerPreferences.locale = it.selected.data as String
+                    game.prefs.locale = it.selected.data as String
                 }
-            }).growX().pad(0f, 0f, 8f.scaledUi(), 0f).row()
+            }).growX().pad(0f, 0f, 14f.scaledUi(), 0f).row()
 
             add(SliderPreferenceSection(
-                "prefs_music_title", "prefs_music_subtext", PlayerPreferences.musicVolume * 100f, 0f, 100f, 5f, this@PreferencesScreen.parent.dialogs
+                "prefs_music_title", "prefs_music_subtext", game.prefs.musicVolume * 100f, 0f, 100f, 5f, this@PreferencesScreen.game.dialogs
             ) {
                 onChange {
-                    PlayerPreferences.musicVolume = it.value / 100f
+                    game.prefs.musicVolume = it.value / 100f
                 }
-            }).growX().pad(0f, 0f, 8f.scaledUi(), 0f).row()
+            }).growX().pad(0f, 0f, 14f.scaledUi(), 0f).row()
+
+            add(BooleanPreferenceSection("prefs_safearea_title", "prefs_safearea_subtext", "common_yes", "common_no", game.prefs.safeArea) {
+                onChange {
+                    game.prefs.safeArea = it.value
+                }
+            }).growX().pad(0f, 0f, 14f.scaledUi(), 0f).row()
+
 
             defaults().row()
             container {
@@ -102,7 +103,7 @@ class PreferencesScreen(parent: ProjectVoice) : GameScreen(parent) {
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
-        tabMenu.padInset()
+        tabMenu.padInset(game.prefs.safeArea)
     }
 
     @OptIn(ExperimentalContracts::class)

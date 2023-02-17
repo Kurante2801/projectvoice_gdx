@@ -7,7 +7,7 @@ import ktx.preferences.get
 import ktx.preferences.set
 import java.util.*
 
-object PlayerPreferences {
+class PlayerPreferences(val game: ProjectVoice) {
     private val prefs: Preferences = Gdx.app.getPreferences("com.kurante.projectvoice_gdx")
 
     val locales = mutableMapOf<String, String>()
@@ -29,5 +29,13 @@ object PlayerPreferences {
         set(value) {
             prefs["musicVolume"] = value
             prefs.flush()
+        }
+
+    var safeArea: Boolean
+        get() = prefs["safeArea"] ?: true
+        set(value) {
+            prefs["safeArea"] = value
+            prefs.flush()
+            game.resize(Gdx.graphics.width, Gdx.graphics.height)
         }
 }

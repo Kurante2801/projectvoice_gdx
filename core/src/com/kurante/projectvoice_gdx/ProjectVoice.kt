@@ -38,6 +38,7 @@ import ktx.async.KtxAsync
 import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin.defaultSkin
 import java.util.*
+import ktx.preferences.get
 
 
 class ProjectVoice(
@@ -60,6 +61,7 @@ class ProjectVoice(
     private lateinit var fpsFont: BitmapFont
 
     lateinit var dialogs: GDXDialogs
+    lateinit var prefs: PlayerPreferences
 
     override fun create() {
         // Create cache
@@ -91,9 +93,11 @@ class ProjectVoice(
             fileResolver = AbsoluteFileHandleResolver()
         )
 
-        PlayerPreferences.locales["en"] = "English"
-        PlayerPreferences.locales["es"] = "Español"
-        UserInterface.setLocale(PlayerPreferences.locale)
+        prefs = PlayerPreferences(this)
+
+        prefs.locales["en"] = "English"
+        prefs.locales["es"] = "Español"
+        UserInterface.setLocale(prefs.locale)
 
         nativeCallbacks.create(this)
         StorageManager.storageHandler = nativeCallbacks.getStorageHandler()
@@ -134,7 +138,7 @@ class ProjectVoice(
         batch.use {
             fpsFont.draw(
                 batch, "FPS: ${Gdx.graphics.framesPerSecond}",
-                Gdx.graphics.safeInsetLeft + 12f, 36f
+                safeLeft() + 12f, 36f
             )
         }
     }
@@ -167,6 +171,11 @@ class ProjectVoice(
         batch = SpriteBatch()
     }
 
+    fun safeLeft(): Int = if (prefs.safeArea) Gdx.graphics.safeInsetLeft else 0
+    fun safeRight(): Int = if (prefs.safeArea) Gdx.graphics.safeInsetRight else 0
+    fun safeTop(): Int = if (prefs.safeArea) Gdx.graphics.safeInsetTop else 0
+    fun safeBottom(): Int = if (prefs.safeArea) Gdx.graphics.safeInsetBottom else 0
+
     inline fun <reified Type : GameScreen> changeScreen(addToHistory: Boolean = true) {
         changeScreen(Type::class.java, addToHistory)
     }
@@ -182,8 +191,8 @@ class ProjectVoice(
         if (current == null) {
             currentScreen.hide()
             currentScreen = newScreen
-            currentScreen.resize(Gdx.graphics.width, Gdx.graphics.height)
             currentScreen.show()
+            currentScreen.resize(Gdx.graphics.width, Gdx.graphics.height)
             return
         }
 
@@ -196,8 +205,8 @@ class ProjectVoice(
                 current.hide()
 
                 newScreen.opacity = 0f
-                newScreen.resize(Gdx.graphics.width, Gdx.graphics.height)
                 newScreen.show()
+                newScreen.resize(Gdx.graphics.width, Gdx.graphics.height)
                 newScreen.stage.addAction(GameScreen.FadeAction(0f, 1f, newScreen))
                 Gdx.input.inputProcessor = newScreen.stage
 

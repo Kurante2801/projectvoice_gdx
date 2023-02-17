@@ -85,3 +85,24 @@ class SliderPreferenceSection(
         }
     }
 }
+
+class BooleanPreferenceSection(
+    titleKey: String,
+    subtextKey: String,
+    yesKey: String,
+    noKey: String,
+    value: Boolean,
+    init: (@Scene2dDsl PVToggle) -> Unit
+) : PreferenceSection() {
+    init {
+        val toggle = PVToggle(value).apply {
+            yesButton.setLocalizedText(yesKey)
+            noButton.setLocalizedText(noKey)
+            init(this)
+        }
+        initialize(titleKey, subtextKey) { container, _ ->
+            container.addActor(toggle)
+        }
+
+    }
+}

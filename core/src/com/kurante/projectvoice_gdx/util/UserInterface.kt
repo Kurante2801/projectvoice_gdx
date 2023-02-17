@@ -15,8 +15,10 @@ object UserInterface {
      * This function converts the Float to match the viewport
      * (on a window with a width of 1280 pixels, an input value of X will be X visually.
      */
-    fun Float.scaledUi() = this / UI_SCALE
+    fun Float.scaledUi(): Float = this / UI_SCALE
+    fun Int.scaledUi(): Float = this / UI_SCALE
     fun Float.scaledStageX(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
+    fun Int.scaledStageX(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
     fun Float.scaledStageY(stage: Stage) = this * REFERENCE_HEIGHT / stage.height
 
 

@@ -81,7 +81,7 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
                 this.group.reverse()
 
                 onChange {
-                    this@StorageScreen.parent.changeScreen<HomeScreen>()
+                    this@StorageScreen.game.changeScreen<HomeScreen>()
                 }
             }
 

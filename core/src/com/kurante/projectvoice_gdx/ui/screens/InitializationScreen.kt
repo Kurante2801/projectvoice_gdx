@@ -20,7 +20,7 @@ class InitializationScreen(parent: ProjectVoice) : GameScreen(parent) {
         super.show()
 
         val tree = prefs.get<String?>("LevelTree", null)
-            ?: return parent.changeScreen<StorageScreen>(false) // First time run
+            ?: return game.changeScreen<StorageScreen>(false) // First time run
 
         val handle = storageHandler.directoryFromString(tree)
 
@@ -31,10 +31,10 @@ class InitializationScreen(parent: ProjectVoice) : GameScreen(parent) {
             KtxAsync.launch(newSingleThreadAsyncContext()) {
                 try {
                     LevelManager.loadLevels(handle)
-                    //this@InitializationScreen.parent.changeScreen<HomeScreen>()
-                    this@InitializationScreen.parent.changeScreen<PreferencesScreen>()
+                    this@InitializationScreen.game.changeScreen<HomeScreen>()
+                    //this@InitializationScreen.parent.changeScreen<PreferencesScreen>()
                 } catch (e: Exception) {
-                    this@InitializationScreen.parent.changeScreen<StorageScreen>()
+                    this@InitializationScreen.game.changeScreen<StorageScreen>()
                     Gdx.app.error("InitializationScreen", "Failed to load levels, moving to storage screen", e)
                 }
             }
