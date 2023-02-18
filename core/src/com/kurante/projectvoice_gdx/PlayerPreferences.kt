@@ -10,6 +10,8 @@ import java.util.*
 class PlayerPreferences(val game: ProjectVoice) {
     private val prefs: Preferences = Gdx.app.getPreferences("com.kurante.projectvoice_gdx")
 
+    // REMINDER: You need to call prefs.flush after every set()
+
     val locales = mutableMapOf<String, String>()
     var locale: String
         get() = prefs["locale"] ?: "en"
@@ -37,5 +39,12 @@ class PlayerPreferences(val game: ProjectVoice) {
             prefs["safeArea"] = value
             prefs.flush()
             game.resize(Gdx.graphics.width, Gdx.graphics.height)
+        }
+
+    var storageString: String?
+        get() = prefs["storage"]
+        set(value) {
+            prefs["storage"] = value!!
+            prefs.flush()
         }
 }

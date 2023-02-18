@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.kurante.projectvoice_gdx.ProjectVoice
-import com.kurante.projectvoice_gdx.ProjectVoice.Companion.getPreferences
 import com.kurante.projectvoice_gdx.level.LevelManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
 import com.kurante.projectvoice_gdx.ui.GameScreen
@@ -29,12 +28,9 @@ import ktx.scene2d.label
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
 
-// TODO: Remove static prefs
-class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
-    private val prefs = getPreferences()
-
+class StorageScreen(game: ProjectVoice) : GameScreen(game) {
     override fun populate() {
-        val tree = prefs.get<String?>("LevelTree", null)
+        val tree = game.prefs.storageString
             ?: return showFirstTime()
 
         table = scene2d.table {
@@ -144,9 +140,7 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
                     storageHandler.requestFolderAccess { handle ->
                         isDisabled = false
                         if (handle != null) {
-                            prefs["LevelTree"] = handle.path()
-                            prefs.flush()
-
+                            game.prefs.storageString = handle.path()
                             stage.clear()
                             populate()
                         }
@@ -193,8 +187,7 @@ class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         field.text = tree.name()
 
-        prefs["LevelTree"] = tree.path()
-        prefs.flush()
+        game.prefs.storageString = tree.path()
 
         KtxAsync.launch(newSingleThreadAsyncContext()) {
             LevelManager.loadLevels(tree)

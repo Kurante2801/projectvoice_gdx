@@ -13,13 +13,11 @@ import ktx.scene2d.label
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
 
-class InitializationScreen(parent: ProjectVoice) : GameScreen(parent) {
-    private val prefs = ProjectVoice.getPreferences()
-
+class InitializationScreen(game: ProjectVoice) : GameScreen(game) {
     override fun show() {
         super.show()
 
-        val tree = prefs.get<String?>("LevelTree", null)
+        val tree = game.prefs.storageString
             ?: return game.changeScreen<StorageScreen>(false) // First time run
 
         val handle = storageHandler.directoryFromString(tree)
