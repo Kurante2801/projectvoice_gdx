@@ -12,4 +12,6 @@ abstract class Conductor : Disposable {
     open val duration: Int = 10
 
     abstract fun act(delta: Float)
+
+    abstract fun restart()
 }

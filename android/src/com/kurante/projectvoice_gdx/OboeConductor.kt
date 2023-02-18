@@ -19,13 +19,21 @@ class OboeConductor(
     private val music: OboeMusic,
     private val shouldDelete: Boolean = false,
 ) : Conductor() {
-    override val duration =
-        meta.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toInt()
+    override val duration: Int
+    private var audioEnded = false
+
+
 
     init {
+        duration = meta.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toInt()
         maxTime = duration
         minTime = minTime.coerceAtMost(0)
         time = minTime
+        music.isLooping = false
+
+        music.setOnCompletionListener {
+            audioEnded = true
+        }
     }
 
     override fun dispose() {
@@ -38,6 +46,11 @@ class OboeConductor(
 
     var lastReport: Float = 0f
     override fun act(delta: Float) {
+        if (time >= maxTime) {
+            if (music.isPlaying) music.stop()
+            return
+        }
+
         if (paused) {
             if (music.isPlaying) music.pause()
             return
@@ -45,7 +58,7 @@ class OboeConductor(
 
         // Support starting the chart before audio starts
         // and ending the chart after the audio ends
-        if (time < 0 || time > duration)
+        if (time < 0 || time > duration || audioEnded)
             time += delta.toMillis()
         else {
             if (!music.isPlaying)
@@ -58,5 +71,11 @@ class OboeConductor(
                 time = lastReport.toMillis()
             }
         }
+    }
+
+    override fun restart() {
+        time = minTime
+        music.stop()
+        audioEnded = false
     }
 }

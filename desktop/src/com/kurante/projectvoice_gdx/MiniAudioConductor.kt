@@ -17,12 +17,14 @@ class MiniAudioConductor(
     private val handle: FileHandle,
     private val sound: MASound,
 ) : Conductor() {
-    override val duration = sound.length.toMillis()
+    override val duration: Int
 
     init {
+        duration = sound.length.toMillis()
         minTime = minTime.coerceAtMost(0)
         maxTime = duration
         time = minTime
+        sound.isLooping = false
     }
 
     override fun dispose() {
@@ -32,6 +34,11 @@ class MiniAudioConductor(
     }
 
     override fun act(delta: Float) {
+        if (time >= maxTime) {
+            if (sound.isPlaying) sound.stop()
+            return
+        }
+
         if (paused) {
             if (sound.isPlaying) sound.pause()
             return
@@ -45,5 +52,10 @@ class MiniAudioConductor(
             if (!sound.isPlaying) sound.play()
             time = sound.cursorPosition.toMillis()
         }
+    }
+
+    override fun restart() {
+        time = 0
+        sound.stop()
     }
 }

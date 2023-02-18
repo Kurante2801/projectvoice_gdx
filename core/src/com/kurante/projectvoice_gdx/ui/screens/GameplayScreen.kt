@@ -1,5 +1,7 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
@@ -101,9 +103,11 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             packer.pack("line", game.internalStorage.load<Pixmap>("game/track_line.png"))
             packer.pack("glow", game.internalStorage.load<Pixmap>("game/track_glow.png"))
             packer.pack("white", game.internalStorage.load<Pixmap>("game/white.png"))
+            packer.pack("active", game.internalStorage.load<Pixmap>("game/track_active.png"))
 
             val trackAtlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
             logic = GameplayLogic(conductor, chart, trackAtlas)
+
             packer.dispose()
 
             initialized = true

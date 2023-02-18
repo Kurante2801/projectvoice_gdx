@@ -20,7 +20,6 @@ import ktx.scene2d.Scene2DSkin.defaultSkin
 import ktx.scene2d.vis.gridGroup
 
 class HomeScreen(game: ProjectVoice) : GameScreen(game) {
-    lateinit var grid: FixedColumnGroup
     override fun populate() {
         table = scene2d.table {
             setFillParent(true)
@@ -49,7 +48,7 @@ class HomeScreen(game: ProjectVoice) : GameScreen(game) {
                 setScrollingDisabled(true, false)
                 setMainColor()
 
-                grid = fixedColumnGroup(3) {
+                fixedColumnGroup(3) {
                     spacing = 28f.scaledUi()
 
                     val levels = LevelManager.levels.sortedBy { level -> level.title }
@@ -62,26 +61,9 @@ class HomeScreen(game: ProjectVoice) : GameScreen(game) {
                         }
                     }
                 }
-
-                setGridSize()
             }
         }
 
         stage.addActor(table)
-    }
-
-    override fun resize(width: Int, height: Int) {
-        super.resize(width, height)
-        setGridSize()
-    }
-
-    private fun setGridSize() {
-        val w = (stage.width - game.safeLeft().scaledUi() - game.safeRight().scaledUi() - 28f.scaledUi() * 6) / 3f
-
-        /*grid.apply {
-            itemWidth = w
-            itemHeight = w / (16f / 9f)
-            invalidateHierarchy()
-        }*/
     }
 }
