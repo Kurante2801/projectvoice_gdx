@@ -19,6 +19,7 @@ class GameplayLogic(
     private val conductor: Conductor,
     chart: Chart,
     private val trackAtlas: TextureAtlas,
+    private val modifiers: HashSet<Modifier>
 ) : Disposable {
     companion object {
         // Track's line is larger than the screen and is centered at the judgement line
@@ -131,6 +132,10 @@ class GameplayLogic(
             info.center = round(track.getPosition(time) * width)
             info.width = track.getWidth(time, trackWidth, glowWidth) * scaleX
             info.color.set(track.getColor(time))
+
+            // Mirror!
+            if (modifiers.contains(Modifier.MIRROR))
+                info.center = round(width) - info.center
 
             // Gameplay info
             info.inputWidth = info.width + glowWidth * 2f

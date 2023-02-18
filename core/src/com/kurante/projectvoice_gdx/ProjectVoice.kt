@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.PropertiesUtils
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.VisUI.SkinScale
+import com.kurante.projectvoice_gdx.game.Modifier
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.randomString
@@ -62,6 +63,8 @@ class ProjectVoice(
 
     lateinit var dialogs: GDXDialogs
     lateinit var prefs: PlayerPreferences
+
+    val modifiers = hashSetOf<Modifier>()
 
     override fun create() {
         // Create cache

@@ -29,6 +29,7 @@ import ktx.scene2d.label
 import ktx.scene2d.scene2d
 import ktx.scene2d.table
 
+// TODO: Remove static prefs
 class StorageScreen(parent: ProjectVoice) : GameScreen(parent) {
     private val prefs = getPreferences()
 

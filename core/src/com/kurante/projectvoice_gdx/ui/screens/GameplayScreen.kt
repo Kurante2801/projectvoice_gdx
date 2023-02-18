@@ -106,7 +106,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             packer.pack("active", game.internalStorage.load<Pixmap>("game/track_active.png"))
 
             val trackAtlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
-            logic = GameplayLogic(conductor, chart, trackAtlas)
+            logic = GameplayLogic(conductor, chart, trackAtlas, game.modifiers)
 
             packer.dispose()
 
