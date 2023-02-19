@@ -22,14 +22,16 @@ object LevelManager {
                 continue
             }
 
-            val config = directory.child("songconfig.txt")
+            var config = directory.child("songconfig.txt")
+            if (!config.exists()) config = directory.child("songconfig.json")
+
             if (!config.exists()) {
                 Gdx.app.log("LevelManager", "Skipping ${directory.name()} (found no songconfig.txt)")
                 continue
             }
 
             try {
-                levels.add(Level.fromSongConfig(directory))
+                levels.add(Level.fromSongConfig(directory, config))
             } catch (e: Exception) {
                 Gdx.app.error("LevelManager", "Skipping ${directory.name()} (failed to load)", e)
             }

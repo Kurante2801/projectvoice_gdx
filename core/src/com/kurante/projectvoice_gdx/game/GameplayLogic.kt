@@ -1,17 +1,20 @@
 package com.kurante.projectvoice_gdx.game
 
-import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
 import com.badlogic.gdx.math.MathUtils.*
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Disposable
+import com.kurante.projectvoice_gdx.PlayerPreferences
 import com.kurante.projectvoice_gdx.util.BakedAnimationCurve
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
+import com.kurante.projectvoice_gdx.util.extensions.draw
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
+import com.kurante.projectvoice_gdx.util.extensions.withAlpha
 import ktx.graphics.use
 import java.lang.Integer.max
 
@@ -19,13 +22,16 @@ class GameplayLogic(
     private val conductor: Conductor,
     chart: Chart,
     private val trackAtlas: TextureAtlas,
-    private val modifiers: HashSet<Modifier>
+    private val notesAtlas: TextureAtlas,
+    private val modifiers: HashSet<Modifier>,
+    private val prefs: PlayerPreferences,
 ) : Disposable {
     companion object {
-        // Track's line is larger than the screen and is centered at the judgement line
-        // This is so that it looks centered when the tracks spawn and despawn with animation
-        const val LINE_POS_MULTIPLIER = 0.16666666f
+        // Tracks' lines are larger than the screen and are centered at the judgement line,
+        // this is so that the tracks' images look centered when they spawn and despawn with animation
         const val LINE_HEIGHT_MULTIPLIER = 1.7083f
+        // Judgement line position
+        const val LINE_POS_MULTIPLIER = 0.16666666f
 
         // You can copy-paste the Unity lines into a Unity AnimationCurve field to see exactly what the curve is
 
@@ -63,17 +69,23 @@ class GameplayLogic(
     private val input = InputHandler(this)
 
     // TEXTURES
-    val trackBackground = trackAtlas.findRegion("background")
-    val trackLine = trackAtlas.findRegion("line")
-    val trackGlow = trackAtlas.findRegion("glow")
-    val judgementLine = trackAtlas.findRegion("white")
-    val trackActive = trackAtlas.findRegion("active")
+    private val trackBackground: AtlasRegion = trackAtlas.findRegion("background")
+    private val trackLine: AtlasRegion = trackAtlas.findRegion("line")
+    private val trackGlow: AtlasRegion = trackAtlas.findRegion("glow")
+    private val judgementLine: AtlasRegion = trackAtlas.findRegion("white")
+    private val trackActive: AtlasRegion = trackAtlas.findRegion("active")
+
+    private val clickBackground: AtlasRegion = notesAtlas.findRegion("click_back")
+    private val clickForeground: AtlasRegion = notesAtlas.findRegion("click_fore")
 
     init {
         if (chart.endTime != null)
             maxTime = chart.endTime
 
         for (track in chart.tracks) {
+            // Ensure we don't despawn before all notes have been played
+            for (note in track.notes)
+                track.despawnTime = max(track.despawnTime, note.time + 0) // TODO: Add timing (lowest possible grade)
             // Ensure despawn_time isn't lower than spawn_time + spawn_duration
             if (track.spawnDuration > 0f)
                 track.despawnTime = track.spawnTime + max(track.despawnTime - track.spawnTime, track.spawnDuration)
@@ -95,10 +107,12 @@ class GameplayLogic(
         val width = stage.width
         val height = stage.height
         val trackWidth = width * 0.115f
-        val borderThick: Float = 3f.scaledStageX(stage)
-        val centerThick: Float = 2f.scaledStageX(stage)
-        val glowWidth: Float = 12f.scaledStageX(stage)
-        val judgementThick: Float = 2f.scaledStageY(stage)
+        val borderThick = 3f.scaledStageX(stage)
+        val centerThick = 2f.scaledStageX(stage)
+        val glowWidth = 12f.scaledStageX(stage)
+        val judgementThick = 2f.scaledStageY(stage)
+        val noteSize = 85f.scaledStageX(stage)
+        val noteHalf = noteSize * 0.5f
 
         for ((track, info) in tracks) {
             info.shouldDraw = time >= track.spawnTime && time <= track.despawnTime + track.despawnDuration
@@ -149,47 +163,53 @@ class GameplayLogic(
             batch.enableBlending()
 
             // LEFT & RIGHT GLOWS
-            forEachDrawable(tracks) {
-                batch.color = it.color
-                val half = it.width * 0.5f
+            forEachDrawable(tracks) { _, info ->
+                batch.color = info.color
+                val half = info.width * 0.5f
 
-                batch.draw(trackGlow, it.center - half - glowWidth, height * it.scaleY.mapRange(0.1666f, 0f), glowWidth, height * it.scaleY)
-                batch.draw(trackGlow, it.center + half + glowWidth, height * it.scaleY.mapRange(0.1666f, 0f), -glowWidth, height * it.scaleY)
+                batch.draw(trackGlow, info.center - half - glowWidth, height * info.scaleY.mapRange(0.1666f, 0f), glowWidth, height * info.scaleY)
+                batch.draw(trackGlow, info.center + half + glowWidth, height * info.scaleY.mapRange(0.1666f, 0f), -glowWidth, height * info.scaleY)
             }
             // BACKGROUND
-            forEachDrawable(tracks) {
-                batch.color = it.color
-                batch.draw(trackBackground, it.center - it.width * 0.5f, height * it.scaleY.mapRange(0.1666f, 0f), it.width, height * it.scaleY)
+            forEachDrawable(tracks) { _, info ->
+                batch.color = info.color
+                batch.draw(info.color, trackBackground, info.center - info.width * 0.5f, height * info.scaleY.mapRange(0.1666f, 0f), info.width, height * info.scaleY)
             }
             // LEFT & RIGHT BORDERS
             batch.color = Color.WHITE
-            forEachDrawable(tracks) {
-                val half = it.width * 0.5f
-                val tall = (height * LINE_HEIGHT_MULTIPLIER) * it.scaleY
+            forEachDrawable(tracks) { _, info ->
+                val half = info.width * 0.5f
+                val tall = (height * LINE_HEIGHT_MULTIPLIER) * info.scaleY
                 val y = (height * LINE_POS_MULTIPLIER) - tall * 0.5f
-                batch.draw(trackLine, it.center - half, y, borderThick, tall)
-                batch.draw(trackLine, it.center + half - borderThick, y, borderThick, tall)
+                batch.draw(trackLine, info.center - half, y, borderThick, tall)
+                batch.draw(trackLine, info.center + half - borderThick, y, borderThick, tall)
             }
             // BLACK CENTER
-            forEachDrawable(tracks) {
-                batch.color = batch.color.set(0f, 0f, 0f, it.scaleY)
-                val tall = (height * LINE_HEIGHT_MULTIPLIER) * it.scaleY
+            forEachDrawable(tracks) { _, info ->
+                batch.color = batch.color.withAlpha(info.scaleY * 0.5f)
+                val tall = (height * LINE_HEIGHT_MULTIPLIER) * info.scaleY
                 val y = (height * LINE_POS_MULTIPLIER) - tall * 0.5f
-                batch.draw(trackLine, it.center - centerThick * 0.5f, y, centerThick, tall)
+                batch.draw(trackLine, info.center - centerThick * 0.5f, y, centerThick, tall)
             }
             // ACTIVE BACKGROUND
-            forEachDrawable(tracks) {
-                if (it.animating) return@forEachDrawable
-                val a = (1f - ((time - it.activeTime) / 250f).coerceIn(0f, 1f))
+            forEachDrawable(tracks) { _, info ->
+                if (info.animating) return@forEachDrawable
+                val a = (1f - ((time - info.activeTime) / 250f).coerceIn(0f, 1f))
                 if (a <= 0f) return@forEachDrawable
 
-                batch.color = batch.color.set(1f, 1f, 1f, a)
-                batch.draw(trackActive, it.center - it.inputWidth * 0.5f, 0f, it.inputWidth, height)
+                batch.draw(batch.color.withAlpha(a), trackActive, info.center - info.inputWidth * 0.5f, 0f, info.inputWidth, height)
             }
             // JUDGEMENT LINE
             batch.color = Color.WHITE
             batch.draw(judgementLine, 0f, height * LINE_POS_MULTIPLIER - judgementThick * 0.5f, width, judgementThick)
             // NOTES
+            val speed = Note.scrollDurations[prefs.noteSpeedIndex]
+            forEachNote(tracks) { track, info, note ->
+                val difference = note.time - time
+                val y = difference.mapRange(0, speed, height * LINE_POS_MULTIPLIER, height)
+                batch.draw(prefs.noteClickBackground, clickBackground, info.center - noteHalf, y - noteHalf, noteSize, noteSize)
+                batch.draw(prefs.noteClickForeground, clickForeground, info.center - noteHalf, y - noteHalf, noteSize, noteSize)
+            }
             // EFFECTS
         }
     }
@@ -197,6 +217,7 @@ class GameplayLogic(
     override fun dispose() {
         conductor.dispose()
         trackAtlas.dispose()
+        notesAtlas.dispose()
     }
 
     fun setPaused(paused: Boolean) {
@@ -205,10 +226,19 @@ class GameplayLogic(
 
     fun getPaused() = conductor.paused
 
-    private fun forEachDrawable(data: MutableMap<Track, TrackInfo>, action: (TrackInfo) -> Unit) {
-        for (info in data.values) {
+    private fun forEachDrawable(data: MutableMap<Track, TrackInfo>, action: (Track, TrackInfo) -> Unit) {
+        for ((track, info) in data) {
             if (info.shouldDraw)
-                action(info)
+                action(track, info)
+        }
+    }
+
+    private fun forEachNote(data: MutableMap<Track, TrackInfo>, action: (Track, TrackInfo, Note) -> Unit) {
+        for ((track, info) in data) {
+            if (!info.shouldDraw) continue
+
+            for (note in track.notes)
+                action(track, info, note)
         }
     }
 }

@@ -94,22 +94,28 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
         val chart = LegacyParser.parseChart(level, section)
 
         KtxAsync.launch {
-            val packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false)
             val conductor = game.loadConductor(level.file.child(level.musicFilename))
 
-            packer.packToTexture = true
-
-            packer.pack("background", game.internalStorage.load<Pixmap>("game/track_background.png"))
-            packer.pack("line", game.internalStorage.load<Pixmap>("game/track_line.png"))
-            packer.pack("glow", game.internalStorage.load<Pixmap>("game/track_glow.png"))
-            packer.pack("white", game.internalStorage.load<Pixmap>("game/white.png"))
-            packer.pack("active", game.internalStorage.load<Pixmap>("game/track_active.png"))
-
+            var packer = PixmapPacker(512, 2048, Pixmap.Format.RGBA8888, 2, false).apply {
+                packToTexture = true
+                pack("background", game.internalStorage.load<Pixmap>("game/track_background.png"))
+                pack("line", game.internalStorage.load<Pixmap>("game/track_line.png"))
+                pack("glow", game.internalStorage.load<Pixmap>("game/track_glow.png"))
+                pack("white", game.internalStorage.load<Pixmap>("game/white.png"))
+                pack("active", game.internalStorage.load<Pixmap>("game/track_active.png"))
+            }
             val trackAtlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
-            logic = GameplayLogic(conductor, chart, trackAtlas, game.modifiers)
-
             packer.dispose()
 
+            packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply {
+                packToTexture = true
+                pack("click_back", game.internalStorage.load<Pixmap>("game/notes/diamond/click_back.png"))
+                pack("click_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/click_fore.png"))
+            }
+            val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
+            packer.dispose()
+
+            logic = GameplayLogic(conductor, chart, trackAtlas, notesAtlas, game.modifiers, game.prefs)
             initialized = true
         }
     }

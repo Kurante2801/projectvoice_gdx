@@ -262,7 +262,12 @@ public class LegacyParser {
         }
 
         private Track convertTrack() {
-            return new Track(id, spawnTime, spawnDuration, despawnTime, despawnDuration, convertTransition(moveTransitions), convertTransition(scaleTransitions), convertColorTransition(colorTransitions));
+            Note[] newNotes = new Note[notes.size];
+
+            for (int i = 0; i < notes.size; i++)
+                newNotes[i] = notes.get(i);
+
+            return new Track(id, spawnTime, spawnDuration, despawnTime, despawnDuration, convertTransition(moveTransitions), convertTransition(scaleTransitions), convertColorTransition(colorTransitions), newNotes);
         }
     }
 

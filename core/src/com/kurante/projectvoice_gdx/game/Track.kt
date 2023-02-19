@@ -15,6 +15,8 @@ data class Track(
     val moveTransitions: Array<Transition>,
     val scaleTransitions: Array<Transition>,
     val colorTransitions: Array<ColorTransition>,
+
+    val notes: Array<Note>,
 ) {
     companion object {
         // 120px at a window width of 1280px

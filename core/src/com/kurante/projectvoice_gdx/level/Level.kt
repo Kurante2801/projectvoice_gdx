@@ -23,7 +23,7 @@ data class  Level(
         private val audioExtensions = arrayOf("mp3", "wav", "ogg")
 
         // Parses a legacy songconfig.txt
-        fun fromSongConfig(directory: FileHandle): Level {
+        fun fromSongConfig(directory: FileHandle, config: FileHandle): Level {
             var musicFile: FileHandle? = null
             var previewFile: FileHandle? = null
 
@@ -39,12 +39,9 @@ data class  Level(
             if (musicFile == null)
                 throw GdxRuntimeException("Music file not found: ${directory.name()}")
 
-            val songConfig = directory.child("songconfig.txt")
-            assert(songConfig.exists())
-
             // songconfig.txt is like an INI file, each line will be: key=value
             val data = mutableMapOf<String, String>()
-            for (line in songConfig.readString().split("\r\n", "\r", "\n")) {
+            for (line in config.readString().split("\r\n", "\r", "\n")) {
                 val index = line.lastIndexOf('=')
                 if (index < 0) continue
                 data[line.substring(0, index)] = line.substring(index + 1)
