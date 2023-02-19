@@ -7,7 +7,7 @@ import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import ktx.json.fromJson
 
-object Legacy {
+/*object Legacy {
     fun parseChart(level: Level, section: ChartSection): Chart {
         val json = Json()
         json.ignoreUnknownFields = true
@@ -197,4 +197,4 @@ data class LegacyTransition(
     val Ease: String = "easelinear",
     val Start: Float = 0f,
     val End: Float = 0f,
-)
+)*/

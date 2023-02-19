@@ -8,10 +8,11 @@ import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
 import com.kurante.projectvoice_gdx.ProjectVoice;
 
 public class IOSLauncher extends IOSApplication.Delegate {
+
     @Override
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        return new IOSApplication(new ProjectVoice(), config);
+        return new IOSApplication(new ProjectVoice(new IOSCallbacks()), config);
     }
 
     public static void main(String[] argv) {

@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.GameplayLogic
-import com.kurante.projectvoice_gdx.game.Legacy
+import com.kurante.projectvoice_gdx.game.LegacyParser
 import com.kurante.projectvoice_gdx.level.ChartSection
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.ui.GameScreen
@@ -91,7 +91,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
     fun initialize(level: Level, section: ChartSection) {
         this.level = level
-        val chart = Legacy.parseChart(level, section)
+        val chart = LegacyParser.parseChart(level, section)
 
         KtxAsync.launch {
             val packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false)

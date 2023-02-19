@@ -47,4 +47,11 @@ class PlayerPreferences(val game: ProjectVoice) {
             prefs["storage"] = value!!
             prefs.flush()
         }
+
+    var noteSpeed: Int
+        get() = prefs["noteIndex"] ?: 2
+        set(value) {
+            prefs["noteIndex"] = value
+            prefs.flush()
+        }
 }
