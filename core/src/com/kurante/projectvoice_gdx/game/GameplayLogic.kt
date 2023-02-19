@@ -111,7 +111,7 @@ class GameplayLogic(
         val centerThick = 2f.scaledStageX(stage)
         val glowWidth = 12f.scaledStageX(stage)
         val judgementThick = 2f.scaledStageY(stage)
-        val noteSize = 85f.scaledStageX(stage)
+        val noteSize = 85f.scaledStageY(stage)
         val noteHalf = noteSize * 0.5f
 
         for ((track, info) in tracks) {
@@ -186,7 +186,7 @@ class GameplayLogic(
             }
             // BLACK CENTER
             forEachDrawable(tracks) { _, info ->
-                batch.color = batch.color.withAlpha(info.scaleY * 0.5f)
+                batch.color = batch.color.set(0f, 0f, 0f, info.scaleY * 0.5f)
                 val tall = (height * LINE_HEIGHT_MULTIPLIER) * info.scaleY
                 val y = (height * LINE_POS_MULTIPLIER) - tall * 0.5f
                 batch.draw(trackLine, info.center - centerThick * 0.5f, y, centerThick, tall)
