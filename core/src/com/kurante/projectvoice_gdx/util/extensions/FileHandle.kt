@@ -8,7 +8,7 @@ fun FileHandle.copyToCache(): FileHandle {
     var output = Gdx.files.local("cache/${randomString()}.${this.extension()}")
     while (output.exists())
         output = Gdx.files.local("cache/${randomString()}.${this.extension()}")
-    this.copyTo(output)
+    copyTo(output)
     return output
 }
 

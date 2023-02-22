@@ -22,8 +22,6 @@ class OboeConductor(
     override val duration: Int
     private var audioEnded = false
 
-
-
     init {
         duration = meta.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toInt()
         maxTime = duration

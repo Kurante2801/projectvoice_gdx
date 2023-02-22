@@ -1,62 +1,47 @@
 package com.kurante.projectvoice_gdx.storage
 
-import android.net.Uri
-import androidx.documentfile.provider.DocumentFile
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.kurante.projectvoice_gdx.AndroidLauncher
+import kurante.gdxscopedstorage.DocumentHandle
 
 class AndroidStorageHandler(
     private val launcher: AndroidLauncher
 ) : StorageHandler {
     override fun requestFolderAccess(callback: (FileHandle?) -> Unit) {
-        launcher.openDocumentTree(callback)
+        launcher.storageHandler.requestDocumentTree(true, callback)
     }
 
     override fun fileFromString(string: String): FileHandle {
-        return AndroidFileHandle(
-            launcher,
-            DocumentFile.fromSingleUri(launcher, Uri.parse(string))!!
-        )
+        return DocumentHandle.valueOf(launcher.context, string)
     }
 
-    override fun directoryFromString(string: String): AndroidFileHandle {
-        return AndroidFileHandle(launcher, DocumentFile.fromTreeUri(launcher, Uri.parse(string))!!)
+    override fun directoryFromString(string: String): FileHandle {
+        return DocumentHandle.valueOf(launcher.context, string)
     }
 
     override fun subDirectory(handle: FileHandle, name: String): FileHandle {
-        var sub = handle.child(name)
+        if (handle !is DocumentHandle) return super.subDirectory(handle, name)
 
-        if (!sub.exists()) {
-            sub = (handle as AndroidFileHandle).createDirectory(name)
-                ?: throw GdxRuntimeException("(Android) Could not get nor create subdirectory $name on ${handle.name()}")
-        }
+        val dir = handle.child(name) as DocumentHandle
+        if (dir.exists()) return dir
 
-        return sub
-    }
-
-    override fun subFile(handle: FileHandle, name: String): FileHandle {
-        var sub = handle.child(name)
-
-        if (!sub.exists()) {
-            sub = (handle as AndroidFileHandle).createFile(name)
-                ?: throw GdxRuntimeException("(Android) Could not get nor create subdirectory $name on ${handle.name()}")
-        }
-
-        return sub
+        val child = dir.document.createDirectory(name)
+            ?: throw GdxRuntimeException("Could not create subdirectory: $name")
+        return DocumentHandle(launcher.context, child)
     }
 
     override fun isSAF(): Boolean = true
 
     override fun canRead(handle: FileHandle): Boolean {
-        if(handle is AndroidFileHandle)
-            return handle.canRead()
+        if (handle is DocumentHandle)
+            return handle.document.canRead()
         return handle.file().canRead()
     }
 
     override fun canWrite(handle: FileHandle): Boolean {
-        if(handle is AndroidFileHandle)
-            return handle.canWrite()
+        if (handle is DocumentHandle)
+            return handle.document.canWrite()
         return handle.file().canWrite()
     }
 }

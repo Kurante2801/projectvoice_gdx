@@ -29,13 +29,15 @@ class NullableStringPreference(
     private val preferences: Preferences,
     private val onChange: ((String?) -> Unit)? = null
 ) : ReadWriteProperty<PlayerPreferences, String?> {
-    private val cache = preferences[key] ?: default
+    private var cache = preferences[key] ?: default
     override fun getValue(thisRef: PlayerPreferences, property: KProperty<*>): String? = cache
     override fun setValue(thisRef: PlayerPreferences, property: KProperty<*>, value: String?) {
         onChange?.invoke(value)
+        cache = value
 
         if (value == null) {
             preferences.remove(key)
+            preferences.flush()
         } else {
             preferences[key] = value
             preferences.flush()

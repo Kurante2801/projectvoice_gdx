@@ -84,13 +84,11 @@ class ProjectVoice(
 
         KtxAsync.initiate()
         assetStorage = AssetStorage(
-            fileResolver = StorageFileHandleResolver()
+            fileResolver = StorageFileHandleResolver(nativeCallbacks.getStorageHandler())
         )
         internalStorage = AssetStorage(
             fileResolver = InternalFileHandleResolver()
         )
-
-
         absoluteStorage = AssetStorage(
             fileResolver = AbsoluteFileHandleResolver()
         )

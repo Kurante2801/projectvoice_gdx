@@ -29,20 +29,17 @@ class AndroidCallbacks(private val launcher: AndroidLauncher) : NativeCallbacks(
     }
 
     override suspend fun loadConductor(game: ProjectVoice, handle: FileHandle): Conductor {
-        val file = if (Platform.isAndroidSAF) handle.copyToCache() else handle
+        val file = if (Platform.isAndroidSAF) handle.copyToCache().absoluteFromLocal() else handle
         // Used to determine song length
         val meta = MediaMetadataRetriever().apply {
-            if (file.type() == FileType.Local)
-                setDataSource(file.absoluteFromLocal().path())
-            else
-                setDataSource(file.path())
+            setDataSource(file.path())
         }
 
         return OboeConductor(
-            assetStorage = game.assetStorage,
+            assetStorage = game.absoluteStorage,
             handle = file,
             meta = meta,
-            music = game.assetStorage.load<Music>(file.path()) as OboeMusic,
+            music = game.absoluteStorage.load<Music>(file.path()) as OboeMusic,
             shouldDelete = Platform.isAndroidSAF
         )
     }
