@@ -1,22 +1,35 @@
-package com.kurante.projectvoice_gdx.game
+package com.kurante.projectvoice_gdx.util
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Json
+import com.kurante.projectvoice_gdx.game.*
 import com.kurante.projectvoice_gdx.level.ChartSection
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import ktx.json.fromJson
 
-/*object Legacy {
+object LegacyParser {
     fun parseChart(level: Level, section: ChartSection): Chart {
         val json = Json()
         json.ignoreUnknownFields = true
 
         val legacyTracks = json.fromJson<Array<LegacyTrack>>(level.file.child(section.chartFilename))
+        val legacyNotes = json.fromJson<Array<LegacyNote>>(level.file.child(section.chartFilename.replace("track_", "note_")))
         val tracks = mutableListOf<Track>()
 
         // Sort the same way as editor
         legacyTracks.sortBy { it.Start }
+        legacyNotes.sortBy { it.Time }
+
+        for (note in legacyNotes) {
+            for (i in legacyTracks.indices) {
+                if (note.Track == legacyTracks[i].Id) {
+                    note.Track = i
+                }
+            }
+        }
+        for (i in legacyTracks.indices)
+            legacyTracks[i].Id = i
 
         for (legacyTrack in legacyTracks) {
             val moveTransitions = convertTransitions(
@@ -47,6 +60,18 @@ import ktx.json.fromJson
                 )
             }.toTypedArray()
 
+            val notes = mutableListOf<Note>()
+            for (note in legacyNotes) {
+                if (note.Track != legacyTrack.Id) continue
+                val type = parseNoteType(note.Type)
+                val data = when(type) {
+                    NoteType.HOLD -> note.Hold.toMillis()
+                    NoteType.SWIPE -> if (note.Dir <= 0) -1 else 1
+                    else -> 0
+                }
+                notes.add(Note(note.Id, note.Time.toMillis(), type, data))
+            }
+
             tracks.add(
                 Track(
                     id = legacyTrack.Id,
@@ -57,6 +82,7 @@ import ktx.json.fromJson
                     moveTransitions = moveTransitions,
                     scaleTransitions = scaleTransitions,
                     colorTransitions = colorTransitions,
+                    notes = notes.toTypedArray()
                 )
             )
         }
@@ -64,7 +90,7 @@ import ktx.json.fromJson
         return Chart(0, null, 0, tracks.toTypedArray())
     }
 
-    fun convertTransitions(
+    private fun convertTransitions(
         legacyTrack: LegacyTrack,
         legacy: Array<LegacyTransition>,
         initial: Float,
@@ -129,7 +155,7 @@ import ktx.json.fromJson
         return transitions.toTypedArray()
     }
 
-    fun parseEase(ease: String): TransitionEase = when (ease) {
+    private fun parseEase(ease: String): TransitionEase = when (ease) {
         "easelinear" -> TransitionEase.LINEAR
         "easeinquad" -> TransitionEase.QUAD_IN
         "easeoutquad" -> TransitionEase.QUAD_OUT
@@ -155,46 +181,61 @@ import ktx.json.fromJson
     }
 
     // In legacy, colors are stored as numbers that map to these values
-    val colors = arrayOf(
-        "#F98F95",
-        "#F9E5A1",
-        "#D3D3D3",
-        "#77D1DE",
-        "#97D384",
-        "#F3B67E",
-        "#E2A0CB",
-        "#8CBCE7",
-        "#76DBCB",
-        "#AEA6F0"
-    )
+    private fun parseColor(value: Int): Color = Color.valueOf(when(value) {
+        0 -> "#F98F95"
+        1 -> "#F9E5A1"
+        2 -> "#D3D3D3"
+        3 -> "#77D1DE"
+        4 -> "#97D384"
+        5 -> "#F3B67E"
+        6 -> "#E2A0CB"
+        7 -> "#8CBCE7"
+        8 -> "#76DBCB"
+        9 -> "#AEA6F0"
+        else -> "#FFFFFF"
+    })
 
-    fun parseColor(value: Int): Color = Color.valueOf(colors.elementAtOrNull(value) ?: "#FFFFFFFF")
-}
-
-data class LegacyTrack(
-    val Id: Int = 0,
-    val EntranceOn: Boolean = true,
-    val X: Float = 0f,
-    val Size: Float = 1f,
-    val Start: Float = 0f,
-    val End: Float = 10f,
-    val Color: Float = 1f,
-    val Move: Array<LegacyTransition> = arrayOf(),
-    val Scale: Array<LegacyTransition> = arrayOf(),
-    val ColorChange: Array<LegacyTransition> = arrayOf(),
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        return (other as LegacyTrack).Id == Id
+    private fun parseNoteType(type: String): NoteType = when(type) {
+        "swipe" -> NoteType.SWIPE
+        "hold" -> NoteType.HOLD
+        "slide" -> NoteType.SLIDE
+        else -> NoteType.CLICK
     }
 
-    override fun hashCode(): Int = Id.hashCode()
-}
+    private data class LegacyTrack(
+        var Id: Int = 0,
+        val EntranceOn: Boolean = true,
+        val X: Float = 0f,
+        val Size: Float = 1f,
+        val Start: Float = 0f,
+        val End: Float = 10f,
+        val Color: Float = 1f,
+        val Move: Array<LegacyTransition> = arrayOf(),
+        val Scale: Array<LegacyTransition> = arrayOf(),
+        val ColorChange: Array<LegacyTransition> = arrayOf(),
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            return (other as LegacyTrack).Id == Id
+        }
 
-data class LegacyTransition(
-    val To: Float = 0f,
-    val Ease: String = "easelinear",
-    val Start: Float = 0f,
-    val End: Float = 0f,
-)*/
+        override fun hashCode(): Int = Id.hashCode()
+    }
+
+    private data class LegacyTransition(
+        val To: Float = 0f,
+        val Ease: String = "easelinear",
+        val Start: Float = 0f,
+        val End: Float = 0f,
+    )
+
+    private data class LegacyNote(
+        val Id: Int = 0,
+        val Type: String = "click",
+        var Track: Int = 0,
+        val Time: Float = 0f,
+        val Hold: Float = 0f,
+        val Dir: Int = 0,
+    )
+}

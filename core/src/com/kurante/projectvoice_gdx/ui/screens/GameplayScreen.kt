@@ -1,7 +1,5 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
@@ -10,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.GameplayLogic
-import com.kurante.projectvoice_gdx.game.LegacyParser
+import com.kurante.projectvoice_gdx.util.LegacyParser
 import com.kurante.projectvoice_gdx.level.ChartSection
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.ui.GameScreen
