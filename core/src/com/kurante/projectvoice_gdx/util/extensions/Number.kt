@@ -14,6 +14,9 @@ fun Int.mapRange(fromMin: Int, fromMax: Int, toMin: Int, toMax: Int) =
 fun Int.mapRange(fromMin: Int, fromMax: Int, toMin: Float, toMax: Float) =
     (this - fromMin) * (toMax - toMin) / (fromMax - fromMin).toFloat() + toMin
 
+fun Int.mapRange(fromMin: Int, fromMax: Int, toMin: Double, toMax: Double) =
+    (this - fromMin) * (toMax - toMin) / (fromMax - fromMin).toFloat() + toMin
+
 // Assume fromMin = 0 and fromMax = 1f
 fun Float.mapRange(toMin: Float, toMax: Float, clamped: Boolean = true): Float {
     return if (clamped)

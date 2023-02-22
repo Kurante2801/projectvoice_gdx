@@ -8,13 +8,13 @@ import com.badlogic.gdx.math.MathUtils.*
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Disposable
 import com.kurante.projectvoice_gdx.PlayerPreferences
+import com.kurante.projectvoice_gdx.game.notes.NoteBehavior
 import com.kurante.projectvoice_gdx.util.BakedAnimationCurve
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
 import com.kurante.projectvoice_gdx.util.extensions.draw
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
-import com.kurante.projectvoice_gdx.util.extensions.withAlpha
 import ktx.graphics.use
 import java.lang.Integer.max
 
@@ -25,6 +25,7 @@ class GameplayLogic(
     private val notesAtlas: TextureAtlas,
     private val modifiers: HashSet<Modifier>,
     private val prefs: PlayerPreferences,
+    private val state: GameState,
 ) : Disposable {
     companion object {
         // Tracks' lines are larger than the screen and are centered at the judgement line,
@@ -60,13 +61,13 @@ class GameplayLogic(
         var shouldDraw: Boolean = false,
         var animating: Boolean = false,
         var activeTime: Int = -10000,
-        var inputWidth: Float = 0f
+        var inputWidth: Float = 0f,
+        val notes: Array<NoteBehavior>
     )
 
-    var  maxTime = conductor.maxTime
+    var maxTime = conductor.maxTime
     val tracks = mutableMapOf<Track, TrackInfo>()
     val time: Int get() = conductor.time
-    private val input = InputHandler(this)
 
     // TEXTURES
     private val trackBackground: AtlasRegion = trackAtlas.findRegion("background")
@@ -75,24 +76,26 @@ class GameplayLogic(
     private val judgementLine: AtlasRegion = trackAtlas.findRegion("white")
     private val trackActive: AtlasRegion = trackAtlas.findRegion("active")
 
-    private val clickBackground: AtlasRegion = notesAtlas.findRegion("click_back")
-    private val clickForeground: AtlasRegion = notesAtlas.findRegion("click_fore")
-
     init {
         if (chart.endTime != null)
             maxTime = chart.endTime
 
         for (track in chart.tracks) {
-            // Ensure we don't despawn before all notes have been played
-            for (note in track.notes)
-                track.despawnTime = max(track.despawnTime, note.time + 0) // TODO: Add timing (lowest possible grade)
+            val notes = mutableListOf<NoteBehavior>()
+            for (note in track.notes) {
+                // Ensure we don't despawn before all notes have been played
+                track.despawnTime = max(track.despawnTime, note.time + NoteGrade.missThreshold)
+                // Add to list
+                notes.add(NoteBehavior(prefs, notesAtlas, note, state))
+            }
             // Ensure despawn_time isn't lower than spawn_time + spawn_duration
             if (track.spawnDuration > 0f)
                 track.despawnTime = track.spawnTime + max(track.despawnTime - track.spawnTime, track.spawnDuration)
             // Ensure game doesn't end too soon
             maxTime = max(maxTime, track.despawnTime + track.despawnDuration + 1f.toMillis())
 
-            tracks[track] = TrackInfo()
+            notes.sortBy { -it.data.time }
+            tracks[track] = TrackInfo(notes = notes.toTypedArray())
         }
 
         conductor.maxTime = maxTime
@@ -111,8 +114,7 @@ class GameplayLogic(
         val centerThick = 2f.scaledStageX(stage)
         val glowWidth = 12f.scaledStageX(stage)
         val judgementThick = 2f.scaledStageY(stage)
-        val noteSize = 85f.scaledStageY(stage)
-        val noteHalf = noteSize * 0.5f
+        val judgementPosition = height * LINE_POS_MULTIPLIER - judgementThick * 0.5f
 
         for ((track, info) in tracks) {
             info.shouldDraw = time >= track.spawnTime && time <= track.despawnTime + track.despawnDuration
@@ -153,11 +155,15 @@ class GameplayLogic(
 
             // Gameplay info
             info.inputWidth = info.width + glowWidth * 2f
+
+            // Notes
+            for (note in info.notes)
+                note.act(time, height, judgementPosition)
         }
 
         // TODO: Don't poll when paused
         // TODO: Don't poll when auto mode (when notes are implemented)
-        input.poll(width)
+        //input.poll(width)
 
         batch.use {
             batch.enableBlending()
@@ -192,25 +198,22 @@ class GameplayLogic(
                 batch.draw(trackLine, info.center - centerThick * 0.5f, y, centerThick, tall)
             }
             // ACTIVE BACKGROUND
+            batch.color = Color.WHITE
             forEachDrawable(tracks) { _, info ->
                 if (info.animating) return@forEachDrawable
                 val a = (1f - ((time - info.activeTime) / 250f).coerceIn(0f, 1f))
                 if (a <= 0f) return@forEachDrawable
 
-                batch.draw(batch.color.withAlpha(a), trackActive, info.center - info.inputWidth * 0.5f, 0f, info.inputWidth, height)
+                batch.color.a = a
+                batch.draw(trackActive, info.center - info.inputWidth * 0.5f, 0f, info.inputWidth, height)
             }
             // JUDGEMENT LINE
             batch.color = Color.WHITE
-            batch.draw(judgementLine, 0f, height * LINE_POS_MULTIPLIER - judgementThick * 0.5f, width, judgementThick)
+            batch.draw(judgementLine, 0f, judgementPosition, width, judgementThick)
             // NOTES
-            val speed = Note.scrollDurations[prefs.noteSpeedIndex]
-            forEachNote(tracks) { track, info, note ->
-                val difference = note.time - time
-                val y = difference.mapRange(0, speed, height * LINE_POS_MULTIPLIER, height)
-                batch.draw(prefs.noteClickBackground, clickBackground, info.center - noteHalf, y - noteHalf, noteSize, noteSize)
-                batch.draw(prefs.noteClickForeground, clickForeground, info.center - noteHalf, y - noteHalf, noteSize, noteSize)
+            forEachNote(tracks) { _, info, note ->
+                note.render(batch, info, stage)
             }
-            // EFFECTS
         }
     }
 
@@ -233,11 +236,11 @@ class GameplayLogic(
         }
     }
 
-    private fun forEachNote(data: MutableMap<Track, TrackInfo>, action: (Track, TrackInfo, Note) -> Unit) {
+    private fun forEachNote(data: MutableMap<Track, TrackInfo>, action: (Track, TrackInfo, NoteBehavior) -> Unit) {
         for ((track, info) in data) {
             if (!info.shouldDraw) continue
 
-            for (note in track.notes)
+            for (note in info.notes)
                 action(track, info, note)
         }
     }

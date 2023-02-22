@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
+import com.kurante.projectvoice_gdx.game.GameState
 import com.kurante.projectvoice_gdx.game.GameplayLogic
 import com.kurante.projectvoice_gdx.util.LegacyParser
 import com.kurante.projectvoice_gdx.level.ChartSection
@@ -113,7 +114,15 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
             packer.dispose()
 
-            logic = GameplayLogic(conductor, chart, trackAtlas, notesAtlas, game.modifiers, game.prefs)
+            logic = GameplayLogic(
+                conductor = conductor,
+                chart = chart,
+                trackAtlas = trackAtlas,
+                notesAtlas = notesAtlas,
+                modifiers = game.modifiers,
+                prefs = game.prefs,
+                state = GameState(level, section, chart),
+            )
             initialized = true
         }
     }
