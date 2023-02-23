@@ -16,12 +16,13 @@ import kotlin.math.max
 
 open class NoteBehavior(
     private val prefs: PlayerPreferences,
-    private val atlas: TextureAtlas,
+    atlas: TextureAtlas,
     val data: Note,
     private val state: GameState,
 ) {
     companion object {
         const val FADE_TIME: Int = 1000
+        const val NOTE_WIDTH: Float = 85f
         var isAuto = true
     }
 
@@ -29,16 +30,17 @@ open class NoteBehavior(
     var isCollected = false
     var shouldRender = false
     var y: Float = 0f
-    private var alpha: Float = 1f
-    private val speed = Note.scrollDurations[prefs.noteSpeedIndex]
+    protected var alpha: Float = 1f
+    protected val speed = Note.scrollDurations[prefs.noteSpeedIndex]
     var grade: NoteGrade? = null
 
-    private val background: TextureRegion = atlas.findRegion("click_back")
-    private val foreground: TextureRegion = atlas.findRegion("click_fore")
+    protected val background: TextureRegion = atlas.findRegion("click_back")
+    protected val foreground: TextureRegion = atlas.findRegion("click_fore")
 
-    fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float) {
+    open fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float) {
         val difference = data.time - time
         shouldRender = difference <= speed
+        if (!shouldRender) return
 
         // Miss animation
         if (isCollected) {
@@ -51,7 +53,6 @@ open class NoteBehavior(
             if (fadeTime < difference) {
                 y = difference.mapRange(NoteGrade.missThreshold, fadeTime, judgementLinePosition, judgementLinePosition - missDistance)
                 alpha = 0.5f - difference.mapRange(NoteGrade.missThreshold, fadeTime, 0f, 0.5f)
-            //alpha = 0.5f + sinceMiss * 0.5f
             } else
                 shouldRender = false
             return
@@ -62,11 +63,11 @@ open class NoteBehavior(
             judge(time)
     }
 
-    fun render(batch: Batch, info: GameplayLogic.TrackInfo, stage: Stage) {
+    open fun render(batch: Batch, info: GameplayLogic.TrackInfo, stage: Stage) {
         if (!shouldRender) return
 
-        val width = 85f.scaledStageX(stage)
-        val drawX =  info.center - width * 0.5f
+        val width = NOTE_WIDTH.scaledStageX(stage)
+        val drawX = info.center - width * 0.5f
         val drawY = y - width * 0.5f
 
         batch.color = batch.color.set(prefs.noteClickBackground, alpha)
@@ -75,9 +76,9 @@ open class NoteBehavior(
         batch.draw(foreground, drawX, drawY, width, width)
     }
 
-    fun judge(time: Int) {
+    open fun judge(time: Int) {
         val difference = data.time - time
-        grade = NoteGrade.fromTime(difference) ?: return
+        grade = NoteGrade.fromDifference(difference) ?: return
 
         if (isAuto) {
             // TODO: Activate tracks behind this note

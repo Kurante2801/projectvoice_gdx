@@ -2,13 +2,16 @@ package com.kurante.projectvoice_gdx.game
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
 import com.badlogic.gdx.math.MathUtils.*
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Disposable
 import com.kurante.projectvoice_gdx.PlayerPreferences
+import com.kurante.projectvoice_gdx.game.notes.HoldNoteBehavior
 import com.kurante.projectvoice_gdx.game.notes.NoteBehavior
 import com.kurante.projectvoice_gdx.util.BakedAnimationCurve
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
@@ -28,6 +31,7 @@ class GameplayLogic(
     prefs: PlayerPreferences,
     state: GameState,
     private val glowTexture: Texture,
+    holdBackground: NinePatch,
 ) : Disposable {
     companion object {
         // Tracks' lines are larger than the screen and are centered at the judgement line,
@@ -88,7 +92,10 @@ class GameplayLogic(
                 // Ensure we don't despawn before all notes have been played
                 track.despawnTime = max(track.despawnTime, note.time + NoteGrade.missThreshold)
                 // Add to list
-                notes.add(NoteBehavior(prefs, notesAtlas, note, state))
+                notes.add(when(note.type) {
+                    NoteType.HOLD -> HoldNoteBehavior(prefs, notesAtlas, note, state, holdBackground)
+                    else -> NoteBehavior(prefs, notesAtlas, note, state)
+                })
             }
             // Ensure despawn_time isn't lower than spawn_time + spawn_duration
             if (track.spawnDuration > 0f)

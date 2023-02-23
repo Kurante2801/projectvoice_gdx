@@ -3,6 +3,7 @@ package com.kurante.projectvoice_gdx.ui.screens
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
+import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -16,6 +17,7 @@ import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
+import com.kurante.projectvoice_gdx.util.extensions.parseNinePatch
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.toSeconds
 import kotlinx.coroutines.launch
@@ -106,10 +108,14 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             val trackAtlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
             packer.dispose()
 
+            val background = game.internalStorage.load<Pixmap>("game/notes/diamond/hold_back.9.png")
+            val ninePatch = background.parseNinePatch()
+
             packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply {
                 packToTexture = true
                 pack("click_back", game.internalStorage.load<Pixmap>("game/notes/diamond/click_back.png"))
                 pack("click_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/click_fore.png"))
+                pack("hold_back", background)
             }
             val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
             packer.dispose()
@@ -126,7 +132,8 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 modifiers = game.modifiers,
                 prefs = game.prefs,
                 state = GameState(level, section, chart),
-                glowTexture = glowTexture
+                glowTexture = glowTexture,
+                holdBackground = ninePatch
             )
             initialized = true
         }

@@ -20,7 +20,7 @@ object DesktopLauncher {
         Lwjgl3Application(ProjectVoice(DesktopCallbacks()), Lwjgl3ApplicationConfiguration().apply {
             setForegroundFPS(144)
             setTitle("Project Voice")
-            setWindowedMode(1280, 960)
+            setWindowedMode(1280, 720)
             setWindowSizeLimits(640, 480, -1, -1)
         })
     }

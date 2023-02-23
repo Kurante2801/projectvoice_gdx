@@ -11,7 +11,7 @@ enum class NoteGrade(val timing: Int, val weight: Double) {
     companion object {
         val missThreshold = -GOOD.timing
 
-        fun fromTime(difference: Int): NoteGrade? {
+        fun fromDifference(difference: Int): NoteGrade? {
             // No grade, note is too far up in the screen to count as being interacted with
             if (difference > GOOD.timing) return null
             if (difference < -GOOD.timing) return MISS
