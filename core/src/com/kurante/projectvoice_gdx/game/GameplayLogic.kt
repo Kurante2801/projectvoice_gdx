@@ -114,7 +114,6 @@ class GameplayLogic(
         val centerThick = 2f.scaledStageX(stage)
         val glowWidth = 12f.scaledStageX(stage)
         val judgementThick = 2f.scaledStageY(stage)
-        val judgementPosition = height * LINE_POS_MULTIPLIER - judgementThick * 0.5f
 
         for ((track, info) in tracks) {
             info.shouldDraw = time >= track.spawnTime && time <= track.despawnTime + track.despawnDuration
@@ -158,7 +157,7 @@ class GameplayLogic(
 
             // Notes
             for (note in info.notes)
-                note.act(time, height, judgementPosition)
+                note.act(time, height, height * LINE_POS_MULTIPLIER, 120f.scaledStageY(stage))
         }
 
         // TODO: Don't poll when paused
@@ -209,7 +208,7 @@ class GameplayLogic(
             }
             // JUDGEMENT LINE
             batch.color = Color.WHITE
-            batch.draw(judgementLine, 0f, judgementPosition, width, judgementThick)
+            batch.draw(judgementLine, 0f, height * LINE_POS_MULTIPLIER - judgementThick * 0.5f, width, judgementThick)
             // NOTES
             forEachNote(tracks) { _, info, note ->
                 note.render(batch, info, stage)

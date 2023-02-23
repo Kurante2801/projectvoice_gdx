@@ -83,15 +83,9 @@ class ProjectVoice(
         loadSkin()
 
         KtxAsync.initiate()
-        assetStorage = AssetStorage(
-            fileResolver = StorageFileHandleResolver(nativeCallbacks.getStorageHandler())
-        )
-        internalStorage = AssetStorage(
-            fileResolver = InternalFileHandleResolver()
-        )
-        absoluteStorage = AssetStorage(
-            fileResolver = AbsoluteFileHandleResolver()
-        )
+        assetStorage = AssetStorage(fileResolver = StorageFileHandleResolver(nativeCallbacks.getStorageHandler()))
+        internalStorage = AssetStorage(fileResolver = InternalFileHandleResolver())
+        absoluteStorage = AssetStorage(fileResolver = AbsoluteFileHandleResolver())
 
         prefs = PlayerPreferences(this)
 
@@ -278,6 +272,7 @@ class ProjectVoice(
             fpsFont = generateFont("skin/rubik_semibold.ttf", param.copy {
                 size = 22
             })
+            add("debug", fpsFont)
 
             // Apply fallbacks
             (regular.data as ChadFontData).fallbackFonts.add(regularJP.data as ChadFontData)

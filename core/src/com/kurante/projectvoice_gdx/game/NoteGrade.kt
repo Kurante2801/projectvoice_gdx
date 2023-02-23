@@ -9,7 +9,7 @@ enum class NoteGrade(val timing: Int, val weight: Double) {
     PERFECT(40, 1.0),
     ;
     companion object {
-        val missThreshold = GOOD.timing
+        val missThreshold = -GOOD.timing
 
         fun fromTime(difference: Int): NoteGrade? {
             // No grade, note is too far up in the screen to count as being interacted with

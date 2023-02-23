@@ -10,70 +10,80 @@ import com.kurante.projectvoice_gdx.game.GameplayLogic
 import com.kurante.projectvoice_gdx.game.Note
 import com.kurante.projectvoice_gdx.game.NoteGrade
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
-import com.kurante.projectvoice_gdx.util.extensions.draw
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
+import com.kurante.projectvoice_gdx.util.extensions.set
+import kotlin.math.max
 
 open class NoteBehavior(
-    val prefs: PlayerPreferences,
-    val atlas: TextureAtlas,
+    private val prefs: PlayerPreferences,
+    private val atlas: TextureAtlas,
     val data: Note,
-    val state: GameState,
+    private val state: GameState,
 ) {
     companion object {
         const val FADE_TIME: Int = 1000
-        var isAuto = true
+        var isAuto = false//true
     }
 
     val id: Int get() = data.id
     var isCollected = false
-    var missAnimationEnded = false
     var shouldRender = false
     var y: Float = 0f
-    var alpha: Float = 1f
-    val speed = Note.scrollDurations[prefs.noteSpeedIndex]
+    private var alpha: Float = 1f
+    private val speed = Note.scrollDurations[prefs.noteSpeedIndex]
     var grade: NoteGrade? = null
-    val background: TextureRegion = atlas.findRegion("click_back")
-    val foreground: TextureRegion = atlas.findRegion("click_fore")
 
-    fun act(time: Int, screenHeight: Float, judgementLinePosition: Float) {
+    private val background: TextureRegion = atlas.findRegion("click_back")
+    private val foreground: TextureRegion = atlas.findRegion("click_fore")
+
+    fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float) {
         val difference = data.time - time
         shouldRender = difference <= speed
 
         // Miss animation
         if (isCollected) {
-            if (difference > -FADE_TIME) {
-                val sinceMiss = (difference - NoteGrade.missThreshold) / FADE_TIME
-                y = screenHeight - sinceMiss * screenHeight * 0.025f
-                alpha = 0.5f + sinceMiss * 0.5f
+            if (grade != NoteGrade.MISS) {
+                shouldRender = false
+                return
+            }
+
+            val fadeTime = NoteGrade.missThreshold - FADE_TIME
+            if (fadeTime < difference) {
+                y = difference.mapRange(NoteGrade.missThreshold, fadeTime, judgementLinePosition, judgementLinePosition - missDistance)
+                alpha = 0.5f - difference.mapRange(NoteGrade.missThreshold, fadeTime, 0f, 0.5f)
+            //alpha = 0.5f + sinceMiss * 0.5f
             } else
-                missAnimationEnded = true
+                shouldRender = false
             return
         }
 
-        y = difference.mapRange(0, speed, judgementLinePosition, screenHeight)
+        y = max(difference.mapRange(0, speed, judgementLinePosition, screenHeight), judgementLinePosition)
         if ((isAuto && difference <= 0) || difference < NoteGrade.missThreshold)
             judge(time)
     }
 
     fun render(batch: Batch, info: GameplayLogic.TrackInfo, stage: Stage) {
-        if (!shouldRender || missAnimationEnded) return
+        if (!shouldRender) return
 
         val width = 85f.scaledStageX(stage)
         val drawX =  info.center - width * 0.5f
         val drawY = y - width * 0.5f
-        batch.draw(prefs.noteClickBackground, background, drawX, drawY, width, width)
-        batch.draw(prefs.noteClickForeground, foreground, drawX, drawY, width, width)
+
+        batch.color = batch.color.set(prefs.noteClickBackground, alpha)
+        batch.draw(background, drawX, drawY, width, width)
+        batch.color = batch.color.set(prefs.noteClickForeground, alpha)
+        batch.draw(foreground, drawX, drawY, width, width)
     }
 
     fun judge(time: Int) {
         val difference = data.time - time
         grade = NoteGrade.fromTime(difference) ?: return
-        missAnimationEnded = grade != NoteGrade.MISS
-        
+
         if (isAuto) {
             // TODO: Activate tracks behind this note
         }
 
         state.judge(data, grade!!, difference)
+        isCollected = true
     }
 }

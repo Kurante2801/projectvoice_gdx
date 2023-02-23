@@ -26,7 +26,7 @@ class PlayerPreferences(val game: ProjectVoice) {
     var storageString by NullableStringPreference("storage", null, preferences)
 
     // GAMEPLAY
-    var noteSpeedIndex by IntPreference("noteSpeedIndex", 0, preferences)
+    var noteSpeedIndex by IntPreference("noteSpeedIndex", 6, preferences)
 
     var noteClickBackground by ColorPreference("clickBack", "#000000FF", preferences)
     var noteClickForeground by ColorPreference("clickFore", "#DC4B4B", preferences)

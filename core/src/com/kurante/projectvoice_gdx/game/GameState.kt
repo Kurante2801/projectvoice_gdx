@@ -96,7 +96,7 @@ class GameState {
             score = MILLION
 
         if (grade != NoteGrade.PERFECT)
-            Gdx.app.log("GameState", "ID: ${note.id} NOTE TIME: ${note.time} ms DIFFERENCE: $difference ms")
+            Gdx.app.log("GameState", "ID: ${note.id} as ${grade.toString().lowercase()} NOTE TIME: ${note.time} ms DIFFERENCE: $difference ms")
     }
 
     fun isNoteJudged(id: Int) = judgements[id]!!.grade != null
