@@ -116,6 +116,10 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 pack("click_back", game.internalStorage.load<Pixmap>("game/notes/diamond/click_back.png"))
                 pack("click_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/click_fore.png"))
                 pack("hold_back", background)
+                pack("slide_back", game.internalStorage.load<Pixmap>("game/notes/diamond/slide_back.png"))
+                pack("slide_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/slide_fore.png"))
+                pack("swipe_back", game.internalStorage.load<Pixmap>("game/notes/diamond/swipe_back.png"))
+                pack("swipe_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/swipe_fore.png"))
             }
             val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
             packer.dispose()

@@ -26,12 +26,21 @@ class PlayerPreferences(val game: ProjectVoice) {
     var storageString by NullableStringPreference("storage", null, preferences)
 
     // GAMEPLAY
-    var noteSpeedIndex by IntPreference("noteSpeedIndex", 0, preferences)
+    var noteSpeedIndex by IntPreference("noteSpeedIndex", 6, preferences)
 
-    var noteClickBackground by ColorPreference("clickBack", "#000000FF", preferences)
+    var noteClickBackground by ColorPreference("clickBack", "#000000", preferences)
     var noteClickForeground by ColorPreference("clickFore", "#DC4B4B", preferences)
 
-    var noteHoldBackground by ColorPreference("clickBack", "#000000FF", preferences)
-    var noteHoldTopForeground by ColorPreference("clickFore", "#DC4B4B", preferences)
-    var noteHoldBottomForeground by ColorPreference("clickFore", "#DC4B4B", preferences)
+    var noteHoldBackground by ColorPreference("holdBack", "#000000", preferences)
+    var noteHoldTopForeground by ColorPreference("holdTopFore", "#DC4B4B", preferences)
+    var noteHoldBottomForeground by ColorPreference("holdBottomFore", "#DC4B4B", preferences)
+
+    var noteSlideBackground by ColorPreference("slideBack", "#000000", preferences)
+    var noteSlideForeground by ColorPreference("slideFore", "#FFFFFF", preferences)
+
+    var noteSwipeLeftBackground by ColorPreference("swipeLeftBack", "#000000", preferences)
+    var noteSwipeLeftForeground by ColorPreference("swipeLeftFore", "#00FFFF", preferences)
+
+    var noteSwipeRightBackground by ColorPreference("swipeRightBack", "#000000", preferences)
+    var noteSwipeRightForeground by ColorPreference("swipeRightFore", "#00FFFF", preferences)
 }

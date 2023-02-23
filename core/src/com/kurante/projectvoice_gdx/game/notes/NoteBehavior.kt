@@ -1,14 +1,12 @@
 package com.kurante.projectvoice_gdx.game.notes
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.kurante.projectvoice_gdx.PlayerPreferences
-import com.kurante.projectvoice_gdx.game.GameState
-import com.kurante.projectvoice_gdx.game.GameplayLogic
-import com.kurante.projectvoice_gdx.game.Note
-import com.kurante.projectvoice_gdx.game.NoteGrade
+import com.kurante.projectvoice_gdx.game.*
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import com.kurante.projectvoice_gdx.util.extensions.set
@@ -19,11 +17,11 @@ open class NoteBehavior(
     atlas: TextureAtlas,
     val data: Note,
     private val state: GameState,
+    private val modifiers: HashSet<Modifier>,
 ) {
     companion object {
         const val FADE_TIME: Int = 1000
         const val NOTE_WIDTH: Float = 85f
-        var isAuto = true
     }
 
     val id: Int get() = data.id
@@ -33,9 +31,16 @@ open class NoteBehavior(
     protected var alpha: Float = 1f
     protected val speed = Note.scrollDurations[prefs.noteSpeedIndex]
     var grade: NoteGrade? = null
+    open val isAuto: Boolean
+        get() = modifiers.contains(Modifier.AUTO) || modifiers.contains(Modifier.AUTO_CLICK)
 
-    protected val background: TextureRegion = atlas.findRegion("click_back")
-    protected val foreground: TextureRegion = atlas.findRegion("click_fore")
+    protected open val background: TextureRegion = atlas.findRegion("click_back")
+    protected open val foreground: TextureRegion = atlas.findRegion("click_fore")
+
+    open val backColor: Color
+        get() = prefs.noteClickBackground
+    open val foreColor: Color
+        get() = prefs.noteClickForeground
 
     open fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float) {
         val difference = data.time - time
@@ -70,9 +75,9 @@ open class NoteBehavior(
         val drawX = info.center - width * 0.5f
         val drawY = y - width * 0.5f
 
-        batch.color = batch.color.set(prefs.noteClickBackground, alpha)
+        batch.color = batch.color.set(backColor, alpha)
         batch.draw(background, drawX, drawY, width, width)
-        batch.color = batch.color.set(prefs.noteClickForeground, alpha)
+        batch.color = batch.color.set(foreColor, alpha)
         batch.draw(foreground, drawX, drawY, width, width)
     }
 

@@ -34,6 +34,7 @@ import de.tomgrill.gdxdialogs.core.GDXDialogs
 import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
+import ktx.app.Platform
 import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
 import ktx.graphics.use
@@ -66,6 +67,9 @@ class ProjectVoice(
     val modifiers = hashSetOf<Modifier>()
 
     override fun create() {
+        if (Platform.isDesktop)
+            modifiers.add(Modifier.AUTO)
+
         // Create cache
         StorageManager.cachePath = Gdx.files.localStoragePath + "cache/"
         StorageManager.cache = Gdx.files.absolute(StorageManager.cachePath)

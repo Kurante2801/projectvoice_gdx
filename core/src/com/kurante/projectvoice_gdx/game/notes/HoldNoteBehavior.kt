@@ -1,6 +1,7 @@
 package com.kurante.projectvoice_gdx.game.notes
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
@@ -8,10 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.kurante.projectvoice_gdx.PlayerPreferences
-import com.kurante.projectvoice_gdx.game.GameState
-import com.kurante.projectvoice_gdx.game.GameplayLogic
-import com.kurante.projectvoice_gdx.game.Note
-import com.kurante.projectvoice_gdx.game.NoteGrade
+import com.kurante.projectvoice_gdx.game.*
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import com.kurante.projectvoice_gdx.util.extensions.set
@@ -23,10 +21,10 @@ class HoldNoteBehavior(
     data: Note,
     private val state: GameState,
     ninePatch: NinePatch,
-) : NoteBehavior(prefs, atlas, data, state) {
+    private val modifiers: HashSet<Modifier>,
+) : NoteBehavior(prefs, atlas, data, state, modifiers) {
     companion object {
         const val RELEASE_THRESHOLD = 360
-        var isAuto = true
     }
 
     val fingers = mutableListOf<Int>()
@@ -38,6 +36,15 @@ class HoldNoteBehavior(
     private var initialDifference = 0 // Difference when hold note was clicked
     var isBeingHeld = false
     private var initialGrade: NoteGrade? = null
+
+    override val isAuto: Boolean
+        get() = modifiers.contains(Modifier.AUTO) || modifiers.contains(Modifier.AUTO_HOLD)
+    override val backColor: Color
+        get() = prefs.noteHoldBackground
+    override val foreColor: Color
+        get() = prefs.noteHoldBottomForeground
+    private val topColor: Color
+        get() = prefs.noteHoldTopForeground
 
     override fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float) {
         var difference = data.time - time
@@ -90,12 +97,12 @@ class HoldNoteBehavior(
         backgroundPatch.topHeight = width * 0.5f
         backgroundPatch.bottomHeight = width * 0.5f
 
-        batch.color = batch.color.set(prefs.noteHoldBackground, alpha)
+        batch.color = batch.color.set(backColor, alpha)
         backgroundPatch.draw(batch, drawX, drawY, width, width + drawYend - drawY)
 
-        batch.color = batch.color.set(prefs.noteHoldTopForeground, alpha)
+        batch.color = batch.color.set(topColor, alpha)
         batch.draw(foreground, drawX, drawYend, width, width)
-        batch.color = batch.color.set(prefs.noteHoldBottomForeground, alpha)
+        batch.color = batch.color.set(foreColor, alpha)
         batch.draw(foreground, drawX, drawY, width, width)
     }
 

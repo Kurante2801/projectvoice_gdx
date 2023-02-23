@@ -11,8 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Disposable
 import com.kurante.projectvoice_gdx.PlayerPreferences
-import com.kurante.projectvoice_gdx.game.notes.HoldNoteBehavior
-import com.kurante.projectvoice_gdx.game.notes.NoteBehavior
+import com.kurante.projectvoice_gdx.game.notes.*
 import com.kurante.projectvoice_gdx.util.BakedAnimationCurve
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
@@ -78,7 +77,6 @@ class GameplayLogic(
     // TEXTURES
     private val trackBackground: AtlasRegion = trackAtlas.findRegion("background")
     private val trackLine: AtlasRegion = trackAtlas.findRegion("line")
-    //private val trackGlow: AtlasRegion = notesAtlas.findRegion("glow") // eeee
     private val judgementLine: AtlasRegion = trackAtlas.findRegion("white")
     private val trackActive: AtlasRegion = trackAtlas.findRegion("active")
 
@@ -93,8 +91,10 @@ class GameplayLogic(
                 track.despawnTime = max(track.despawnTime, note.time + NoteGrade.missThreshold)
                 // Add to list
                 notes.add(when(note.type) {
-                    NoteType.HOLD -> HoldNoteBehavior(prefs, notesAtlas, note, state, holdBackground)
-                    else -> NoteBehavior(prefs, notesAtlas, note, state)
+                    NoteType.HOLD -> HoldNoteBehavior(prefs, notesAtlas, note, state, holdBackground, modifiers)
+                    NoteType.SLIDE -> SlideNoteBehavior(prefs, notesAtlas, note, state, modifiers)
+                    NoteType.SWIPE -> SwipeNoteBehavior(prefs, notesAtlas, note, state, modifiers)
+                    else -> ClickNoteBehavior(prefs, notesAtlas, note, state, modifiers)
                 })
             }
             // Ensure despawn_time isn't lower than spawn_time + spawn_duration
