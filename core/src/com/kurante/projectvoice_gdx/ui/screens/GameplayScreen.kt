@@ -1,6 +1,7 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -99,7 +100,6 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 packToTexture = true
                 pack("background", game.internalStorage.load<Pixmap>("game/track_background.png"))
                 pack("line", game.internalStorage.load<Pixmap>("game/track_line.png"))
-                pack("glow", game.internalStorage.load<Pixmap>("game/track_glow.png"))
                 pack("white", game.internalStorage.load<Pixmap>("game/white.png"))
                 pack("active", game.internalStorage.load<Pixmap>("game/track_active.png"))
             }
@@ -114,6 +114,10 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
             packer.dispose()
 
+            val glowTexture = game.internalStorage.load<Texture>("game/track_glow.png").apply {
+                setFilter(TextureFilter.Linear, TextureFilter.Linear)
+            }
+
             logic = GameplayLogic(
                 conductor = conductor,
                 chart = chart,
@@ -122,6 +126,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 modifiers = game.modifiers,
                 prefs = game.prefs,
                 state = GameState(level, section, chart),
+                glowTexture = glowTexture
             )
             initialized = true
         }

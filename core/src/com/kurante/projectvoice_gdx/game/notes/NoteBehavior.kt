@@ -22,7 +22,7 @@ open class NoteBehavior(
 ) {
     companion object {
         const val FADE_TIME: Int = 1000
-        var isAuto = false//true
+        var isAuto = true
     }
 
     val id: Int get() = data.id

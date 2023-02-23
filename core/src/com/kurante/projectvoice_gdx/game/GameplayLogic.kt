@@ -1,6 +1,7 @@
 package com.kurante.projectvoice_gdx.game
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
@@ -24,8 +25,9 @@ class GameplayLogic(
     private val trackAtlas: TextureAtlas,
     private val notesAtlas: TextureAtlas,
     private val modifiers: HashSet<Modifier>,
-    private val prefs: PlayerPreferences,
-    private val state: GameState,
+    prefs: PlayerPreferences,
+    state: GameState,
+    private val glowTexture: Texture,
 ) : Disposable {
     companion object {
         // Tracks' lines are larger than the screen and are centered at the judgement line,
@@ -72,7 +74,7 @@ class GameplayLogic(
     // TEXTURES
     private val trackBackground: AtlasRegion = trackAtlas.findRegion("background")
     private val trackLine: AtlasRegion = trackAtlas.findRegion("line")
-    private val trackGlow: AtlasRegion = trackAtlas.findRegion("glow")
+    //private val trackGlow: AtlasRegion = notesAtlas.findRegion("glow") // eeee
     private val judgementLine: AtlasRegion = trackAtlas.findRegion("white")
     private val trackActive: AtlasRegion = trackAtlas.findRegion("active")
 
@@ -172,8 +174,8 @@ class GameplayLogic(
                 batch.color = info.color
                 val half = info.width * 0.5f
 
-                batch.draw(trackGlow, info.center - half - glowWidth, height * info.scaleY.mapRange(0.1666f, 0f), glowWidth, height * info.scaleY)
-                batch.draw(trackGlow, info.center + half + glowWidth, height * info.scaleY.mapRange(0.1666f, 0f), -glowWidth, height * info.scaleY)
+                batch.draw(glowTexture, info.center - half - glowWidth, height * info.scaleY.mapRange(0.1666f, 0f), glowWidth, height * info.scaleY)
+                batch.draw(glowTexture, info.center + half + glowWidth, height * info.scaleY.mapRange(0.1666f, 0f), -glowWidth, height * info.scaleY)
             }
             // BACKGROUND
             forEachDrawable(tracks) { _, info ->
