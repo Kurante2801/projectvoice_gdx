@@ -9,38 +9,40 @@ import ktx.preferences.get
 import ktx.preferences.set
 
 class PlayerPreferences(val game: ProjectVoice) {
-    private val preferences: Preferences = Gdx.app.getPreferences("com.kurante.projectvoice_gdx")
+    val preferences: Preferences = Gdx.app.getPreferences("com.kurante.projectvoice_gdx")
 
     val locales = mutableMapOf<String, String>()
-    var locale by StringPreference("locale", "en", preferences) {
+    var locale by delegatedString("locale", "en") {
         if (it !in locales.keys)
             Gdx.app.error("PlayerPreferences", "Tried to set an invalid language: $it")
+        else
+            UserInterface.setLocale(it)
     }
 
-    var musicVolume by FloatPreference("musicVolume", 1f, preferences) // TODO: Change volume if playing in level summary
+    var musicVolume by delegatedFloat("musicVolume", 1f) // TODO: Change volume if playing in level summary
 
-    var safeArea by BooleanPreference("safeArea", true, preferences) {
+    var safeArea by delegatedBoolean("safeArea", true) {
         game.resize(Gdx.graphics.width, Gdx.graphics.height)
     }
 
-    var storageString by NullableStringPreference("storage", null, preferences)
+    var storageString by delegatedString<String?>("storage", null)
 
     // GAMEPLAY
-    var noteSpeedIndex by IntPreference("noteSpeedIndex", 6, preferences)
+    var noteSpeedIndex by delegatedInt("noteSpeedIndex", 6)
 
-    var noteClickBackground by ColorPreference("clickBack", "#000000", preferences)
-    var noteClickForeground by ColorPreference("clickFore", "#DC4B4B", preferences)
+    var noteClickBackground by delegatedColor("clickBack", Color.valueOf("#000000"))
+    var noteClickForeground by delegatedColor("clickFore", Color.valueOf("#DC4B4B"))
 
-    var noteHoldBackground by ColorPreference("holdBack", "#000000", preferences)
-    var noteHoldTopForeground by ColorPreference("holdTopFore", "#DC4B4B", preferences)
-    var noteHoldBottomForeground by ColorPreference("holdBottomFore", "#DC4B4B", preferences)
+    var noteHoldBackground by delegatedColor("holdBack", Color.valueOf("#000000"))
+    var noteHoldTopForeground by delegatedColor("holdTopFore", Color.valueOf("#DC4B4B"))
+    var noteHoldBottomForeground by delegatedColor("holdBottomFore", Color.valueOf("#DC4B4B"))
 
-    var noteSlideBackground by ColorPreference("slideBack", "#000000", preferences)
-    var noteSlideForeground by ColorPreference("slideFore", "#FFFFFF", preferences)
+    var noteSlideBackground by delegatedColor("slideBack", Color.valueOf("#000000"))
+    var noteSlideForeground by delegatedColor("slideFore", Color.valueOf("#FFFFFF"))
 
-    var noteSwipeLeftBackground by ColorPreference("swipeLeftBack", "#000000", preferences)
-    var noteSwipeLeftForeground by ColorPreference("swipeLeftFore", "#00FFFF", preferences)
+    var noteSwipeLeftBackground by delegatedColor("swipeLeftBack", Color.valueOf("#000000"))
+    var noteSwipeLeftForeground by delegatedColor("swipeLeftFore", Color.valueOf("#00FFFF"))
 
-    var noteSwipeRightBackground by ColorPreference("swipeRightBack", "#000000", preferences)
-    var noteSwipeRightForeground by ColorPreference("swipeRightFore", "#00FFFF", preferences)
+    var noteSwipeRightBackground by delegatedColor("swipeRightBack", Color.valueOf("#000000"))
+    var noteSwipeRightForeground by delegatedColor("swipeRightFore", Color.valueOf("#00FFFF"))
 }
