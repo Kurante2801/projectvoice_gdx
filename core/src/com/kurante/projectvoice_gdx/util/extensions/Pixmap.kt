@@ -25,8 +25,7 @@ fun Pixmap.parseNinePatch(): NinePatch {
     }
 
     // Crop pixmap
-    val new = Pixmap(width - 2, height - 2, format)
-    new.drawPixmap(this, 0, 0, 1, 1, width, height)
+    val new = crop()
     val tex = Texture(new)
     new.dispose()
 
@@ -36,3 +35,8 @@ fun Pixmap.parseNinePatch(): NinePatch {
     return NinePatch(tex, left, right, top, bottom)
 }
 
+fun Pixmap.crop(): Pixmap {
+    val new = Pixmap(width - 2, height - 2, format)
+    new.drawPixmap(this, 0, 0, 1, 1, width, height)
+    return new
+}

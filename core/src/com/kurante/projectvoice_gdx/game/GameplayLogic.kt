@@ -92,7 +92,7 @@ class GameplayLogic(
                 track.despawnTime = max(track.despawnTime, note.time + NoteGrade.missThreshold)
                 // Add to list
                 notes.add(when(note.type) {
-                    NoteType.HOLD -> HoldNoteBehavior(prefs, notesAtlas, note, state, holdBackground, modifiers, this)
+                    NoteType.HOLD -> HoldNoteBehavior(prefs, notesAtlas, note, state, holdBackground, modifiers, this, track)
                     NoteType.SLIDE -> SlideNoteBehavior(prefs, notesAtlas, note, state, modifiers, this)
                     NoteType.SWIPE -> SwipeNoteBehavior(prefs, notesAtlas, note, state, modifiers, this)
                     else -> ClickNoteBehavior(prefs, notesAtlas, note, state, modifiers, this)
@@ -222,6 +222,11 @@ class GameplayLogic(
             // NOTES
             forEachNote { _, info, note ->
                 note.render(batch, info, stage)
+            }
+            // HOLD TICKS
+            forEachNote { _, _, note ->
+                if (note is HoldNoteBehavior)
+                    note.renderTicks(batch, time, height, height * LINE_POS_MULTIPLIER, stage)
             }
         }
     }

@@ -30,19 +30,22 @@ class PlayerPreferences(val game: ProjectVoice) {
     // GAMEPLAY
     var noteSpeedIndex by delegatedInt("noteSpeedIndex", 6)
 
-    var noteClickBackground by delegatedColor("clickBack", Color.valueOf("#000000"))
-    var noteClickForeground by delegatedColor("clickFore", Color.valueOf("#DC4B4B"))
+    var noteClickBackground by delegatedColor("clickBack", Color.valueOf("#000000")!!)
+    var noteClickForeground by delegatedColor("clickFore", Color.valueOf("#DC4B4B")!!)
 
-    var noteHoldBackground by delegatedColor("holdBack", Color.valueOf("#000000"))
-    var noteHoldTopForeground by delegatedColor("holdTopFore", Color.valueOf("#DC4B4B"))
-    var noteHoldBottomForeground by delegatedColor("holdBottomFore", Color.valueOf("#DC4B4B"))
+    var noteHoldBackground by delegatedColor("holdBack", Color.valueOf("#000000")!!)
+    var noteHoldTopForeground by delegatedColor("holdTopFore", Color.valueOf("#DC4B4B")!!)
+    var noteHoldBottomForeground by delegatedColor("holdBottomFore", Color.valueOf("#DC4B4B")!!)
 
-    var noteSlideBackground by delegatedColor("slideBack", Color.valueOf("#000000"))
-    var noteSlideForeground by delegatedColor("slideFore", Color.valueOf("#FFFFFF"))
+    var noteSlideBackground by delegatedColor("slideBack", Color.valueOf("#000000")!!)
+    var noteSlideForeground by delegatedColor("slideFore", Color.valueOf("#FFFFFF")!!)
 
-    var noteSwipeLeftBackground by delegatedColor("swipeLeftBack", Color.valueOf("#000000"))
-    var noteSwipeLeftForeground by delegatedColor("swipeLeftFore", Color.valueOf("#00FFFF"))
+    var noteSwipeLeftBackground by delegatedColor("swipeLeftBack", Color.valueOf("#000000")!!)
+    var noteSwipeLeftForeground by delegatedColor("swipeLeftFore", Color.valueOf("#00FFFF")!!)
 
-    var noteSwipeRightBackground by delegatedColor("swipeRightBack", Color.valueOf("#000000"))
-    var noteSwipeRightForeground by delegatedColor("swipeRightFore", Color.valueOf("#00FFFF"))
+    var noteSwipeRightBackground by delegatedColor("swipeRightBack", Color.valueOf("#000000")!!)
+    var noteSwipeRightForeground by delegatedColor("swipeRightFore", Color.valueOf("#00FFFF")!!)
+
+    var noteTickBackground by delegatedColor("tickBack", Color.valueOf("#DC4B4B")!!)
+    var noteTickForeground by delegatedColor("tickFore", Color.valueOf("#FFFFFF")!!)
 }

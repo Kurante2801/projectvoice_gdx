@@ -4,13 +4,16 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.NinePatch
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.kurante.projectvoice_gdx.PlayerPreferences
 import com.kurante.projectvoice_gdx.game.*
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
+import com.kurante.projectvoice_gdx.util.extensions.draw
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import com.kurante.projectvoice_gdx.util.extensions.set
 import kotlin.math.max
@@ -23,9 +26,37 @@ class HoldNoteBehavior(
     ninePatch: NinePatch,
     private val modifiers: HashSet<Modifier>,
     private val logic: GameplayLogic,
+    private val track: Track
 ) : NoteBehavior(prefs, atlas, data, state, modifiers, logic) {
     companion object {
         const val RELEASE_THRESHOLD = 360
+    }
+
+    private data class Tick(
+        val time: Int,
+        val posX: Float
+    )
+
+    private val ticks: Array<Tick>
+
+    init {
+        val startX = track.getPosition(data.time)
+        var moves = false
+
+        val positions = mutableListOf<Tick>()
+        for (i in 100..data.data step 100) {
+            val x = track.getPosition(data.time + i)
+            if (x != startX)
+                moves = true
+            positions.add(Tick(i, x))
+        }
+
+        ticks = if (moves)
+            positions.toTypedArray()
+        else {
+            positions.clear()
+            arrayOf()
+        }
     }
 
     val fingers = mutableListOf<Int>()
@@ -46,6 +77,13 @@ class HoldNoteBehavior(
         get() = prefs.noteHoldBottomForeground
     private val topColor: Color
         get() = prefs.noteHoldTopForeground
+    private val tickBackColor: Color
+        get() = prefs.noteTickBackground
+    private val tickForeColor: Color
+        get() = prefs.noteTickForeground
+
+    private val tickBack = atlas.findRegion("tick_back")
+    private val tickFore = atlas.findRegion("tick_fore")
 
     override fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float, x: Int) {
         var difference = data.time - time
@@ -140,6 +178,20 @@ class HoldNoteBehavior(
         else {
             isBeingHeld = true
             initialDifference = data.time - time
+        }
+    }
+
+    fun renderTicks(batch: Batch, time: Int, screenHeight: Float, judgementLinePosition: Float, stage: Stage) {
+        val width = 85f.scaledStageX(stage)
+        val half = width * 0.5f
+        for (tick in ticks) {
+            val difference = data.time + tick.time - time
+            if (difference < 0) continue
+            val x = tick.posX * stage.width - half
+            val y = difference.mapRange(0, speed, judgementLinePosition, screenHeight) - half
+
+            batch.draw(tickBackColor, tickBack, x, y, width, width)
+            batch.draw(tickForeColor, tickFore, x, y, width, width)
         }
     }
 }

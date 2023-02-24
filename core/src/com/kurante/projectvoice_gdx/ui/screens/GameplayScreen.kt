@@ -17,6 +17,7 @@ import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
+import com.kurante.projectvoice_gdx.util.extensions.crop
 import com.kurante.projectvoice_gdx.util.extensions.parseNinePatch
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.toSeconds
@@ -108,8 +109,12 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             val trackAtlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
             packer.dispose()
 
-            val background = game.internalStorage.load<Pixmap>("game/notes/diamond/hold_back.9.png")
-            val ninePatch = background.parseNinePatch()
+            val ninePatch: NinePatch
+            val background: Pixmap
+            game.internalStorage.load<Pixmap>("game/notes/diamond/hold_back.9.png").apply {
+                ninePatch = parseNinePatch()
+                background = crop()
+            }
 
             packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply {
                 packToTexture = true
@@ -120,6 +125,9 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 pack("slide_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/slide_fore.png"))
                 pack("swipe_back", game.internalStorage.load<Pixmap>("game/notes/diamond/swipe_back.png"))
                 pack("swipe_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/swipe_fore.png"))
+                pack("tick_back", game.internalStorage.load<Pixmap>("game/notes/tick_back.png"))
+                pack("tick_fore", game.internalStorage.load<Pixmap>("game/notes/tick_fore.png"))
+
             }
             val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
             packer.dispose()
