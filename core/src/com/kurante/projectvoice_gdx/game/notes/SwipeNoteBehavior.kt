@@ -19,7 +19,8 @@ class SwipeNoteBehavior(
     data: Note,
     state: GameState,
     private val modifiers: HashSet<Modifier>,
-) : NoteBehavior(prefs, atlas, data, state, modifiers) {
+    logic: GameplayLogic,
+) : NoteBehavior(prefs, atlas, data, state, modifiers, logic) {
     override val background: TextureRegion = atlas.findRegion("swipe_back")
     override val foreground: TextureRegion = atlas.findRegion("swipe_fore")
 

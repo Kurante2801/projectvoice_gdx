@@ -20,6 +20,7 @@ object UserInterface {
     fun Float.scaledStageX(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
     fun Int.scaledStageX(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
     fun Float.scaledStageY(stage: Stage) = this * REFERENCE_HEIGHT / stage.height
+    fun Int.scaledStageY(stage: Stage) = this * REFERENCE_HEIGHT / stage.height
 
 
     // Java interop

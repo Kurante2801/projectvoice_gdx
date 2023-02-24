@@ -23,6 +23,7 @@ class AndroidLauncher : AndroidComponentApplication() {
             useAccelerometer = false
             useImmersiveMode = true
             useRotationVectorSensor = false
+            numSamples = 2
         })
     }
 

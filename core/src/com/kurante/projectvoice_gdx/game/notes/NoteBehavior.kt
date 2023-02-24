@@ -18,6 +18,7 @@ open class NoteBehavior(
     val data: Note,
     private val state: GameState,
     private val modifiers: HashSet<Modifier>,
+    private val logic: GameplayLogic
 ) {
     companion object {
         const val FADE_TIME: Int = 1000
@@ -42,7 +43,7 @@ open class NoteBehavior(
     open val foreColor: Color
         get() = prefs.noteClickForeground
 
-    open fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float) {
+    open fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float, x: Int) {
         val difference = data.time - time
         shouldRender = difference <= speed
         if (!shouldRender) return
@@ -65,7 +66,7 @@ open class NoteBehavior(
 
         y = max(difference.mapRange(0, speed, judgementLinePosition, screenHeight), judgementLinePosition)
         if ((isAuto && difference <= 0) || difference < NoteGrade.missThreshold)
-            judge(time)
+            judge(time, x)
     }
 
     open fun render(batch: Batch, info: GameplayLogic.TrackInfo, stage: Stage) {
@@ -81,13 +82,12 @@ open class NoteBehavior(
         batch.draw(foreground, drawX, drawY, width, width)
     }
 
-    open fun judge(time: Int) {
+    open fun judge(time: Int, x: Int) {
         val difference = data.time - time
         grade = NoteGrade.fromDifference(difference) ?: return
 
-        if (isAuto) {
-            // TODO: Activate tracks behind this note
-        }
+        if (isAuto)
+            logic.simulateTrackInput(time, x)
 
         state.judge(data, grade!!, difference)
         isCollected = true

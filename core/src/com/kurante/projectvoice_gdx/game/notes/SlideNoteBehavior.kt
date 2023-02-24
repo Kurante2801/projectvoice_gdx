@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.kurante.projectvoice_gdx.PlayerPreferences
 import com.kurante.projectvoice_gdx.game.GameState
+import com.kurante.projectvoice_gdx.game.GameplayLogic
 import com.kurante.projectvoice_gdx.game.Modifier
 import com.kurante.projectvoice_gdx.game.Note
 
@@ -15,7 +16,8 @@ class SlideNoteBehavior(
     data: Note,
     state: GameState,
     private val modifiers: HashSet<Modifier>,
-) : NoteBehavior(prefs, atlas, data, state, modifiers) {
+    logic: GameplayLogic,
+) : NoteBehavior(prefs, atlas, data, state, modifiers, logic) {
     override val background: TextureRegion = atlas.findRegion("slide_back")
     override val foreground: TextureRegion = atlas.findRegion("slide_fore")
 

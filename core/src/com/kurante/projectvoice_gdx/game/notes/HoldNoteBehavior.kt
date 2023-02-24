@@ -22,7 +22,8 @@ class HoldNoteBehavior(
     private val state: GameState,
     ninePatch: NinePatch,
     private val modifiers: HashSet<Modifier>,
-) : NoteBehavior(prefs, atlas, data, state, modifiers) {
+    private val logic: GameplayLogic,
+) : NoteBehavior(prefs, atlas, data, state, modifiers, logic) {
     companion object {
         const val RELEASE_THRESHOLD = 360
     }
@@ -46,7 +47,7 @@ class HoldNoteBehavior(
     private val topColor: Color
         get() = prefs.noteHoldTopForeground
 
-    override fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float) {
+    override fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float, x: Int) {
         var difference = data.time - time
         shouldRender = difference <= speed
         if (!shouldRender) return
@@ -75,13 +76,15 @@ class HoldNoteBehavior(
             difference = data.time + data.data - time
             // Collect
             if (!hasFingers || difference <= 0)
-                judge(time, difference)
+                judgeHold(time, difference)
+            else
+                logic.simulateTrackInput(time, x)
         } else {
             if (isAuto) {
                 if (difference <= 0)
-                    startHold(time)
+                    startHold(time, x)
             } else if (difference < NoteGrade.missThreshold)
-                judge(time)
+                judge(time, x)
         }
     }
 
@@ -106,13 +109,13 @@ class HoldNoteBehavior(
         batch.draw(foreground, drawX, drawY, width, width)
     }
 
-    override fun judge(time: Int) {
+    override fun judge(time: Int, x: Int) {
         // This makes the hold note shorten properly when releasing too early
         initialDifference = data.time - time
-        super.judge(time)
+        super.judge(time, x)
     }
 
-    fun judge(time: Int, difference: Int) {
+    fun judgeHold(time: Int, difference: Int) {
         if (initialGrade == null) {
             Gdx.app.error("HoldNoteBehavior", "Note was judged when grade was null! ID: ${data.id}")
             return
@@ -128,12 +131,12 @@ class HoldNoteBehavior(
         isCollected = true
     }
 
-    fun startHold(time: Int) {
+    fun startHold(time: Int, x: Int) {
         initialGrade = NoteGrade.fromDifference(data.time - time)
         if (initialGrade == null) return
 
         if (initialGrade == NoteGrade.MISS)
-            judge(initialDifference)
+            judge(initialDifference, x)
         else {
             isBeingHeld = true
             initialDifference = data.time - time

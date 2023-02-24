@@ -67,7 +67,7 @@ class ProjectVoice(
     val modifiers = hashSetOf<Modifier>()
 
     override fun create() {
-        if (Platform.isDesktop)
+        //if (Platform.isDesktop)
             modifiers.add(Modifier.AUTO)
 
         // Create cache

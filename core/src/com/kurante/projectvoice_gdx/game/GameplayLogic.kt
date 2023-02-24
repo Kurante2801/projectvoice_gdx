@@ -17,6 +17,7 @@ import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
 import com.kurante.projectvoice_gdx.util.extensions.draw
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
+import com.kurante.projectvoice_gdx.util.extensions.set
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import ktx.graphics.use
 import java.lang.Integer.max
@@ -91,10 +92,10 @@ class GameplayLogic(
                 track.despawnTime = max(track.despawnTime, note.time + NoteGrade.missThreshold)
                 // Add to list
                 notes.add(when(note.type) {
-                    NoteType.HOLD -> HoldNoteBehavior(prefs, notesAtlas, note, state, holdBackground, modifiers)
-                    NoteType.SLIDE -> SlideNoteBehavior(prefs, notesAtlas, note, state, modifiers)
-                    NoteType.SWIPE -> SwipeNoteBehavior(prefs, notesAtlas, note, state, modifiers)
-                    else -> ClickNoteBehavior(prefs, notesAtlas, note, state, modifiers)
+                    NoteType.HOLD -> HoldNoteBehavior(prefs, notesAtlas, note, state, holdBackground, modifiers, this)
+                    NoteType.SLIDE -> SlideNoteBehavior(prefs, notesAtlas, note, state, modifiers, this)
+                    NoteType.SWIPE -> SwipeNoteBehavior(prefs, notesAtlas, note, state, modifiers, this)
+                    else -> ClickNoteBehavior(prefs, notesAtlas, note, state, modifiers, this)
                 })
             }
             // Ensure despawn_time isn't lower than spawn_time + spawn_duration
@@ -166,7 +167,7 @@ class GameplayLogic(
 
             // Notes
             for (note in info.notes)
-                note.act(time, height, height * LINE_POS_MULTIPLIER, 120f.scaledStageY(stage))
+                note.act(time, height, height * LINE_POS_MULTIPLIER, 120f.scaledStageY(stage), info.center)
         }
 
         // TODO: Don't poll when paused
@@ -177,7 +178,7 @@ class GameplayLogic(
             batch.enableBlending()
 
             // LEFT & RIGHT GLOWS
-            forEachDrawable(tracks) { _, info ->
+            forEachDrawable { _, info ->
                 batch.color = info.color
                 val half = info.width * 0.5f
 
@@ -185,13 +186,13 @@ class GameplayLogic(
                 batch.draw(glowTexture, info.center + half + glowWidth, height * info.scaleY.mapRange(0.1666f, 0f), -glowWidth, height * info.scaleY)
             }
             // BACKGROUND
-            forEachDrawable(tracks) { _, info ->
+            forEachDrawable { _, info ->
                 batch.color = info.color
                 batch.draw(info.color, trackBackground, info.center - info.width * 0.5f, height * info.scaleY.mapRange(0.1666f, 0f), info.width, height * info.scaleY)
             }
             // LEFT & RIGHT BORDERS
             batch.color = Color.WHITE
-            forEachDrawable(tracks) { _, info ->
+            forEachDrawable { _, info ->
                 val half = info.width * 0.5f
                 val tall = (height * LINE_HEIGHT_MULTIPLIER) * info.scaleY
                 val y = (height * LINE_POS_MULTIPLIER) - tall * 0.5f
@@ -199,7 +200,7 @@ class GameplayLogic(
                 batch.draw(trackLine, info.center + half - borderThick, y, borderThick, tall)
             }
             // BLACK CENTER
-            forEachDrawable(tracks) { _, info ->
+            forEachDrawable { _, info ->
                 batch.color = batch.color.set(0f, 0f, 0f, info.scaleY * 0.5f)
                 val tall = (height * LINE_HEIGHT_MULTIPLIER) * info.scaleY
                 val y = (height * LINE_POS_MULTIPLIER) - tall * 0.5f
@@ -207,19 +208,19 @@ class GameplayLogic(
             }
             // ACTIVE BACKGROUND
             batch.color = Color.WHITE
-            forEachDrawable(tracks) { _, info ->
+            forEachDrawable { _, info ->
                 if (info.animating) return@forEachDrawable
                 val a = (1f - ((time - info.activeTime) / 250f).coerceIn(0f, 1f))
                 if (a <= 0f) return@forEachDrawable
 
-                batch.color.a = a
+                batch.color = batch.color.set(batch.color, a)
                 batch.draw(trackActive, info.center - info.inputWidth * 0.5f, 0f, info.inputWidth, height)
             }
             // JUDGEMENT LINE
             batch.color = Color.WHITE
             batch.draw(judgementLine, 0f, height * LINE_POS_MULTIPLIER - judgementThick * 0.5f, width, judgementThick)
             // NOTES
-            forEachNote(tracks) { _, info, note ->
+            forEachNote { _, info, note ->
                 note.render(batch, info, stage)
             }
         }
@@ -237,19 +238,27 @@ class GameplayLogic(
 
     fun getPaused() = conductor.paused
 
-    private fun forEachDrawable(data: MutableMap<Track, TrackInfo>, action: (Track, TrackInfo) -> Unit) {
-        for ((track, info) in data) {
+    private fun forEachDrawable(action: (Track, TrackInfo) -> Unit) {
+        for ((track, info) in tracks) {
             if (info.shouldDraw)
                 action(track, info)
         }
     }
 
-    private fun forEachNote(data: MutableMap<Track, TrackInfo>, action: (Track, TrackInfo, NoteBehavior) -> Unit) {
-        for ((track, info) in data) {
+    private fun forEachNote(action: (Track, TrackInfo, NoteBehavior) -> Unit) {
+        for ((track, info) in tracks) {
             if (!info.shouldDraw) continue
 
             for (note in info.notes)
                 action(track, info, note)
+        }
+    }
+
+    fun simulateTrackInput(time: Int, x: Int) {
+        forEachDrawable { _, info ->
+            val half = info.inputWidth * 0.5f
+            if (info.center - half <= x && x <= info.center + half)
+                info.activeTime = time
         }
     }
 }

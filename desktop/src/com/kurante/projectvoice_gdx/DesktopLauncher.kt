@@ -22,6 +22,7 @@ object DesktopLauncher {
             setTitle("Project Voice")
             setWindowedMode(1280, 720)
             setWindowSizeLimits(640, 480, -1, -1)
+            setBackBufferConfig(8, 8, 8, 8, 16, 0, 4)
         })
     }
 }
