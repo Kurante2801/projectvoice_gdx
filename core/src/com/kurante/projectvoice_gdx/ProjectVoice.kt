@@ -48,6 +48,9 @@ class ProjectVoice(
 ) : KtxGame<KtxScreen>() {
     companion object {
         const val PI = 3.1415927f
+        // I'm tired of endlessly passing references around, so I'm making statics
+        var stageWidth = 0f
+        var stageHeight = 0f
     }
 
     private lateinit var batch: SpriteBatch
@@ -107,6 +110,11 @@ class ProjectVoice(
         addScreen(PreferencesScreen(this))
 
         setScreen<InitializationScreen>()
+
+        getScreen<InitializationScreen>().stage.apply {
+            stageWidth = width
+            stageHeight = height
+        }
     }
 
     override fun render() {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.I18NBundle
+import com.kurante.projectvoice_gdx.ProjectVoice
 import java.util.*
 
 object UserInterface {
@@ -17,10 +18,9 @@ object UserInterface {
      */
     fun Float.scaledUi(): Float = this / UI_SCALE
     fun Int.scaledUi(): Float = this / UI_SCALE
-    fun Float.scaledStageX(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
-    fun Int.scaledStageX(stage: Stage) = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * stage.width
-    fun Float.scaledStageY(stage: Stage) = this * REFERENCE_HEIGHT / stage.height
-    fun Int.scaledStageY(stage: Stage) = this * REFERENCE_HEIGHT / stage.height
+    fun Float.scaledStageX() = this.scaledUi() / WidthViewport.REFERENCE_WIDTH * ProjectVoice.stageWidth
+    fun Float.scaledStageY() = this * REFERENCE_HEIGHT / ProjectVoice.stageHeight
+    fun Float.scaledScreenY() = this / 960f * Gdx.graphics.height
 
 
     // Java interop

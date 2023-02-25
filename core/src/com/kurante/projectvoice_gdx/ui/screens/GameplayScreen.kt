@@ -77,7 +77,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     override fun render(delta: Float) {
         if (initialized) {
             logic.act(delta)
-            logic.render(stage, stage.batch as SpriteBatch)
+            logic.render(stage.batch)
 
             pauseButton.text = formatter.format(logic.time/*.toSeconds()*/)
             exitButton.text = formatter.format(logic.maxTime.toSeconds())
@@ -127,7 +127,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 pack("swipe_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/swipe_fore.png"))
                 pack("tick_back", game.internalStorage.load<Pixmap>("game/notes/tick_back.png"))
                 pack("tick_fore", game.internalStorage.load<Pixmap>("game/notes/tick_fore.png"))
-
+                pack("perfect", game.internalStorage.load<Pixmap>("game/notes/diamond/grade_perfect.png"))
             }
             val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
             packer.dispose()

@@ -27,10 +27,10 @@ class SwipeNoteBehavior(
     override val isAuto: Boolean
         get() = modifiers.contains(Modifier.AUTO) || modifiers.contains(Modifier.AUTO_SWIPE)
 
-    override fun render(batch: Batch, info: GameplayLogic.TrackInfo, stage: Stage) {
+    override fun render(batch: Batch, info: GameplayLogic.TrackInfo) {
         if (!shouldRender) return
 
-        val width = NOTE_WIDTH.scaledStageX(stage)
+        val width = NOTE_WIDTH.scaledStageX()
         val drawX = info.center - width * 0.5f
         val drawY = y - width * 0.5f
 

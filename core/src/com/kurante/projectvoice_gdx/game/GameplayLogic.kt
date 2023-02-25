@@ -1,7 +1,9 @@
 package com.kurante.projectvoice_gdx.game
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
@@ -11,10 +13,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.utils.Disposable
 import com.kurante.projectvoice_gdx.PlayerPreferences
+import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.notes.*
+import com.kurante.projectvoice_gdx.game.particles.CollectionParticle
+import com.kurante.projectvoice_gdx.game.particles.ParticleManager
 import com.kurante.projectvoice_gdx.util.BakedAnimationCurve
+import com.kurante.projectvoice_gdx.util.UserInterface.scaledScreenY
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
+import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.draw
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
 import com.kurante.projectvoice_gdx.util.extensions.set
@@ -81,6 +88,8 @@ class GameplayLogic(
     private val judgementLine: AtlasRegion = trackAtlas.findRegion("white")
     private val trackActive: AtlasRegion = trackAtlas.findRegion("active")
 
+    private val particleManager = ParticleManager()
+
     init {
         if (chart.endTime != null)
             maxTime = chart.endTime
@@ -113,17 +122,20 @@ class GameplayLogic(
 
     fun act(delta: Float) {
         conductor.act(delta)
+
+        if (!conductor.paused)
+            particleManager.act(delta)
     }
 
-    fun render(stage: Stage, batch: SpriteBatch) {
+    fun render(batch: Batch) {
         val time = conductor.time
-        val width = stage.width
-        val height = stage.height
+        val width = ProjectVoice.stageWidth
+        val height = ProjectVoice.stageHeight
         val trackWidth = width * 0.115f
-        val borderThick = 3f.scaledStageX(stage)
-        val centerThick = 2f.scaledStageX(stage)
-        val glowWidth = 12f.scaledStageX(stage)
-        val judgementThick = 2f.scaledStageY(stage)
+        val borderThick = 3f.scaledStageX()
+        val centerThick = 2f.scaledStageX()
+        val glowWidth = 12f.scaledStageX()
+        val judgementThick = 2f.scaledStageY()
 
         for ((track, info) in tracks) {
             info.shouldDraw = time >= track.spawnTime && time <= track.despawnTime + track.despawnDuration
@@ -167,7 +179,7 @@ class GameplayLogic(
 
             // Notes
             for (note in info.notes)
-                note.act(time, height, height * LINE_POS_MULTIPLIER, 120f.scaledStageY(stage), info.center)
+                note.act(time, height * LINE_POS_MULTIPLIER, 120f.scaledStageY(), info.center)
         }
 
         // TODO: Don't poll when paused
@@ -181,9 +193,10 @@ class GameplayLogic(
             forEachDrawable { _, info ->
                 batch.color = info.color
                 val half = info.width * 0.5f
+                val y = height * info.scaleY.mapRange(0.1666f, 0f)
 
-                batch.draw(glowTexture, info.center - half - glowWidth, height * info.scaleY.mapRange(0.1666f, 0f), glowWidth, height * info.scaleY)
-                batch.draw(glowTexture, info.center + half + glowWidth, height * info.scaleY.mapRange(0.1666f, 0f), -glowWidth, height * info.scaleY)
+                batch.draw(glowTexture, info.center - half - glowWidth, y, glowWidth, height * info.scaleY)
+                batch.draw(glowTexture, info.center + half + glowWidth, y, -glowWidth, height * info.scaleY)
             }
             // BACKGROUND
             forEachDrawable { _, info ->
@@ -221,12 +234,14 @@ class GameplayLogic(
             batch.draw(judgementLine, 0f, height * LINE_POS_MULTIPLIER - judgementThick * 0.5f, width, judgementThick)
             // NOTES
             forEachNote { _, info, note ->
-                note.render(batch, info, stage)
+                note.render(batch, info)
             }
+            // PARTICLE EFFECTS
+            particleManager.render(batch)
             // HOLD TICKS
             forEachNote { _, _, note ->
                 if (note is HoldNoteBehavior)
-                    note.renderTicks(batch, time, height, height * LINE_POS_MULTIPLIER, stage)
+                    note.renderTicks(batch, time, height * LINE_POS_MULTIPLIER)
             }
         }
     }
@@ -265,5 +280,16 @@ class GameplayLogic(
             if (info.center - half <= x && x <= info.center + half)
                 info.activeTime = time
         }
+    }
+
+    fun noteCollected(grade: NoteGrade, x: Int) {
+        val region = when(grade) {
+            NoteGrade.PERFECT -> notesAtlas.findRegion("perfect")
+            else -> return
+        }
+
+        particleManager.particles.add(CollectionParticle(
+            x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, region, 1200f.scaledScreenY(), 0f, 3f
+        ))
     }
 }

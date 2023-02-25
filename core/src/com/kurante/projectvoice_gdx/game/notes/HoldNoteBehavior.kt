@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.kurante.projectvoice_gdx.PlayerPreferences
+import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.*
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.extensions.draw
@@ -85,11 +86,12 @@ class HoldNoteBehavior(
     private val tickBack = atlas.findRegion("tick_back")
     private val tickFore = atlas.findRegion("tick_fore")
 
-    override fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float, x: Int) {
+    override fun act(time: Int, judgementLinePosition: Float, missDistance: Float, x: Int) {
         var difference = data.time - time
         shouldRender = difference <= speed
         if (!shouldRender) return
 
+        val height = ProjectVoice.stageHeight
         // Miss animation
         if (isCollected) {
             if (grade != NoteGrade.MISS) {
@@ -98,16 +100,16 @@ class HoldNoteBehavior(
             }
 
             difference -= initialDifference
-            y = difference.mapRange(0, speed, judgementLinePosition, screenHeight)
-            endY = (data.time + data.data - time).mapRange(0, speed, judgementLinePosition, screenHeight)
+            y = difference.mapRange(0, speed, judgementLinePosition, height)
+            endY = (data.time + data.data - time).mapRange(0, speed, judgementLinePosition, height)
 
-            shouldRender = endY < screenHeight
+            shouldRender = endY < height
             alpha = 0.5f
             return
         }
 
-        y = max(difference.mapRange(0, speed, judgementLinePosition, screenHeight), judgementLinePosition)
-        endY = max((data.time + data.data - time).mapRange(0, speed, judgementLinePosition, screenHeight), judgementLinePosition)
+        y = max(difference.mapRange(0, speed, judgementLinePosition, height), judgementLinePosition)
+        endY = max((data.time + data.data - time).mapRange(0, speed, judgementLinePosition, height), judgementLinePosition)
 
         if (isBeingHeld) {
             val hasFingers = isAuto || fingers.isNotEmpty()
@@ -126,10 +128,10 @@ class HoldNoteBehavior(
         }
     }
 
-    override fun render(batch: Batch, info: GameplayLogic.TrackInfo, stage: Stage) {
+    override fun render(batch: Batch, info: GameplayLogic.TrackInfo) {
         if (!shouldRender) return
 
-        val width = 85f.scaledStageX(stage)
+        val width = 85f.scaledStageX()
         val drawX = info.center - width * 0.5f
         val drawY = y - width * 0.5f
         val drawYend = endY - width * 0.5f
@@ -181,14 +183,14 @@ class HoldNoteBehavior(
         }
     }
 
-    fun renderTicks(batch: Batch, time: Int, screenHeight: Float, judgementLinePosition: Float, stage: Stage) {
-        val width = 85f.scaledStageX(stage)
+    fun renderTicks(batch: Batch, time: Int, judgementLinePosition: Float) {
+        val width = 85f.scaledStageX()
         val half = width * 0.5f
         for (tick in ticks) {
             val difference = data.time + tick.time - time
             if (difference < 0) continue
-            val x = tick.posX * stage.width - half
-            val y = difference.mapRange(0, speed, judgementLinePosition, screenHeight) - half
+            val x = tick.posX * ProjectVoice.stageWidth - half
+            val y = difference.mapRange(0, speed, judgementLinePosition, ProjectVoice.stageHeight) - half
 
             batch.draw(tickBackColor, tickBack, x, y, width, width)
             batch.draw(tickForeColor, tickFore, x, y, width, width)

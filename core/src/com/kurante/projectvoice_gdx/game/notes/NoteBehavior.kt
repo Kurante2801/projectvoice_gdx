@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.kurante.projectvoice_gdx.PlayerPreferences
+import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.*
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
@@ -43,7 +43,7 @@ open class NoteBehavior(
     open val foreColor: Color
         get() = prefs.noteClickForeground
 
-    open fun act(time: Int, screenHeight: Float, judgementLinePosition: Float, missDistance: Float, x: Int) {
+    open fun act(time: Int, judgementLinePosition: Float, missDistance: Float, x: Int) {
         val difference = data.time - time
         shouldRender = difference <= speed
         if (!shouldRender) return
@@ -64,15 +64,15 @@ open class NoteBehavior(
             return
         }
 
-        y = max(difference.mapRange(0, speed, judgementLinePosition, screenHeight), judgementLinePosition)
+        y = max(difference.mapRange(0, speed, judgementLinePosition, ProjectVoice.stageHeight), judgementLinePosition)
         if ((isAuto && difference <= 0) || difference < NoteGrade.missThreshold)
             judge(time, x)
     }
 
-    open fun render(batch: Batch, info: GameplayLogic.TrackInfo, stage: Stage) {
+    open fun render(batch: Batch, info: GameplayLogic.TrackInfo) {
         if (!shouldRender) return
 
-        val width = NOTE_WIDTH.scaledStageX(stage)
+        val width = NOTE_WIDTH.scaledStageX()
         val drawX = info.center - width * 0.5f
         val drawY = y - width * 0.5f
 
@@ -91,5 +91,6 @@ open class NoteBehavior(
 
         state.judge(data, grade!!, difference)
         isCollected = true
+        logic.noteCollected(grade!!, x)
     }
 }
