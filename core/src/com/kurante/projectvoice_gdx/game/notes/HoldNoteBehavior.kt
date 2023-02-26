@@ -13,6 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.kurante.projectvoice_gdx.PlayerPreferences
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.*
+import com.kurante.projectvoice_gdx.game.particles.CollectionParticle
+import com.kurante.projectvoice_gdx.game.particles.ParticleManager
+import com.kurante.projectvoice_gdx.util.UserInterface.scaledScreenY
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.extensions.draw
 import com.kurante.projectvoice_gdx.util.extensions.mapRange
@@ -21,16 +24,17 @@ import kotlin.math.max
 
 class HoldNoteBehavior(
     private val prefs: PlayerPreferences,
-    atlas: TextureAtlas,
+    private val atlas: TextureAtlas,
     data: Note,
     private val state: GameState,
     ninePatch: NinePatch,
     private val modifiers: HashSet<Modifier>,
     private val logic: GameplayLogic,
-    private val track: Track
+    track: Track
 ) : NoteBehavior(prefs, atlas, data, state, modifiers, logic) {
     companion object {
         const val RELEASE_THRESHOLD = 360
+        const val PARTICLE_TIME = 100
     }
 
     private data class Tick(
@@ -86,6 +90,9 @@ class HoldNoteBehavior(
     private val tickBack = atlas.findRegion("tick_back")
     private val tickFore = atlas.findRegion("tick_fore")
 
+    private val particleManager = ParticleManager()
+    private var lastParticle = PARTICLE_TIME
+
     override fun act(time: Int, judgementLinePosition: Float, missDistance: Float, x: Int) {
         var difference = data.time - time
         shouldRender = difference <= speed
@@ -114,6 +121,16 @@ class HoldNoteBehavior(
         if (isBeingHeld) {
             val hasFingers = isAuto || fingers.isNotEmpty()
             difference = data.time + data.data - time
+
+            // Create particles
+            if (time - lastParticle >= PARTICLE_TIME) {
+                lastParticle = time
+                makeParticle(initialGrade!!)
+            }
+            // Move ALL particles according to track's position
+            for (particle in particleManager.particles)
+                particle.x = x.toFloat()
+
             // Collect
             if (!hasFingers || difference <= 0)
                 judgeHold(time, difference)
@@ -150,6 +167,7 @@ class HoldNoteBehavior(
     }
 
     override fun judge(time: Int, x: Int) {
+        particleManager.clear()
         // This makes the hold note shorten properly when releasing too early
         initialDifference = data.time - time
         super.judge(time, x)
@@ -162,8 +180,14 @@ class HoldNoteBehavior(
         }
 
         // Note was released too early, count as a miss
-        if (difference > RELEASE_THRESHOLD)
+        if (difference > RELEASE_THRESHOLD) {
             initialGrade = NoteGrade.MISS
+            particleManager.clear()
+        } else {
+            // Change particle's animation curve
+            for (particle in particleManager.particles)
+                particle.sizeAnim = CollectionParticle.holdSizeEndAnim
+        }
 
         grade = initialGrade
         initialDifference = data.time - time
@@ -184,6 +208,8 @@ class HoldNoteBehavior(
     }
 
     fun renderTicks(batch: Batch, time: Int, judgementLinePosition: Float) {
+        if (!shouldRender || ticks.isEmpty()) return
+
         val width = 85f.scaledStageX()
         val half = width * 0.5f
         for (tick in ticks) {
@@ -195,5 +221,25 @@ class HoldNoteBehavior(
             batch.draw(tickBackColor, tickBack, x, y, width, width)
             batch.draw(tickForeColor, tickFore, x, y, width, width)
         }
+    }
+
+    private fun makeParticle(grade: NoteGrade) {
+        val region = when(grade) {
+            NoteGrade.PERFECT -> atlas.findRegion("perfect")
+            else -> return
+        }
+        val size = 1250f.scaledScreenY() * grade.weight.toFloat()
+        val particle = ProjectVoice.particlePool.obtain()
+        // X pos is 0 since it'll be manually changed afterwards anyways
+        particle.initialize(0f, ProjectVoice.stageHeight * GameplayLogic.LINE_POS_MULTIPLIER, region, size, 45f, 3f)
+        particleManager.particles.add(particle)
+    }
+
+    fun actParticles(delta: Float) {
+        particleManager.act(delta)
+    }
+
+    fun renderParticles(batch: Batch) {
+        particleManager.render(batch)
     }
 }

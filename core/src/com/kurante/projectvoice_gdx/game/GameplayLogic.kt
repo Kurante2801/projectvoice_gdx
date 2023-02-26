@@ -123,8 +123,13 @@ class GameplayLogic(
     fun act(delta: Float) {
         conductor.act(delta)
 
-        if (!conductor.paused)
+        if (!conductor.paused) {
             particleManager.act(delta)
+            forEachNote { _, _, note ->
+                if (note is HoldNoteBehavior)
+                    note.actParticles(delta)
+            }
+        }
     }
 
     fun render(batch: Batch) {
@@ -238,6 +243,10 @@ class GameplayLogic(
             }
             // PARTICLE EFFECTS
             particleManager.render(batch)
+            forEachNote { _, _, note ->
+                if (note is HoldNoteBehavior)
+                    note.renderParticles(batch)
+            }
             // HOLD TICKS
             forEachNote { _, _, note ->
                 if (note is HoldNoteBehavior)
@@ -287,9 +296,10 @@ class GameplayLogic(
             NoteGrade.PERFECT -> notesAtlas.findRegion("perfect")
             else -> return
         }
+        val size = 1000f.scaledScreenY() * grade.weight.toFloat()
 
-        particleManager.particles.add(CollectionParticle(
-            x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, region, 1200f.scaledScreenY(), 0f, 3f
-        ))
+        val particle = ProjectVoice.particlePool.obtain()
+        particle.initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, region, size, 0f, 3f)
+        particleManager.particles.add(particle)
     }
 }

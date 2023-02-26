@@ -1,6 +1,7 @@
 package com.kurante.projectvoice_gdx.game.particles
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.kurante.projectvoice_gdx.ProjectVoice.Companion.particlePool
 
 class ParticleManager {
     val particles = mutableListOf<CollectionParticle>()
@@ -13,13 +14,19 @@ class ParticleManager {
         for (i in size downTo 0) {
             val particle = particles[i]
             if (particle.progress >= particle.duration)
-                particles.removeAt(i)
+                particlePool.free(particles.removeAt(i))
         }
     }
 
     fun render(batch: Batch) {
         for (particle in particles)
             particle.render(batch)
+    }
+
+    fun clear() {
+        for (particle in particles)
+            particlePool.free(particle)
+        particles.clear()
     }
 
     fun hasVisibleParticles(): Boolean = particles.isNotEmpty()

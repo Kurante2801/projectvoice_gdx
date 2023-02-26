@@ -17,11 +17,13 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.utils.Pool
 import com.badlogic.gdx.utils.PropertiesUtils
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.VisUI.SkinScale
 import com.kurante.projectvoice_gdx.game.Modifier
+import com.kurante.projectvoice_gdx.game.particles.CollectionParticle
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
 import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.randomString
@@ -51,6 +53,17 @@ class ProjectVoice(
         // I'm tired of endlessly passing references around, so I'm making statics
         var stageWidth = 0f
         var stageHeight = 0f
+
+        val particlePool = object : Pool<CollectionParticle>() {
+            override fun newObject(): CollectionParticle =
+                CollectionParticle(0f, 0f, null, 0f, 0f, 0f)
+        }
+
+        init {
+            // Add particles to the pool so that we don't have to create them as often later on
+            for (i in 0..50)
+                particlePool.free(CollectionParticle(0f, 0f, null, 0f, 0f, 0f))
+        }
     }
 
     private lateinit var batch: SpriteBatch

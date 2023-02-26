@@ -11,6 +11,8 @@ package com.kurante.projectvoice_gdx.util;
 // Example:
 // val curve = BakedAnimationCurve.valueOf("0#100") // Linear func
 
+import org.jetbrains.annotations.NotNull;
+
 public class BakedAnimationCurve {
     float[] values;
     public float multiplier;
@@ -24,14 +26,17 @@ public class BakedAnimationCurve {
         this.multiplier = multiplier;
     }
 
+    @NotNull
     public static BakedAnimationCurve valueOf(String string) {
         return BakedAnimationCurve.valueOf("#", string);
     }
 
+    @NotNull
     public static BakedAnimationCurve valueOf(String separator, String string) {
         return BakedAnimationCurve.valueOf(separator, string, 100f);
     }
 
+    @NotNull
     public static BakedAnimationCurve valueOf(String separator, String string, float multiplier) {
         String[] separated = string.split(separator);
         float[] values = new float[separated.length];
