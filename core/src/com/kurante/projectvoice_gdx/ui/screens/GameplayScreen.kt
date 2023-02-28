@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
@@ -39,6 +38,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
     private val formatter = DecimalFormat("0.##")
 
+
     override fun populate() {
         table = scene2d.table {
             setFillParent(true)
@@ -58,7 +58,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
                 exitButton = pvImageTextButton("LEAVE") {
                     onChange {
-                        this@GameplayScreen.game.changeScreen<HomeScreen>()
+                        exitGame()
                     }
                 }
 
@@ -92,6 +92,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
         super.hide()
     }
 
+    // Lots of loading
     fun initialize(level: Level, section: ChartSection) {
         this.level = level
         val chart = LegacyParser.parseChart(level, section)
@@ -147,7 +148,14 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 glowTexture = glowTexture,
                 holdBackground = ninePatch
             )
+
+            game.blurEnabled = true
             initialized = true
         }
+    }
+
+    fun exitGame() {
+        game.backgroundEnabled = false
+        game.changeScreen<HomeScreen>()
     }
 }

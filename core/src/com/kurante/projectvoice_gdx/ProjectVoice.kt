@@ -2,7 +2,6 @@ package com.kurante.projectvoice_gdx
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver
 import com.badlogic.gdx.files.FileHandle
@@ -13,12 +12,12 @@ import com.badlogic.gdx.graphics.g2d.*
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.Hinting
+import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.Pool
-import com.badlogic.gdx.utils.PropertiesUtils
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.VisUI.SkinScale
@@ -36,13 +35,11 @@ import de.tomgrill.gdxdialogs.core.GDXDialogs
 import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
-import ktx.app.Platform
 import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
 import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin.defaultSkin
 import java.util.*
-import ktx.preferences.get
 
 
 class ProjectVoice(
@@ -50,6 +47,7 @@ class ProjectVoice(
 ) : KtxGame<KtxScreen>() {
     companion object {
         const val PI = 3.1415927f
+        const val BACKGROUND_FADE = 0.25f
         // I'm tired of endlessly passing references around, so I'm making statics
         var stageWidth = 0f
         var stageHeight = 0f
@@ -82,6 +80,17 @@ class ProjectVoice(
 
     val modifiers = hashSetOf<Modifier>()
 
+    private lateinit var blurShader: ShaderProgram
+    private var backgroundTexture: Drawable? = null
+    private var backgroundAlpha = 0f
+    var backgroundEnabled = false
+
+    private var blurBuffer: FrameBuffer? = null
+    private val blurTexture: Texture? get() = blurBuffer?.colorBufferTexture
+    private var blurAlpha = 0f
+    var blurEnabled = false
+    var backgroundOpacity = 1f
+
     override fun create() {
         //if (Platform.isDesktop)
             modifiers.add(Modifier.AUTO)
@@ -108,10 +117,11 @@ class ProjectVoice(
         absoluteStorage = AssetStorage(fileResolver = AbsoluteFileHandleResolver())
 
         prefs = PlayerPreferences(this)
-
         prefs.locales["en"] = "English"
         prefs.locales["es"] = "Español"
         UserInterface.setLocale(prefs.locale)
+
+        blurShader = ShaderProgram(Gdx.files.internal("gaussian.vert"), Gdx.files.internal("gaussian.frag"))
 
         nativeCallbacks.create(this)
         StorageManager.storageHandler = nativeCallbacks.getStorageHandler()
@@ -132,8 +142,27 @@ class ProjectVoice(
 
     override fun render() {
         ScreenUtils.clear(BACKGROUND_COLOR)
-
         val screen = currentScreen as? GameScreen
+        val delta = Gdx.graphics.deltaTime
+
+        // Fade background in/out
+        backgroundAlpha = if (backgroundEnabled) (backgroundAlpha + delta / BACKGROUND_FADE).coerceAtMost(1f)
+            else (backgroundAlpha - delta / BACKGROUND_FADE).coerceAtLeast(0f)
+
+        blurAlpha = if (backgroundEnabled && blurEnabled) (blurAlpha + delta / BACKGROUND_FADE).coerceAtMost(1f)
+        else (blurAlpha - delta / BACKGROUND_FADE).coerceAtLeast(0f)
+
+        batch.use {
+            if (backgroundTexture != null && backgroundAlpha > 0f) {
+                it.color = it.color.set(backgroundOpacity, backgroundOpacity, backgroundOpacity, backgroundAlpha)
+                backgroundTexture!!.draw(it, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+            }
+            if (blurEnabled && blurTexture != null && blurAlpha > 0f) {
+                it.color = it.color.set(backgroundOpacity, backgroundOpacity, backgroundOpacity, blurAlpha)
+                it.draw(blurTexture, 0f, 0f)
+            }
+        }
+
         // Used when rendering fade in/out
         if (screen != null && screen.opacity < 1f) {
             screen.renderToBuffer(Gdx.graphics.deltaTime)
@@ -188,6 +217,9 @@ class ProjectVoice(
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
         batch = SpriteBatch()
+
+        if (backgroundTexture != null)
+            setBackground(backgroundTexture, blurEnabled)
     }
 
     fun safeLeft(): Int = if (prefs.safeArea) Gdx.graphics.safeInsetLeft else 0
@@ -321,6 +353,53 @@ class ProjectVoice(
 
             add("default-horizontal", style)
         }
+    }
+
+    fun setBackground(texture: Drawable?, isBlurred: Boolean = false) {
+        backgroundTexture = texture
+
+        blurBuffer?.dispose()
+        blurBuffer = null
+
+        if (texture == null) {
+            backgroundEnabled = false
+            backgroundAlpha = 0f
+            blurAlpha = 0f
+            return
+        }
+
+        backgroundEnabled = true
+        // Blur texture to a FrameBuffer (so we only blur it once, and not every draw call)
+        val width = Gdx.graphics.width; val height = Gdx.graphics.height
+        val blurred = FrameBuffer(Pixmap.Format.RGBA8888, width, height, false)
+        val blurA = FrameBuffer(Pixmap.Format.RGBA8888, width, height, false)
+        val blurB = FrameBuffer(Pixmap.Format.RGBA8888, width, height, false)
+        val batch = SpriteBatch()
+
+        blurA.use {
+            ScreenUtils.clear(0f, 0f, 1f, 1f)
+            batch.use { texture.draw(it, 0f, 0f, width.toFloat(), height.toFloat()) }
+        }
+
+        blurB.use { batch.use {
+            it.shader = blurShader
+            blurShader.setUniformf("dir", 1f, 0f)
+            blurShader.setUniformf("resolution", width.toFloat())
+            blurShader.setUniformf("radius", prefs.backgroundBlur)
+            it.draw(blurA.colorBufferTexture, 0f, 0f)
+        } }
+
+        blurred.use { batch.use {
+            blurShader.setUniformf("dir", 0f, 1f)
+            it.draw(blurB.colorBufferTexture, 0f, 0f, width.toFloat(), height.toFloat(), 0f, 0f, 1f, 1f)
+        } }
+
+        blurBuffer = blurred
+        blurEnabled = isBlurred
+
+        blurA.dispose()
+        blurB.dispose()
+        batch.dispose()
     }
 
     private fun generateFont(

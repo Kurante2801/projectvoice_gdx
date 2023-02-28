@@ -35,7 +35,7 @@ class LevelCard(
     init {
         color = UserInterface.FOREGROUND1_COLOR
 
-        image = Image(defaultSkin.getRegion("white")).apply {
+        image = Image().apply {
             setFillParent(true)
             color = UserInterface.FOREGROUND1_COLOR
 

@@ -18,7 +18,7 @@ import ktx.graphics.use
 open class GameScreen(
     val game: ProjectVoice
 ) : KtxScreen {
-    var buffer = FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, false)
+    var buffer = FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, true)
     var opacity: Float = 1f
     val stage = Stage(WidthViewport())
     var table: Table? = null
@@ -50,7 +50,7 @@ open class GameScreen(
 
     fun renderToBuffer(delta: Float) {
         buffer.use {
-            ScreenUtils.clear(BACKGROUND_COLOR)
+            ScreenUtils.clear(0f, 0f ,0f, 0f)
             render(delta)
         }
     }
