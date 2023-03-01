@@ -14,7 +14,8 @@ import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
-import com.kurante.projectvoice_gdx.util.extensions.envelopeRatio
+import com.kurante.projectvoice_gdx.util.extensions.aspectRatio
+import com.kurante.projectvoice_gdx.util.extensions.envelopeParent
 import kotlinx.coroutines.launch
 import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
@@ -31,6 +32,7 @@ class LevelCard(
     @Suppress("JoinDeclarationAndAssignment")
     val image: Image
     val table: Table
+    var texture: Texture? = null
 
     init {
         color = UserInterface.FOREGROUND1_COLOR
@@ -49,7 +51,10 @@ class LevelCard(
                     setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
                 }
 
-                drawable = TextureRegionDrawable(tex.envelopeRatio(level.backgroundAspectRatio))
+                texture = tex
+                drawable = TextureRegionDrawable(tex.envelopeParent(
+                    width / height, level.backgroundAspectRatio ?: (tex.width.toFloat() / tex.height)
+                ))
                 color = Color(0.75f, 0.75f, 0.75f, 1f)
             }
 
@@ -110,6 +115,14 @@ class LevelCard(
 
     override fun getPrefHeight(): Float {
         return width / (16f / 9f)
+    }
+
+    override fun layout() {
+        super.layout()
+        if (texture != null)
+            image.drawable = TextureRegionDrawable(texture!!.envelopeParent(
+                width / height, level.backgroundAspectRatio ?: texture!!.aspectRatio
+            ))
     }
 }
 

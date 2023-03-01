@@ -24,7 +24,7 @@ class PlayerPreferences(val game: ProjectVoice) {
         game.resize(Gdx.graphics.width, Gdx.graphics.height)
     }
     var storageString by delegatedString<String?>("storage", null)
-    var backgroundBlur by delegatedFloat("backgroundBlur", 2.75f)
+    var backgroundBlur by delegatedFloat("backgroundBlur", 0f)//2.75f)
     var backgroundOpacity by delegatedFloat("backgroundOpacity", 0.75f)
 
     // GAMEPLAY

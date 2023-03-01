@@ -1,14 +1,87 @@
 package com.kurante.projectvoice_gdx.util
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.utils.GdxRuntimeException
 import com.badlogic.gdx.utils.Json
 import com.kurante.projectvoice_gdx.game.*
 import com.kurante.projectvoice_gdx.level.ChartSection
+import com.kurante.projectvoice_gdx.level.DifficultyType
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import ktx.json.fromJson
+import kotlin.math.min
 
 object LegacyParser {
+    private val audioExtensions = arrayOf("mp3", "wav", "ogg")
+
+    fun parseLevel(directory: FileHandle, config: FileHandle): Level {
+        var musicFile: FileHandle? = null
+        var previewFile: FileHandle? = null
+        // Find any audio file
+        for (file in directory.list()) {
+            if (file.extension() !in audioExtensions) continue
+            when (file.nameWithoutExtension()) {
+                "song_full" -> musicFile = file
+                "song_pv" -> previewFile = file
+            }
+        }
+
+        if (musicFile == null) throw GdxRuntimeException("Music file not found: ${directory.name()}")
+
+        // songconfig.txt is structured as: key=value
+        val data = mutableMapOf<String, String>()
+        for (line in config.readString().split("\r\n", "\r", "\n")) {
+            val index = line.lastIndexOf('=')
+            if (index < 0) continue
+            data[line.substring(0, index)] = line.substring(index + 1)
+        }
+
+        val diff = data["diff"] ?: throw GdxRuntimeException("Config file does not have 'diff' defined: ${directory.name()}")
+        val id = data["id"] ?: throw GdxRuntimeException("Config file does not have 'id' defined: ${directory.name()}")
+        val name = data["name"] ?: throw GdxRuntimeException("Config file does not have 'name' defined: ${directory.name()}")
+        val author = data["author"] ?: throw GdxRuntimeException("Config file does not have 'author' defined: ${directory.name()}")
+
+        val diffs = diff.split('-')
+        if (diffs.isEmpty()) throw GdxRuntimeException("Could not parse difficulties: ${directory.name()}")
+
+        val charts = mutableListOf<ChartSection>()
+        val count = min(diffs.size, 6) // Limit charts to 6 per level
+        for (i in 0 until count) {
+            val difficulty = diffs[i].toIntOrNull() ?: 0
+            if (difficulty <= 0) {
+                Gdx.app.log("LegacyParser", "Skipped difficulty i: $i because it had a difficulty of 0 or below")
+                continue
+            }
+
+            val type = when (i) {
+                0 -> DifficultyType.EASY
+                1 -> DifficultyType.HARD
+                else -> DifficultyType.EXTRA
+            }
+
+            // If we're adding additional difficulties, start enumeration from track_extra2.json
+            val path = if (i <= 2) "track_${type.toString().lowercase()}.json" else "track_extra${i - 1}.json"
+            charts.add(ChartSection(path, difficulty, type, null))
+        }
+
+        if (charts.isEmpty()) throw GdxRuntimeException("Level does not have any charts: ${directory.name()}")
+
+        return Level(
+            file = directory,
+            id = id,
+            title = name,
+            artist = author,
+            musicFilename = musicFile.name(),
+            previewFilename = previewFile?.name(),
+            previewTime = data["preview_time"]?.toIntOrNull(),
+            backgroundFilename = data["background_name"] ?: "image_regular.png",
+            backgroundAspectRatio = data["background_ratio"]?.toFloatOrNull() ?: 1.25f,
+            charts = charts.toTypedArray(),
+        )
+    }
+
     fun parseChart(level: Level, section: ChartSection): Chart {
         val json = Json()
         json.ignoreUnknownFields = true

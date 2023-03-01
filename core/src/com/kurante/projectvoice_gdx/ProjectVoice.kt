@@ -16,7 +16,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Pool
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kotcrab.vis.ui.VisUI
@@ -28,9 +28,13 @@ import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.randomString
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.*
-import com.kurante.projectvoice_gdx.util.*
+import com.kurante.projectvoice_gdx.util.ChadFontData
+import com.kurante.projectvoice_gdx.util.TintedNinePatchDrawable
+import com.kurante.projectvoice_gdx.util.TintedTextureRegionDrawable
+import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import com.kurante.projectvoice_gdx.util.extensions.copy
+import com.kurante.projectvoice_gdx.util.extensions.envelopeParent
 import de.tomgrill.gdxdialogs.core.GDXDialogs
 import de.tomgrill.gdxdialogs.core.GDXDialogsSystem
 import ktx.app.KtxGame
@@ -81,9 +85,10 @@ class ProjectVoice(
     val modifiers = hashSetOf<Modifier>()
 
     private lateinit var blurShader: ShaderProgram
-    private var backgroundTexture: Drawable? = null
+    private var backgroundDrawable: TextureRegionDrawable? = null
     private var backgroundAlpha = 0f
     var backgroundEnabled = false
+    private var backgroundRatio = 1f
 
     private var blurBuffer: FrameBuffer? = null
     private val blurTexture: Texture? get() = blurBuffer?.colorBufferTexture
@@ -153,9 +158,9 @@ class ProjectVoice(
         else (blurAlpha - delta / BACKGROUND_FADE).coerceAtLeast(0f)
 
         batch.use {
-            if (backgroundTexture != null && backgroundAlpha > 0f) {
+            if (backgroundDrawable != null && backgroundAlpha > 0f) {
                 it.color = it.color.set(backgroundOpacity, backgroundOpacity, backgroundOpacity, backgroundAlpha)
-                backgroundTexture!!.draw(it, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+                backgroundDrawable!!.draw(it, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
             }
             if (blurEnabled && blurTexture != null && blurAlpha > 0f) {
                 it.color = it.color.set(backgroundOpacity, backgroundOpacity, backgroundOpacity, blurAlpha)
@@ -217,9 +222,8 @@ class ProjectVoice(
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
         batch = SpriteBatch()
-
-        if (backgroundTexture != null)
-            setBackground(backgroundTexture, blurEnabled)
+        if (backgroundDrawable != null && backgroundEnabled)
+            setBackground(backgroundDrawable!!.region.texture, backgroundRatio, blurEnabled)
     }
 
     fun safeLeft(): Int = if (prefs.safeArea) Gdx.graphics.safeInsetLeft else 0
@@ -355,11 +359,15 @@ class ProjectVoice(
         }
     }
 
-    fun setBackground(texture: Drawable?, isBlurred: Boolean = false) {
-        backgroundTexture = texture
+    fun setBackground(texture: Texture?, aspectRatio: Float, isBlurred: Boolean = false) {
+        if (texture != null)
+            backgroundDrawable = TextureRegionDrawable(texture.envelopeParent(
+                Gdx.graphics.width.toFloat() / Gdx.graphics.height, aspectRatio)
+            )
 
         blurBuffer?.dispose()
         blurBuffer = null
+        backgroundRatio = aspectRatio
 
         if (texture == null) {
             backgroundEnabled = false
@@ -377,8 +385,8 @@ class ProjectVoice(
         val batch = SpriteBatch()
 
         blurA.use {
-            ScreenUtils.clear(0f, 0f, 1f, 1f)
-            batch.use { texture.draw(it, 0f, 0f, width.toFloat(), height.toFloat()) }
+            ScreenUtils.clear(0f, 0f, 0f, 1f)
+            batch.use { backgroundDrawable!!.draw(it, 0f, 0f, width.toFloat(), height.toFloat()) }
         }
 
         blurB.use { batch.use {

@@ -1,5 +1,6 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.level.LevelManager
@@ -7,6 +8,7 @@ import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.widgets.fixedColumnGroup
 import com.kurante.projectvoice_gdx.ui.widgets.levelCard
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
+import com.kurante.projectvoice_gdx.util.extensions.aspectRatio
 import com.kurante.projectvoice_gdx.util.extensions.pvImageTextButton
 import com.kurante.projectvoice_gdx.util.extensions.setMainColor
 import kotlinx.coroutines.delay
@@ -56,7 +58,10 @@ class HomeScreen(game: ProjectVoice) : GameScreen(game) {
                         levelCard(level, game.assetStorage) {
                             onChange {
                                 KtxAsync.launch {
-                                    game.setBackground(image.drawable, false)
+                                    val texture = (image.drawable as TextureRegionDrawable).region.texture
+                                    game.setBackground(texture,
+                                        level.backgroundAspectRatio ?: texture.aspectRatio, false
+                                    )
                                     game.changeScreen<GameplayScreen>()
                                     delay(250)
                                     game.getScreen<GameplayScreen>().initialize(level, level.charts.last())

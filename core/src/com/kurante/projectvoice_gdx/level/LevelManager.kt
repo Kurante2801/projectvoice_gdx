@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.GdxRuntimeException
 import com.kurante.projectvoice_gdx.storage.StorageManager.storageHandler
+import com.kurante.projectvoice_gdx.util.LegacyParser
 
 object LevelManager {
     val levels = mutableListOf<Level>()
@@ -31,7 +32,7 @@ object LevelManager {
             }
 
             try {
-                levels.add(Level.fromSongConfig(directory, config))
+                levels.add(LegacyParser.parseLevel(directory, config))
             } catch (e: Exception) {
                 Gdx.app.error("LevelManager", "Skipping ${directory.name()} (failed to load)", e)
             }
