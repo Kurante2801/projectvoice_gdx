@@ -8,7 +8,7 @@ import kotlin.math.abs
 /**
  * Creates a region that has an aspect ratio of parentRatio but preserves childRatio.
  *
- * Imitates Unity's Aspect Ratio Fitter when set to Envelope Parent.
+ * This function tries to imitate Unity's Aspect Ratio Fitter when set to Envelope Parent and an aspect ratio that differs from Texture's aspect ratio
  * @param parentRatio The Aspect Ratio of the container of this image (for example an Image actor or the screen itself)
  * @param childRatio The Aspect Ratio of the texture itself
  */
