@@ -60,7 +60,7 @@ class HomeScreen(game: ProjectVoice) : GameScreen(game) {
                                 KtxAsync.launch {
                                     val texture = (image.drawable as TextureRegionDrawable).region.texture
                                     game.setBackground(texture,
-                                        level.backgroundAspectRatio ?: texture.aspectRatio, false
+                                        level.backgroundAspectRatio ?: texture.aspectRatio
                                     )
                                     game.changeScreen<GameplayScreen>()
                                     delay(250)

@@ -96,6 +96,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     fun initialize(level: Level, section: ChartSection) {
         this.level = level
         val chart = LegacyParser.parseChart(level, section)
+        game.backgroundOpacity = game.prefs.backgroundOpacity
 
         KtxAsync.launch {
             val conductor = game.loadConductor(level.file.child(level.musicFilename))
@@ -151,12 +152,13 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 holdBackground = ninePatch
             )
 
-            game.blurEnabled = true
+            game.blurAlpha = 1f
             initialized = true
         }
     }
 
     fun exitGame() {
+        game.backgroundOpacity = 0f
         game.backgroundEnabled = false
         game.changeScreen<HomeScreen>()
     }

@@ -1,5 +1,6 @@
 package com.kurante.projectvoice_gdx.ui.screens
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.Align
@@ -19,6 +20,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import com.kurante.projectvoice_gdx.ui.widgets.*
+import de.tomgrill.gdxdialogs.core.GDXDialogs
 
 class PreferencesScreen(game: ProjectVoice) : GameScreen(game) {
     private val tabMenu = TabMenu()
@@ -68,13 +70,19 @@ class PreferencesScreen(game: ProjectVoice) : GameScreen(game) {
                 }
             }).growX().pad(0f, 0f, 14f.scaledUi(), 0f).row()
 
-            add(SliderPreferenceSection(
-                "prefs_music_title", "prefs_music_subtext", game.prefs.musicVolume * 100f, 0f, 100f, 5f, this@PreferencesScreen.game.dialogs
-            ) {
-                onChange {
-                    game.prefs.musicVolume = it.value / 100f
-                }
-            }).growX().pad(0f, 0f, 14f.scaledUi(), 0f).row()
+            addSliderPrefs(this, "prefs_music", game.prefs.musicVolume, 0f, 1f, 0.05f, 100f, game.dialogs) {
+                game.prefs.musicVolume = it
+            }
+
+            addSliderPrefs(this, "prefs_backgroundOpacity", game.prefs.backgroundOpacity, 0f, 1f, 0.05f, 100f, game.dialogs) {
+                game.prefs.backgroundOpacity = it
+            }
+
+
+            addSliderPrefs(this, "prefs_backgroundBlur", game.prefs.backgroundBlur, 0f, 4f, 0.25f, 1f, game.dialogs) {
+                game.prefs.backgroundBlur = it
+                game.updateBackground()
+            }
 
             add(BooleanPreferenceSection("prefs_safearea_title", "prefs_safearea_subtext", "common_yes", "common_no", game.prefs.safeArea) {
                 onChange {
@@ -126,5 +134,25 @@ class PreferencesScreen(game: ProjectVoice) : GameScreen(game) {
                 }
             }
         })
+    }
+
+    private fun addSliderPrefs(
+        actor: KTableWidget,
+        key: String,
+        value: Float,
+        min: Float,
+        max: Float,
+        step: Float,
+        displayMultiplier: Float,
+        dialogs: GDXDialogs,
+        onChange: (Float) -> Unit
+    ) {
+        actor.add(SliderPreferenceSection(
+            "${key}_title", "${key}_subtext", value * displayMultiplier, min * displayMultiplier, max * displayMultiplier, step * displayMultiplier, dialogs
+        ) {
+            it.onChange {
+                onChange(this.value / displayMultiplier)
+            }
+        }).growX().pad(0f, 0f, 14f.scaledUi(), 0f).row()
     }
 }

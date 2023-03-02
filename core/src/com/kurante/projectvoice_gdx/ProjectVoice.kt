@@ -28,10 +28,7 @@ import com.kurante.projectvoice_gdx.storage.StorageManager
 import com.kurante.projectvoice_gdx.storage.StorageManager.randomString
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.screens.*
-import com.kurante.projectvoice_gdx.util.ChadFontData
-import com.kurante.projectvoice_gdx.util.TintedNinePatchDrawable
-import com.kurante.projectvoice_gdx.util.TintedTextureRegionDrawable
-import com.kurante.projectvoice_gdx.util.UserInterface
+import com.kurante.projectvoice_gdx.util.*
 import com.kurante.projectvoice_gdx.util.UserInterface.BACKGROUND_COLOR
 import com.kurante.projectvoice_gdx.util.extensions.copy
 import com.kurante.projectvoice_gdx.util.extensions.envelopeParent
@@ -86,15 +83,15 @@ class ProjectVoice(
 
     private lateinit var blurShader: ShaderProgram
     private var backgroundDrawable: TextureRegionDrawable? = null
-    private var backgroundAlpha = 0f
+    private var backgroundAlpha by AnimatableValues.FloatDelegate("backgroundAlpha", 0f)
     var backgroundEnabled = false
     private var backgroundRatio = 1f
 
     private var blurBuffer: FrameBuffer? = null
     private val blurTexture: Texture? get() = blurBuffer?.colorBufferTexture
-    private var blurAlpha = 0f
-    var blurEnabled = false
-    var backgroundOpacity = 1f
+    var blurAlpha by AnimatableValues.FloatDelegate("blurAlpha", 0f)
+
+    var backgroundOpacity by AnimatableValues.FloatDelegate("backgroundOpacity", 0f)
 
     override fun create() {
         //if (Platform.isDesktop)
@@ -146,23 +143,19 @@ class ProjectVoice(
     }
 
     override fun render() {
+
         ScreenUtils.clear(BACKGROUND_COLOR)
         val screen = currentScreen as? GameScreen
         val delta = Gdx.graphics.deltaTime
 
-        // Fade background in/out
-        backgroundAlpha = if (backgroundEnabled) (backgroundAlpha + delta / BACKGROUND_FADE).coerceAtMost(1f)
-            else (backgroundAlpha - delta / BACKGROUND_FADE).coerceAtLeast(0f)
-
-        blurAlpha = if (backgroundEnabled && blurEnabled) (blurAlpha + delta / BACKGROUND_FADE).coerceAtMost(1f)
-        else (blurAlpha - delta / BACKGROUND_FADE).coerceAtLeast(0f)
+        AnimatableValues.act(delta)
 
         batch.use {
             if (backgroundDrawable != null && backgroundAlpha > 0f) {
                 it.color = it.color.set(backgroundOpacity, backgroundOpacity, backgroundOpacity, backgroundAlpha)
                 backgroundDrawable!!.draw(it, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
             }
-            if (blurEnabled && blurTexture != null && blurAlpha > 0f) {
+            if (blurAlpha > 0f && blurTexture != null) {
                 it.color = it.color.set(backgroundOpacity, backgroundOpacity, backgroundOpacity, blurAlpha)
                 it.draw(blurTexture, 0f, 0f)
             }
@@ -222,8 +215,7 @@ class ProjectVoice(
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
         batch = SpriteBatch()
-        if (backgroundDrawable != null && backgroundEnabled)
-            setBackground(backgroundDrawable!!.region.texture, backgroundRatio, blurEnabled)
+        updateBackground()
     }
 
     fun safeLeft(): Int = if (prefs.safeArea) Gdx.graphics.safeInsetLeft else 0
@@ -359,7 +351,7 @@ class ProjectVoice(
         }
     }
 
-    fun setBackground(texture: Texture?, aspectRatio: Float, isBlurred: Boolean = false) {
+    fun setBackground(texture: Texture?, aspectRatio: Float, blur: Float = 0f) {
         if (texture != null)
             backgroundDrawable = TextureRegionDrawable(texture.envelopeParent(
                 Gdx.graphics.width.toFloat() / Gdx.graphics.height, aspectRatio)
@@ -403,11 +395,17 @@ class ProjectVoice(
         } }
 
         blurBuffer = blurred
-        blurEnabled = isBlurred
+        backgroundAlpha = 1f
+        blurAlpha = blur
 
         blurA.dispose()
         blurB.dispose()
         batch.dispose()
+    }
+
+    fun updateBackground() {
+        if (backgroundDrawable != null && backgroundEnabled)
+            setBackground(backgroundDrawable!!.region.texture, backgroundRatio, AnimatableValues["blurAlpha"]!!.target)
     }
 
     private fun generateFont(
