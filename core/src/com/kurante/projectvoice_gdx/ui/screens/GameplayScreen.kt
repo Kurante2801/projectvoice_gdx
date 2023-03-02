@@ -112,6 +112,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
             val ninePatch: NinePatch
             val background: Pixmap
+            // Load Hold Background as Pixmap so we can pack it
             game.internalStorage.load<Pixmap>("game/notes/diamond/hold_back.9.png").apply {
                 ninePatch = parseNinePatch()
                 background = crop()
@@ -129,6 +130,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 pack("tick_back", game.internalStorage.load<Pixmap>("game/notes/tick_back.png"))
                 pack("tick_fore", game.internalStorage.load<Pixmap>("game/notes/tick_fore.png"))
                 pack("perfect", game.internalStorage.load<Pixmap>("game/notes/diamond/grade_perfect.png"))
+                pack("input", game.internalStorage.load<Pixmap>("game/notes/diamond/grade_input.png"))
             }
             val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
             packer.dispose()

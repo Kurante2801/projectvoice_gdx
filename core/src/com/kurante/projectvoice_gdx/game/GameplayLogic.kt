@@ -89,6 +89,13 @@ class GameplayLogic(
     private val trackActive: AtlasRegion = trackAtlas.findRegion("active")
 
     private val particleManager = ParticleManager()
+    private val inputRegion = notesAtlas.findRegion("input")
+    private val gradeRegions = mapOf(
+        NoteGrade.MISS to null,
+        NoteGrade.GOOD to notesAtlas.findRegion("perfect"),
+        NoteGrade.GREAT to notesAtlas.findRegion("perfect"),
+        NoteGrade.PERFECT to notesAtlas.findRegion("perfect"),
+    )
 
     init {
         if (chart.endTime != null)
@@ -292,14 +299,20 @@ class GameplayLogic(
     }
 
     fun noteCollected(grade: NoteGrade, x: Int) {
-        val region = when(grade) {
-            NoteGrade.PERFECT -> notesAtlas.findRegion("perfect")
-            else -> return
-        }
-        val size = 1000f.scaledScreenY() * grade.weight.toFloat()
+        val region = gradeRegions[grade] ?: return
 
-        val particle = ProjectVoice.particlePool.obtain()
-        particle.initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, region, size, 0f, 3f)
-        particleManager.particles.add(particle)
+        ProjectVoice.particlePool.obtain().apply {
+            val size = 1000f.scaledScreenY() * grade.weight.toFloat()
+            initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, region, size, 0f, 3f)
+            particleManager.particles.add(this)
+        }
+    }
+
+    fun noteTouched(x: Int) {
+        ProjectVoice.particlePool.obtain().apply {
+            val size = 1500f.scaledScreenY()
+            initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, inputRegion, size, 0f, 1f)
+            particleManager.particles.add(this)
+        }
     }
 }

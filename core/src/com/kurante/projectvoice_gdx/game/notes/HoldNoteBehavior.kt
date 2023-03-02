@@ -204,6 +204,7 @@ class HoldNoteBehavior(
         else {
             isBeingHeld = true
             initialDifference = data.time - time
+            logic.noteTouched(x)
         }
     }
 

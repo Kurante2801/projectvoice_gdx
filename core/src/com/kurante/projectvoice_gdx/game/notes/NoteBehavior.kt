@@ -92,5 +92,6 @@ open class NoteBehavior(
         state.judge(data, grade!!, difference)
         isCollected = true
         logic.noteCollected(grade!!, x)
+        logic.noteTouched(x)
     }
 }
