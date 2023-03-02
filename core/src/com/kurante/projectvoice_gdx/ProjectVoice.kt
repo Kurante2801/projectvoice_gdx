@@ -308,6 +308,8 @@ class ProjectVoice(
                 packer = this@ProjectVoice.packer
             }
 
+            GameplayScreen.loadFonts(this@ProjectVoice, this, param)
+
             // Rubik Fonts
             val regular = generateFont("skin/rubik_regular.ttf", param)
             val bold = generateFont("skin/rubik_semibold.ttf", param)
@@ -405,10 +407,10 @@ class ProjectVoice(
 
     fun updateBackground() {
         if (backgroundDrawable != null && backgroundEnabled)
-            setBackground(backgroundDrawable!!.region.texture, backgroundRatio, AnimatableValues["blurAlpha"]!!.target)
+            setBackground(backgroundDrawable!!.region.texture, backgroundRatio, AnimatableValues["blurAlpha"]!!.value)
     }
 
-    private fun generateFont(
+    fun generateFont(
         path: String,
         parameter: FreeTypeFontParameter,
     ): BitmapFont {

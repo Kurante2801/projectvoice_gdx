@@ -21,7 +21,7 @@ open class GameScreen(
     var buffer = FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.width, Gdx.graphics.height, true)
     var opacity: Float = 1f
     val stage = Stage(WidthViewport())
-    var table: Table? = null
+    val tables = mutableListOf<Table>()
     var populated = false
 
     override fun show() {
@@ -37,7 +37,8 @@ open class GameScreen(
         // Minimizing on windows crashes without this
         if (width == 0 || height == 0) return@postRunnable
 
-        table?.padInset(game.prefs.safeArea)
+        for (table in tables)
+            table.padInset(game.prefs.safeArea)
 
         buffer.dispose()
         buffer = FrameBuffer(Pixmap.Format.RGBA8888, width, height, false)

@@ -53,6 +53,11 @@ class GameState {
 
         isFullComboPossible = true
         isFullScorePossible = true
+
+        for (track in chart.tracks) {
+            for (note in track.notes)
+                noteCount++
+        }
     }
 
     fun judge(note: Note, grade: NoteGrade, difference: Int) {

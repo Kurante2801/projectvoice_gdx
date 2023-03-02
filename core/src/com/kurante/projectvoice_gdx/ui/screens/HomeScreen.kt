@@ -23,7 +23,7 @@ import ktx.scene2d.table
 
 class HomeScreen(game: ProjectVoice) : GameScreen(game) {
     override fun populate() {
-        table = scene2d.table {
+        val table = scene2d.table {
             setFillParent(true)
 
             horizontalGroup {
@@ -73,6 +73,7 @@ class HomeScreen(game: ProjectVoice) : GameScreen(game) {
             }
         }
 
+        tables.add(table)
         stage.addActor(table)
     }
 }

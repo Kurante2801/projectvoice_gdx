@@ -13,3 +13,6 @@ fun String.lastIndexOfOrNull(
     val index = lastIndexOf(string, startIndex, ignoreCase)
     return if (index == -1) null else index
 }
+
+fun String.capitalize() =
+    this.replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.ROOT) else it.toString() }

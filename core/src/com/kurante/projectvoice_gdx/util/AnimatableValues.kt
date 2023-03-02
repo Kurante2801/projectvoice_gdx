@@ -28,10 +28,12 @@ object AnimatableValues {
 
     operator fun get(name: String) = animatables[name]
 
+    fun remove(name: String) = animatables.remove(name)
+
     class FloatDelegate(
         name: String,
         initial: Float,
-        override var transitionTime: Float = 0.25f
+        override var transitionTime: Float = 0.25f,
     ) : Animatable(initial, transitionTime), ReadWriteProperty<Any, Float> {
         init {
             animatables[name] = this

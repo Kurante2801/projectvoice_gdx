@@ -17,6 +17,7 @@ import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.notes.*
 import com.kurante.projectvoice_gdx.game.particles.CollectionParticle
 import com.kurante.projectvoice_gdx.game.particles.ParticleManager
+import com.kurante.projectvoice_gdx.ui.screens.GameplayScreen
 import com.kurante.projectvoice_gdx.util.BakedAnimationCurve
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledScreenY
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
@@ -36,8 +37,9 @@ class GameplayLogic(
     private val notesAtlas: TextureAtlas,
     private val modifiers: HashSet<Modifier>,
     prefs: PlayerPreferences,
-    state: GameState,
+    private val state: GameState,
     private val glowTexture: Texture,
+    private val screen: GameplayScreen,
     holdBackground: NinePatch,
 ) : Disposable {
     companion object {
@@ -306,6 +308,8 @@ class GameplayLogic(
             initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, region, size, 0f, 3f)
             particleManager.particles.add(this)
         }
+
+        screen.scoreChanged(state)
     }
 
     fun noteTouched(x: Int) {

@@ -27,7 +27,7 @@ class PreferencesScreen(game: ProjectVoice) : GameScreen(game) {
 
     override fun populate() {
         // Table only holds the return button
-        table = scene2d.table {
+        val table = scene2d.table {
             setFillParent(true)
 
             horizontalGroup {
@@ -105,13 +105,10 @@ class PreferencesScreen(game: ProjectVoice) : GameScreen(game) {
             pvImageTextButton("Tab 3")
         }
 
+        tables.add(tabMenu)
         stage.addActor(tabMenu)
+        tables.add(table)
         stage.addActor(table)
-    }
-
-    override fun resize(width: Int, height: Int) {
-        super.resize(width, height)
-        tabMenu.padInset(game.prefs.safeArea)
     }
 
     @OptIn(ExperimentalContracts::class)

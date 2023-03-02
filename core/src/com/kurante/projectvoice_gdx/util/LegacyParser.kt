@@ -9,6 +9,7 @@ import com.kurante.projectvoice_gdx.game.*
 import com.kurante.projectvoice_gdx.level.ChartSection
 import com.kurante.projectvoice_gdx.level.DifficultyType
 import com.kurante.projectvoice_gdx.level.Level
+import com.kurante.projectvoice_gdx.util.extensions.capitalize
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import ktx.json.fromJson
 import kotlin.math.min
@@ -63,7 +64,9 @@ object LegacyParser {
 
             // If we're adding additional difficulties, start enumeration from track_extra2.json
             val path = if (i <= 2) "track_${type.toString().lowercase()}.json" else "track_extra${i - 1}.json"
-            charts.add(ChartSection(path, difficulty, type, null))
+
+            val name = type.toString().lowercase().capitalize()
+            charts.add(ChartSection(path, difficulty, type, name, null))
         }
 
         if (charts.isEmpty()) throw GdxRuntimeException("Level does not have any charts: ${directory.name()}")

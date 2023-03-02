@@ -19,3 +19,7 @@ fun Label.setLocalizedText(key: String) {
         setText(bundle[key])
     }
 }
+
+fun Label.scaleBy(scaleX: Float, scaleY: Float) {
+
+}

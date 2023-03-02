@@ -34,7 +34,7 @@ class StorageScreen(game: ProjectVoice) : GameScreen(game) {
         val tree = game.prefs.storageString
             ?: return showFirstTime()
 
-        table = scene2d.table {
+        val table = scene2d.table {
             setFillParent(true)
 
             val message = label("") {
@@ -115,12 +115,13 @@ class StorageScreen(game: ProjectVoice) : GameScreen(game) {
             tryLoadLevels(handle, message, field, browse, next)
         }
 
+        tables.add(table)
         stage.addActor(table)
     }
 
     // First thing you see upon launching the game for the first time
     private fun showFirstTime() {
-        table = scene2d.table {
+        val table = scene2d.table {
             setFillParent(true)
 
             label("storage_request") {
@@ -150,6 +151,7 @@ class StorageScreen(game: ProjectVoice) : GameScreen(game) {
             }
         }
 
+        tables.add(table)
         stage.addActor(table)
     }
 

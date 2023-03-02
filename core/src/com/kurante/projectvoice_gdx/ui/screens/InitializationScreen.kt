@@ -22,7 +22,7 @@ class InitializationScreen(game: ProjectVoice) : GameScreen(game) {
 
         val handle = storageHandler.directoryFromString(tree)
 
-        table = scene2d.table {
+        val table = scene2d.table {
             setFillParent(true)
             label("Loading levels...")
 
@@ -38,6 +38,7 @@ class InitializationScreen(game: ProjectVoice) : GameScreen(game) {
             }
         }
 
+        tables.add(table)
         stage.addActor(table)
     }
 }

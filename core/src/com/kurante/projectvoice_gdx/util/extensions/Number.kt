@@ -24,3 +24,5 @@ fun Float.mapRange(toMin: Float, toMax: Float, clamped: Boolean = true): Float {
     else
         this * (toMax - toMin) + toMin
 }
+
+fun Float.lerp(b: Float, t: Float): Float = this + (b - this) * t.coerceIn(0f, 1f)
