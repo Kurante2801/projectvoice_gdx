@@ -44,7 +44,7 @@ allprojects {
 
 project(":core") {
     apply plugin: "kotlin"
-
+    apply plugin: "java"
 
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -65,12 +65,19 @@ project(":core") {
         api group: 'io.github.libktx', name: 'ktx-vis-style', version: ktxVersion
 
         implementation "de.tomgrill.gdxdialogs:gdx-dialogs-core:1.3.0"
+
+        testImplementation 'junit:junit:4.13.2'
+        testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+        testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.8.2"
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 
 project(":desktop") {
     apply plugin: "kotlin"
-
 
     dependencies {
         implementation project(":core")
@@ -89,6 +96,8 @@ project(":desktop") {
 
         implementation "de.tomgrill.gdxdialogs:gdx-dialogs-desktop:1.3.0"
     }
+
+
 }
 
 project(":android") {

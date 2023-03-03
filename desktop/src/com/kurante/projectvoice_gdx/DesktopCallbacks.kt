@@ -2,8 +2,10 @@ package com.kurante.projectvoice_gdx
 
 import com.badlogic.gdx.files.FileHandle
 import com.kurante.projectvoice_gdx.game.Conductor
+import com.kurante.projectvoice_gdx.game.SoundlessConductor
 import com.kurante.projectvoice_gdx.storage.StorageHandler
 import com.kurante.projectvoice_gdx.storage.WindowsStorageHandler
+import com.kurante.projectvoice_gdx.util.extensions.toMillis
 import games.rednblack.miniaudio.MiniAudio
 import games.rednblack.miniaudio.loader.MASoundLoader
 import games.rednblack.miniaudio.loader.MASoundLoaderParameters
@@ -30,11 +32,15 @@ class DesktopCallbacks : NativeCallbacks() {
         miniAudio.dispose()
     }
 
-    override suspend fun loadConductor(game: ProjectVoice, handle: FileHandle): Conductor {
+    /*override suspend fun loadConductor(game: ProjectVoice, handle: FileHandle): Conductor {
         val sound = game.absoluteStorage.load(handle.path(), MASoundLoaderParameters().apply {
             external = true
         })
         return MiniAudioConductor(game.absoluteStorage, handle, sound)
+    }*/
+    override suspend fun loadConductor(game: ProjectVoice, handle: FileHandle): Conductor {
+        val sound = game.absoluteStorage.load(handle.path(), MASoundLoaderParameters().apply { external = true })
+        return SoundlessConductor(sound.length.toMillis(), 1f, 9049)
     }
 
     override fun getStorageHandler(): StorageHandler = WindowsStorageHandler()

@@ -197,7 +197,7 @@ object LegacyParser {
             transitions.add(
                 Transition(
                     startTime = legacyTrack.Start.toMillis(),
-                    endTime = transition.Start.toMillis(),
+                    endTime = transition.Start.toMillis() - 1,
                     startValue = initialValue,
                     endValue = initialValue,
                     easing = TransitionEase.NONE,
@@ -208,27 +208,39 @@ object LegacyParser {
         // Convert transitions
         for (i in legacy.indices) {
             transition = legacy[i]
-            // If this is not the first legacy transition, we get the value from the previous transition
-            if (i > 0)
-                initialValue = transitions[transitions.size - 1].endValue
+
+            if (transitions.isNotEmpty()) {
+                initialValue = transitions.last().endValue
+                // Fix gap between last transition and legacy
+                val last = transitions.last()
+                val start = transition.Start.toMillis()
+
+                if (last.endTime !in (start - 1..start + 1)) {
+                    transitions.add(Transition(
+                        startTime = last.endTime + 1,
+                        endTime = start - 1,
+                        startValue = initialValue,
+                        endValue = initialValue,
+                        easing = TransitionEase.NONE
+                    ))
+                }
+            }
 
             // EXIT transition is different for move, scale and color
             var ease = parseEase(transition.Ease)
             if (ease == TransitionEase.EXIT)
                 ease = exit
 
-            transitions.add(
-                Transition(
-                    startTime = transition.Start.toMillis(),
-                    endTime = transition.End.toMillis(),
-                    startValue = initialValue,
-                    endValue = transition.To,
-                    easing = ease
-                )
-            )
+            transitions.add(Transition(
+                startTime = transition.Start.toMillis(),
+                endTime = transition.End.toMillis(),
+                startValue = initialValue,
+                endValue = transition.To,
+                easing = ease
+            ))
         }
 
-        return transitions.toTypedArray().apply { sortBy { it.startTime } }
+        return transitions.sortedBy { it.startTime }.toTypedArray()
     }
 
     private fun parseEase(ease: String): TransitionEase = when (ease) {
