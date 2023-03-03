@@ -29,12 +29,28 @@ data class Track(
                 from.r + percent * (to.r - from.r),
                 from.g + percent * (to.g - from.g),
                 from.b + percent * (to.b - from.b),
-                from.a + percent * (to.a - from.a),
+                1f,
             )
 
             return colorHolder.clamp()
         }
     }
+
+    data class Transition(
+        val easing: TransitionEase,
+        val startTime: Int,
+        val endTime: Int,
+        val startValue: Float,
+        val endValue: Float,
+    )
+
+    data class ColorTransition(
+        val startTime: Int,
+        val endTime: Int,
+        val startValue: Color,
+        val endValue: Color,
+        val easing: TransitionEase,
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -45,29 +61,27 @@ data class Track(
     override fun hashCode(): Int = id.hashCode()
 
     fun getTransition(time: Int, transitions: Array<Transition>): Transition {
-        var result = transitions.first()
-
-        for (transition in transitions) {
+        var result = transitions[0]
+        for (i in transitions.indices) {
+            val transition = transitions[i]
             if (time >= transition.startTime)
                 result = transition
             else
                 return result
         }
-
-        return transitions.last()
+        return transitions[transitions.size - 1]
     }
 
     fun getColorTransition(time: Int): ColorTransition {
-        var result = colorTransitions.first()
-
-        for (transition in colorTransitions) {
+        var result = colorTransitions[0]
+        for (i in colorTransitions.indices) {
+            val transition = colorTransitions[i]
             if (time >= transition.startTime)
                 result = transition
             else
                 return result
         }
-
-        return colorTransitions.last()
+        return colorTransitions[colorTransitions.size - 1]
     }
 
     fun getPosition(time: Int): Float {
@@ -103,19 +117,3 @@ data class Track(
         return lerpColor(transition.startValue, transition.endValue, percent)
     }
 }
-
-data class Transition(
-    val easing: TransitionEase,
-    val startTime: Int,
-    val endTime: Int,
-    val startValue: Float,
-    val endValue: Float,
-)
-
-data class ColorTransition(
-    val startTime: Int,
-    val endTime: Int,
-    val startValue: Color,
-    val endValue: Color,
-    val easing: TransitionEase,
-)

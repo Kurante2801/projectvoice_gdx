@@ -11,6 +11,8 @@ import com.kurante.projectvoice_gdx.level.DifficultyType
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.util.extensions.capitalize
 import com.kurante.projectvoice_gdx.util.extensions.toMillis
+import com.kurante.projectvoice_gdx.game.Track.Transition
+import com.kurante.projectvoice_gdx.game.Track.ColorTransition
 import ktx.json.fromJson
 import kotlin.math.min
 
@@ -65,8 +67,7 @@ object LegacyParser {
             // If we're adding additional difficulties, start enumeration from track_extra2.json
             val path = if (i <= 2) "track_${type.toString().lowercase()}.json" else "track_extra${i - 1}.json"
 
-            val name = type.toString().lowercase().capitalize()
-            charts.add(ChartSection(path, difficulty, type, name, null))
+            charts.add(ChartSection(path, difficulty, type, type.toString().lowercase().capitalize(), null))
         }
 
         if (charts.isEmpty()) throw GdxRuntimeException("Level does not have any charts: ${directory.name()}")
@@ -227,8 +228,7 @@ object LegacyParser {
             )
         }
 
-        transitions.sortBy { it.startTime }
-        return transitions.toTypedArray()
+        return transitions.toTypedArray().apply { sortBy { it.startTime } }
     }
 
     private fun parseEase(ease: String): TransitionEase = when (ease) {
@@ -257,19 +257,20 @@ object LegacyParser {
     }
 
     // In legacy, colors are stored as numbers that map to these values
-    private fun parseColor(value: Int): Color = Color.valueOf(when(value) {
-        0 -> "#F98F95"
-        1 -> "#F9E5A1"
-        2 -> "#D3D3D3"
-        3 -> "#77D1DE"
-        4 -> "#97D384"
-        5 -> "#F3B67E"
-        6 -> "#E2A0CB"
-        7 -> "#8CBCE7"
-        8 -> "#76DBCB"
-        9 -> "#AEA6F0"
-        else -> "#FFFFFF"
-    })
+    // https://github.com/AndrewFM/VoezEditor/blob/master/Assets/Scripts/ProjectData.cs#L548
+    private val colors = arrayOf(
+        Color.valueOf("#F98F95")!!,
+        Color.valueOf("#F9E5A1")!!,
+        Color.valueOf("#D3D3D3")!!,
+        Color.valueOf("#77D1DE")!!,
+        Color.valueOf("#97D384")!!,
+        Color.valueOf("#F3B67E")!!,
+        Color.valueOf("#E2A0CB")!!,
+        Color.valueOf("#8CBCE7")!!,
+        Color.valueOf("#76DBCB")!!,
+        Color.valueOf("#AEA6F0")!!,
+    )
+    private fun parseColor(value: Int): Color = colors.elementAtOrNull(value) ?: Color(1f, 1f, 1f, 1f)
 
     private fun parseNoteType(type: String): NoteType = when(type) {
         "swipe" -> NoteType.SWIPE

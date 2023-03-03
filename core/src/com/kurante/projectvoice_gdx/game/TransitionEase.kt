@@ -18,7 +18,7 @@ interface ITransitionEase {
         startValue: Float,
         endValue: Float,
     ): Float {
-        val percent = time.mapRange(startTime, endTime, 0, 1)
+        val percent = time.mapRange(startTime, endTime, 0f, 1f)
         return easeFunction(percent.coerceIn(0f, 1f), startValue, endValue)
     }
 
