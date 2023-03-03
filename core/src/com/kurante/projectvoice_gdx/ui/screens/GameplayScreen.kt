@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter
-import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -22,6 +21,7 @@ import com.kurante.projectvoice_gdx.level.ChartSection
 import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.ui.GameScreen
 import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
+import com.kurante.projectvoice_gdx.util.Interpolations
 import com.kurante.projectvoice_gdx.util.KActions
 import com.kurante.projectvoice_gdx.util.LegacyParser
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
@@ -38,8 +38,13 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     companion object {
         fun loadFonts(game: ProjectVoice, skin: Skin, param: FreeTypeFontParameter) {
             skin.add("combo", game.generateFont("skin/rubik_semibold.ttf", param.copy {
-                size = 76
+                size = 84
                 characters = "0123456789"
+            }))
+
+            skin.add("comboText", game.generateFont("skin/rubik_semibold.ttf", param.copy {
+                size = 38
+                characters = "COMB"
             }))
 
             skin.add("score", game.generateFont("skin/rubik_semibold.ttf", param.copy {
@@ -64,6 +69,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     private lateinit var exitButton: PVImageTextButton
 
     private lateinit var combo: Label
+    private lateinit var comboText: Label
     private lateinit var score: Label
     private lateinit var accuracy: Label
     private lateinit var title: Label
@@ -116,12 +122,11 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             container { it.grow() }
 
             table {
-                debug = true
-
                 align(Align.topRight)
                 it.width(350f.scaledUi())
                 it.growY()
-                it.pad(28f.scaledUi(), 0f, 0f, 28f.scaledUi())
+                // Texts' top paddings are less than 28f because texts have an empty gap on top of them
+                it.pad(19f.scaledUi(), 0f, 0f, 28f.scaledUi())
 
                 score = label("1000000") {
                     it.growX()
@@ -153,15 +158,19 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         comboTable = scene2d.table {
             setFillParent(true)
-
             combo = label("39") {
-                it.pad(26f.scaledUi()) // A bit less than 28 to comensate for large font's top gap
-                setAlignment(Align.top)
+                it.pad(16f.scaledUi(), 0f, -8f.scaledUi(), 0f)
+                setAlignment(Align.bottom)
                 style = style.withFont(defaultSkin.getFont("combo"))
+            }
+            defaults().row()
+
+            comboText = label("COMBO") {
+                setAlignment(Align.top)
+                style = style.withFont(defaultSkin.getFont("comboText"))
             }
 
             defaults().row()
-
             container { it.grow() }
         }
 
@@ -190,6 +199,12 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
             scoreDisplay = scoreDisplay.lerp(scoreValue, 0.6f)
             score.setText(scoreFormatter.format(scoreDisplay))
+
+            combo.fontScaleX = combo.fontScaleX.coerceIn(1f, 1.25f)
+            combo.fontScaleY = combo.fontScaleY.coerceIn(1f, 1.25f)
+            comboText.color = comboText.color.set(combo.color)
+            comboText.fontScaleX = combo.fontScaleX
+            comboText.fontScaleY = combo.fontScaleY
         }
 
         super.render(delta)
@@ -323,6 +338,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
         combo.setText("0")
         combo.clearActions()
         combo.color = combo.color.setAlpha(0f)
+        comboText.color = comboText.color.setAlpha(0f)
 
         scoreDisplay = 0f
         scoreValue = 0f
@@ -334,7 +350,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
         if (state.accuracy == 100.0)
             accuracy.setText("100%")
         else
-            accuracy.setText("${formatter.format(state.accuracy)}%")
+            accuracy.setText("${formatter.format(state.accuracy * 100f)}%")
 
         combo.clearActions()
         if (state.combo > 0) {
@@ -344,14 +360,12 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 Actions.parallel(
                     Actions.color(comboColor.setAlpha(1f), 0.25f),
                     Actions.sequence(
-                        KActions.scaleLabelBy(1.25f, 1.25f, 0.0625f, Interpolation.linear),
-                        KActions.scaleLabelBy(1f, 1f, 0.0625f, Interpolation.linear),
+                        KActions.scaleLabelBy(0.25f, 0.25f, 0.0625f, Interpolations.outCubic),
+                        KActions.scaleLabelBy(-0.25f, -0.25f, 0.0625f, Interpolations.outCubic),
                     )
                 )
             )
         } else
             combo.addAction(Actions.color(comboColor.setAlpha(0f), 0.25f))
-
-
     }
 }

@@ -193,6 +193,8 @@ class HoldNoteBehavior(
         initialDifference = data.time - time
         state.judge(data, initialGrade!!, difference)
         isCollected = true
+
+        logic.noteJudged()
     }
 
     fun startHold(time: Int, x: Int) {

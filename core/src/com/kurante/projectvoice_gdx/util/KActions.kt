@@ -9,7 +9,7 @@ object KActions {
         amountY: Float,
         duration: Float = 0f,
         interpolation: Interpolation? = null,
-    ) = Actions.action(ScaleLabelByAction::class.java).apply {
+    ): ScaleLabelByAction = Actions.action(ScaleLabelByAction::class.java).apply {
         this.amountX = amountX
         this.amountY = amountY
         this.duration = duration

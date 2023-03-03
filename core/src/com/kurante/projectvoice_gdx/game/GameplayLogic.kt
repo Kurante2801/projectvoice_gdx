@@ -309,6 +309,10 @@ class GameplayLogic(
             particleManager.particles.add(this)
         }
 
+        noteJudged()
+    }
+
+    fun noteJudged() {
         screen.scoreChanged(state)
     }
 

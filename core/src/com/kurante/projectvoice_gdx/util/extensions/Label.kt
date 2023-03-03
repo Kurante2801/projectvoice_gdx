@@ -20,6 +20,7 @@ fun Label.setLocalizedText(key: String) {
     }
 }
 
-fun Label.scaleBy(scaleX: Float, scaleY: Float) {
-
+fun Label.scaleFontBy(scaleX: Float, scaleY: Float) {
+    fontScaleX += scaleX
+    fontScaleY += scaleY
 }
