@@ -234,7 +234,7 @@ class HoldNoteBehavior(
         val size = 1250f.scaledScreenY() * grade.weight.toFloat()
         val particle = ProjectVoice.particlePool.obtain()
         // X pos is 0 since it'll be manually changed afterwards anyways
-        particle.initialize(0f, ProjectVoice.stageHeight * GameplayLogic.LINE_POS_MULTIPLIER, region, size, 45f, 3f)
+        particle.initialize(0f, ProjectVoice.stageHeight * GameplayLogic.LINE_POS_MULTIPLIER, region, size, 45f, 0.75f)
         particleManager.particles.add(particle)
     }
 

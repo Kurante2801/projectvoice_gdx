@@ -30,7 +30,7 @@ class CollectionParticle(
     private var rotation = 0f
 
     fun act(delta: Float) {
-        progress += duration * delta
+        progress += delta
         if (progress > duration) return
 
         val t = progress / duration

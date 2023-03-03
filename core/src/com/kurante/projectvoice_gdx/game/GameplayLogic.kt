@@ -146,8 +146,8 @@ class GameplayLogic(
         val width = ProjectVoice.stageWidth
         val height = ProjectVoice.stageHeight
         val trackWidth = width * 0.115f
-        val borderThick = 3f.scaledStageX()
-        val centerThick = 2f.scaledStageX()
+        val borderThick = 2f.scaledStageX()
+        val centerThick = 1.5f.scaledStageX()
         val glowWidth = 12f.scaledStageX()
         val judgementThick = 2f.scaledStageY()
 
@@ -305,7 +305,7 @@ class GameplayLogic(
 
         ProjectVoice.particlePool.obtain().apply {
             val size = 1000f.scaledScreenY() * grade.weight.toFloat()
-            initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, region, size, 0f, 3f)
+            initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, region, size, 0f, 1f)
             particleManager.particles.add(this)
         }
 
@@ -318,8 +318,8 @@ class GameplayLogic(
 
     fun noteTouched(x: Int) {
         ProjectVoice.particlePool.obtain().apply {
-            val size = 1500f.scaledScreenY()
-            initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, inputRegion, size, 0f, 1f)
+            val size = 1250f.scaledScreenY()
+            initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, inputRegion, size, 0f, 0.5f)
             particleManager.particles.add(this)
         }
     }

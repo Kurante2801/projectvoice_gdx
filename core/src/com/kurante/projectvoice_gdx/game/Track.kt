@@ -25,14 +25,12 @@ data class Track(
         private val colorHolder = Color(1f, 1f, 1f, 1f)
 
         fun lerpColor(from: Color, to: Color, percent: Float): Color {
-            colorHolder.set(
+            return colorHolder.set(
                 from.r + percent * (to.r - from.r),
                 from.g + percent * (to.g - from.g),
                 from.b + percent * (to.b - from.b),
                 1f,
             )
-
-            return colorHolder.clamp()
         }
     }
 
