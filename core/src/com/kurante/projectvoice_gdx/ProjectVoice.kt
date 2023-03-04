@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Pool
 import com.badlogic.gdx.utils.ScreenUtils
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.VisUI.SkinScale
+import com.kurante.projectvoice_gdx.game.Gamemode
 import com.kurante.projectvoice_gdx.game.Modifier
 import com.kurante.projectvoice_gdx.game.particles.CollectionParticle
 import com.kurante.projectvoice_gdx.storage.StorageFileHandleResolver
@@ -80,6 +81,7 @@ class ProjectVoice(
     lateinit var prefs: PlayerPreferences
 
     val modifiers = hashSetOf<Modifier>()
+    var gamemode = Gamemode.NORMAL
 
     private lateinit var blurShader: ShaderProgram
     private var backgroundDrawable: TextureRegionDrawable? = null

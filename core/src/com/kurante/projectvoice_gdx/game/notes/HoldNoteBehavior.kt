@@ -34,7 +34,7 @@ class HoldNoteBehavior(
 ) : NoteBehavior(prefs, atlas, data, state, modifiers, logic) {
     companion object {
         const val RELEASE_THRESHOLD = 360
-        const val PARTICLE_TIME = 100
+        const val PARTICLE_TIME = 125
     }
 
     private data class Tick(
@@ -231,10 +231,10 @@ class HoldNoteBehavior(
             NoteGrade.PERFECT -> atlas.findRegion("perfect")
             else -> return
         }
-        val size = 1250f.scaledScreenY() * grade.weight.toFloat()
+        val size = 1000f.scaledScreenY() * grade.weight.toFloat()
         val particle = ProjectVoice.particlePool.obtain()
         // X pos is 0 since it'll be manually changed afterwards anyways
-        particle.initialize(0f, ProjectVoice.stageHeight * GameplayLogic.LINE_POS_MULTIPLIER, region, size, 45f, 0.75f)
+        particle.initialize(0f, ProjectVoice.stageHeight * GameplayLogic.LINE_POS_MULTIPLIER, region, size, 45f, 1.25f)
         particleManager.particles.add(particle)
     }
 

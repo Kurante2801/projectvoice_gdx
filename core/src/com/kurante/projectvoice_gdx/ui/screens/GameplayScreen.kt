@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.Chart
+import com.kurante.projectvoice_gdx.game.Gamemode
 import com.kurante.projectvoice_gdx.game.GameState
 import com.kurante.projectvoice_gdx.game.GameplayLogic
 import com.kurante.projectvoice_gdx.level.ChartSection
@@ -291,6 +292,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 glowTexture = glowTexture,
                 holdBackground = ninePatch,
                 screen = this@GameplayScreen,
+                game = game
             )
 
             if (populated) {
@@ -310,6 +312,9 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     }
 
     fun addUiAlphaActions(target: Float, duration: Float) {
+        if (game.gamemode == Gamemode.TRACKS && target != 0f)
+            return addUiAlphaActions(0f, duration)
+
         val color = Color(1f, 1f, 1f, target)
         score.clearActions()
         score.addAction(Actions.color(color, duration))
