@@ -32,16 +32,14 @@ class DesktopCallbacks : NativeCallbacks() {
         miniAudio.dispose()
     }
 
-    /*override suspend fun loadConductor(game: ProjectVoice, handle: FileHandle): Conductor {
-        val sound = game.absoluteStorage.load(handle.path(), MASoundLoaderParameters().apply {
-            external = true
-        })
-        return MiniAudioConductor(game.absoluteStorage, handle, sound)
-    }*/
     override suspend fun loadConductor(game: ProjectVoice, handle: FileHandle): Conductor {
         val sound = game.absoluteStorage.load(handle.path(), MASoundLoaderParameters().apply { external = true })
-        return SoundlessConductor(sound.length.toMillis(), 1f, 9049)
+        return MiniAudioConductor(game.absoluteStorage, handle, sound)
     }
+    /*override suspend fun loadConductor(game: ProjectVoice, handle: FileHandle): Conductor {
+        val sound = game.absoluteStorage.load(handle.path(), MASoundLoaderParameters().apply { external = true })
+        return SoundlessConductor(sound.length.toMillis(), 1f, 9049)
+    }*/
 
     override fun getStorageHandler(): StorageHandler = WindowsStorageHandler()
 }

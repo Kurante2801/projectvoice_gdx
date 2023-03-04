@@ -89,6 +89,7 @@ class GameplayLogic(
     private val trackLine: AtlasRegion = trackAtlas.findRegion("line")
     private val judgementLine: AtlasRegion = trackAtlas.findRegion("white")
     private val trackActive: AtlasRegion = trackAtlas.findRegion("active")
+    private val trackShape: AtlasRegion = notesAtlas.findRegion("track")
 
     private val particleManager = ParticleManager()
     private val inputRegion = notesAtlas.findRegion("input")
@@ -246,6 +247,13 @@ class GameplayLogic(
             // JUDGEMENT LINE
             batch.color = Color.WHITE
             batch.draw(judgementLine, 0f, height * LINE_POS_MULTIPLIER - judgementThick * 0.5f, width, judgementThick)
+            // TRACK SHAPE
+            batch.color = Color.BLACK
+            forEachDrawable { _, info ->
+                val size = 25f.scaledStageX() * info.scaleY
+                val half = size * 0.5f
+                batch.draw(trackShape, info.center - half, height * LINE_POS_MULTIPLIER - half, size, size)
+            }
             // NOTES
             forEachNote { _, info, note ->
                 note.render(batch, info)
@@ -318,7 +326,7 @@ class GameplayLogic(
 
     fun noteTouched(x: Int) {
         ProjectVoice.particlePool.obtain().apply {
-            val size = 1250f.scaledScreenY()
+            val size = 1100f.scaledScreenY()
             initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, inputRegion, size, 0f, 0.5f)
             particleManager.particles.add(this)
         }

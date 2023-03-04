@@ -271,6 +271,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
                 pack("tick_fore", game.internalStorage.load<Pixmap>("game/notes/tick_fore.png"))
                 pack("perfect", game.internalStorage.load<Pixmap>("game/notes/diamond/grade_perfect.png"))
                 pack("input", game.internalStorage.load<Pixmap>("game/notes/diamond/grade_input.png"))
+                pack("track", game.internalStorage.load<Pixmap>("game/notes/diamond/track.png"))
             }
             val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
             packer.dispose()
