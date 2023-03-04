@@ -8,10 +8,9 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.NinePatch
 import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.Chart
@@ -25,6 +24,7 @@ import com.kurante.projectvoice_gdx.ui.widgets.PVImageTextButton
 import com.kurante.projectvoice_gdx.util.Interpolations
 import com.kurante.projectvoice_gdx.util.KActions
 import com.kurante.projectvoice_gdx.util.LegacyParser
+import com.kurante.projectvoice_gdx.util.UserInterface
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledUi
 import com.kurante.projectvoice_gdx.util.extensions.*
 import kotlinx.coroutines.launch
@@ -76,6 +76,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
     private lateinit var title: Label
     private lateinit var difficulty: Label
     private lateinit var comboTable: Table
+    private lateinit var modsGroup: KHorizontalGroup
 
     private var scoreValue = 0f
     private var scoreDisplay = 0f
@@ -89,6 +90,8 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             setFillParent(true)
 
             horizontalGroup {
+                touchable = Touchable.childrenOnly
+
                 align(Align.left)
                 space(28f.scaledUi())
                 it.growX()
@@ -112,13 +115,24 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
             defaults().row()
             container {
+                touchable = Touchable.disabled
                 it.grow()
                 it.pad(0f, 28f.scaledUi(), 28f.scaledUi(), 28f.scaledUi())
+            }
+            defaults().row()
+            modsGroup = horizontalGroup {
+                touchable = Touchable.disabled
+
+                align(Align.right)
+                space(28f.scaledUi())
+                it.growX()
+                it.pad(28f.scaledUi())
             }
         }
 
         val infoTable = scene2d.table {
             setFillParent(true)
+            touchable = Touchable.disabled
 
             container { it.grow() }
 
@@ -159,6 +173,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         comboTable = scene2d.table {
             setFillParent(true)
+            touchable = Touchable.disabled
             combo = label("39") {
                 it.pad(16f.scaledUi(), 0f, -8f.scaledUi(), 0f)
                 setAlignment(Align.bottom)
@@ -322,6 +337,8 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
         accuracy.addAction(Actions.color(color, duration))
         title.clearActions()
         title.addAction(Actions.color(color, duration))
+        modsGroup.clearActions()
+        modsGroup.addAction(Actions.color(color, duration))
 
         difficulty.clearActions()
         if (this::section.isInitialized)
@@ -348,6 +365,14 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
 
         scoreDisplay = 0f
         scoreValue = 0f
+
+        modsGroup.clear()
+        modsGroup.color = modsGroup.color.setAlpha(0f)
+        for (mod in game.modifiers) {
+            modsGroup.addActor(TextButton(mod.toString().lowercase().capitalize(), defaultSkin).apply {
+                color = UserInterface.mainColor
+            })
+        }
     }
 
     fun scoreChanged(state: GameState) {

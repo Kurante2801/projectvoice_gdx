@@ -34,7 +34,7 @@ class GameplayLogic(
     private val glowTexture: Texture,
     private val screen: GameplayScreen,
     holdBackground: NinePatch,
-    private val game: ProjectVoice,
+    game: ProjectVoice,
 ) : Disposable {
     companion object {
         // Tracks' lines are larger than the screen and are centered at the judgement line,
