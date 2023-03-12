@@ -1,9 +1,12 @@
 package com.kurante.projectvoice_gdx.game
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.Texture.TextureFilter
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.NinePatch
+import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
 import com.badlogic.gdx.math.MathUtils.*
@@ -12,15 +15,14 @@ import com.kurante.projectvoice_gdx.PlayerPreferences
 import com.kurante.projectvoice_gdx.ProjectVoice
 import com.kurante.projectvoice_gdx.game.notes.*
 import com.kurante.projectvoice_gdx.game.particles.ParticleManager
+import com.kurante.projectvoice_gdx.level.ChartSection
+import com.kurante.projectvoice_gdx.level.Level
 import com.kurante.projectvoice_gdx.ui.screens.GameplayScreen
 import com.kurante.projectvoice_gdx.util.BakedAnimationCurve
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledScreenY
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageX
 import com.kurante.projectvoice_gdx.util.UserInterface.scaledStageY
-import com.kurante.projectvoice_gdx.util.extensions.draw
-import com.kurante.projectvoice_gdx.util.extensions.mapRange
-import com.kurante.projectvoice_gdx.util.extensions.set
-import com.kurante.projectvoice_gdx.util.extensions.toMillis
+import com.kurante.projectvoice_gdx.util.extensions.*
 import java.lang.Integer.max
 
 class GameplayLogic(
@@ -60,6 +62,72 @@ class GameplayLogic(
         // UnityEditor.AnimationCurveWrapperJSON:{"curve":{"serializedVersion":"2","m_Curve":[{"serializedVersion":"3","time":0.0,"value":1.0,"inSlope":-2.547168731689453,"outSlope":-2.547168731689453,"tangentMode":0,"weightedMode":0,"inWeight":0.0,"outWeight":0.10000000149011612},{"serializedVersion":"3","time":0.5,"value":0.5,"inSlope":-0.05660367012023926,"outSlope":-3.0360195636749269,"tangentMode":1,"weightedMode":0,"inWeight":0.5,"outWeight":0.09166669845581055},{"serializedVersion":"3","time":1.0,"value":0.0,"inSlope":-0.7018868923187256,"outSlope":-0.7018868923187256,"tangentMode":0,"weightedMode":0,"inWeight":0.4166666269302368,"outWeight":0.0}],"m_PreInfinity":2,"m_PostInfinity":2,"m_RotationOrder":4}}
         private val despawnCurveHeight = BakedAnimationCurve.valueOf("100#98.25179#96.5446#94.87793#93.25129#91.6642#90.11618#88.60674#87.13539#85.70166#84.30504#82.94508#81.62125#80.3331#79.08013#77.86186#76.6778#75.52747#74.41039#73.32605#72.27399#71.25372#70.26475#69.30659#68.37876#67.48078#66.61216#65.77242#64.96105#64.1776#63.42157#62.69246#61.98981#61.31312#60.66191#60.03568#59.43397#58.85627#58.30212#57.77102#57.26247#56.77601#56.31115#55.8674#55.44426#55.04128#54.65794#54.29378#53.94829#53.62101#53.31143#53.0191#52.74349#52.48414#52.24057#52.01228#51.7988#51.59963#51.41429#51.24229#51.08316#50.93639#50.80153#50.67806#50.56552#50.4634#50.37125#50.28855#50.21481#50.14959#50.09236#50.04266#50#47.92783#45.92704#43.99628#42.13411#40.33916#38.61002#36.94531#35.34361#33.80354#32.3237#30.90268#29.53911#28.23156#26.97867#25.77901#24.6312#23.53384#22.48554#21.48489#20.53049#19.62097#18.7549#17.93091#17.14758#16.40354#15.69737#15.02768#14.39308#13.79216#13.22354#12.68581#12.17757#11.69744#11.24401#10.81588#10.41167#10.02997#9.669384#9.32852#9.005973#8.700359#8.410266#8.134309#7.871089#7.619205#7.377261#7.143855#6.917608#6.697106#6.480962#6.267768#6.056139#5.84467#5.631971#5.416641#5.197281#4.9725#4.740891#4.501071#4.251641#3.991196#3.718326#3.431666#3.129804#2.811346#2.474892#2.11904#1.742387#1.343566#0.92116#0.4737705#0")
         fun despawnHeightAnim(x: Float): Float = despawnCurveHeight.evaluate(x)
+
+        suspend fun load(
+            game: ProjectVoice,
+            level: Level,
+            chart: Chart,
+            section: ChartSection,
+            screen: GameplayScreen,
+        ): GameplayLogic {
+            val conductor = game.loadConductor(level.file.child(level.musicFilename))
+
+            // Pack track's images
+            var packer = PixmapPacker(512, 2048, Pixmap.Format.RGBA8888, 2, false).apply {
+                packToTexture = true
+                pack("background", game.internalStorage.load<Pixmap>("game/track_background.png"))
+                pack("line", game.internalStorage.load<Pixmap>("game/track_line.png"))
+                pack("white", game.internalStorage.load<Pixmap>("game/white.png"))
+                pack("active", game.internalStorage.load<Pixmap>("game/track_active.png"))
+            }
+
+            val trackAtlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
+            packer.dispose()
+            // Hold note's background texture is a NinePatch
+            // We load it here AND pack it so we can render it with the same atlas as other notes using 9patch data
+            val ninePatch: NinePatch
+            val background: Pixmap
+            game.internalStorage.load<Pixmap>("game/notes/diamond/hold_back.9.png").apply {
+                ninePatch = parseNinePatch()
+                background = crop()
+            }
+
+            packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply {
+                packToTexture = true
+                pack("click_back", game.internalStorage.load<Pixmap>("game/notes/diamond/click_back.png"))
+                pack("click_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/click_fore.png"))
+                pack("hold_back", background)
+                pack("slide_back", game.internalStorage.load<Pixmap>("game/notes/diamond/slide_back.png"))
+                pack("slide_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/slide_fore.png"))
+                pack("swipe_back", game.internalStorage.load<Pixmap>("game/notes/diamond/swipe_back.png"))
+                pack("swipe_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/swipe_fore.png"))
+                pack("tick_back", game.internalStorage.load<Pixmap>("game/notes/tick_back.png"))
+                pack("tick_fore", game.internalStorage.load<Pixmap>("game/notes/tick_fore.png"))
+                pack("perfect", game.internalStorage.load<Pixmap>("game/notes/diamond/grade_perfect.png"))
+                pack("track", game.internalStorage.load<Pixmap>("game/notes/diamond/track.png"))
+            }
+            val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
+            packer.dispose()
+
+            // Glow is not packed so it's anti-aliased
+            val glowTexture = game.internalStorage.load<Texture>("game/track_glow.png").apply {
+                setFilter(TextureFilter.Linear, TextureFilter.Linear)
+            }
+
+            return GameplayLogic(
+                conductor = conductor,
+                chart = chart,
+                trackAtlas = trackAtlas,
+                notesAtlas = notesAtlas,
+                modifiers = game.modifiers,
+                prefs = game.prefs,
+                state = GameState(level, section, chart),
+                glowTexture = glowTexture,
+                screen = screen,
+                holdBackground = ninePatch,
+                game = game
+            )
+        }
     }
 
     data class TrackInfo(
@@ -86,7 +154,7 @@ class GameplayLogic(
     private val trackShape: AtlasRegion = notesAtlas.findRegion("track")
 
     private val particleManager = ParticleManager()
-    private val inputRegion = notesAtlas.findRegion("input")
+    //private val inputRegion = notesAtlas.findRegion("input")
     private val gradeRegions = mapOf(
         NoteGrade.MISS to null,
         NoteGrade.GOOD to notesAtlas.findRegion("perfect"),
@@ -142,7 +210,7 @@ class GameplayLogic(
         val height = ProjectVoice.stageHeight
         val trackWidth = width * 0.115f
         val borderThick = 2f.scaledStageX()
-        val centerThick = 1.5f.scaledStageX()
+        val centerThick = 2f.scaledStageX()
         val glowWidth = 12f.scaledStageX()
         val judgementThick = 2f.scaledStageY()
 
@@ -319,10 +387,10 @@ class GameplayLogic(
     }
 
     fun noteTouched(x: Int) {
-        ProjectVoice.particlePool.obtain().apply {
+        /*ProjectVoice.particlePool.obtain().apply {
             val size = 1100f.scaledScreenY()
             initialize(x.toFloat(), ProjectVoice.stageHeight * LINE_POS_MULTIPLIER, inputRegion, size, 0f, 0.5f)
             particleManager.particles.add(this)
-        }
+        }*/
     }
 }

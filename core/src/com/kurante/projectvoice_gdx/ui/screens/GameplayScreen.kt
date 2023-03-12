@@ -254,61 +254,7 @@ class GameplayScreen(parent: ProjectVoice) : GameScreen(parent) {
             updateLabels()
 
         KtxAsync.launch {
-            val conductor = game.loadConductor(level.file.child(level.musicFilename))
-
-            var packer = PixmapPacker(512, 2048, Pixmap.Format.RGBA8888, 2, false).apply {
-                packToTexture = true
-                pack("background", game.internalStorage.load<Pixmap>("game/track_background.png"))
-                pack("line", game.internalStorage.load<Pixmap>("game/track_line.png"))
-                pack("white", game.internalStorage.load<Pixmap>("game/white.png"))
-                pack("active", game.internalStorage.load<Pixmap>("game/track_active.png"))
-            }
-            val trackAtlas = packer.generateTextureAtlas(TextureFilter.Nearest, TextureFilter.Nearest, false)
-            packer.dispose()
-
-            val ninePatch: NinePatch
-            val background: Pixmap
-            // Load Hold Background as Pixmap so we can pack it
-            game.internalStorage.load<Pixmap>("game/notes/diamond/hold_back.9.png").apply {
-                ninePatch = parseNinePatch()
-                background = crop()
-            }
-
-            packer = PixmapPacker(2048, 2048, Pixmap.Format.RGBA8888, 2, false).apply {
-                packToTexture = true
-                pack("click_back", game.internalStorage.load<Pixmap>("game/notes/diamond/click_back.png"))
-                pack("click_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/click_fore.png"))
-                pack("hold_back", background)
-                pack("slide_back", game.internalStorage.load<Pixmap>("game/notes/diamond/slide_back.png"))
-                pack("slide_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/slide_fore.png"))
-                pack("swipe_back", game.internalStorage.load<Pixmap>("game/notes/diamond/swipe_back.png"))
-                pack("swipe_fore", game.internalStorage.load<Pixmap>("game/notes/diamond/swipe_fore.png"))
-                pack("tick_back", game.internalStorage.load<Pixmap>("game/notes/tick_back.png"))
-                pack("tick_fore", game.internalStorage.load<Pixmap>("game/notes/tick_fore.png"))
-                pack("perfect", game.internalStorage.load<Pixmap>("game/notes/diamond/grade_perfect.png"))
-                pack("input", game.internalStorage.load<Pixmap>("game/notes/diamond/grade_input.png"))
-                pack("track", game.internalStorage.load<Pixmap>("game/notes/diamond/track.png"))
-            }
-            val notesAtlas = packer.generateTextureAtlas(TextureFilter.MipMap, TextureFilter.MipMap, true)
-            packer.dispose()
-
-            val glowTexture = game.internalStorage.load<Texture>("game/track_glow.png").apply {
-                setFilter(TextureFilter.Linear, TextureFilter.Linear)
-            }
-
-            logic = GameplayLogic(
-                conductor = conductor,
-                chart = chart,
-                trackAtlas = trackAtlas,
-                notesAtlas = notesAtlas,
-                modifiers = game.modifiers,
-                prefs = game.prefs,
-                state = GameState(level, section, chart),
-                glowTexture = glowTexture,
-                holdBackground = ninePatch,
-                screen = this@GameplayScreen,
-                game = game
-            )
+            logic = GameplayLogic.load(game, level, chart, section, this@GameplayScreen)
 
             if (populated) {
                 updateLabels()

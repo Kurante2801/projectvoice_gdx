@@ -22,7 +22,7 @@ open class NoteBehavior(
 ) {
     companion object {
         const val FADE_TIME: Int = 1000
-        const val NOTE_WIDTH: Float = 85f
+        const val NOTE_WIDTH: Float = 74f
     }
 
     val id: Int get() = data.id
